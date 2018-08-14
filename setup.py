@@ -14,7 +14,7 @@ setup(
     description='Colorify your desktop with Larry the Cow',
     long_description=readme(),
     author='Albert Hopkins',
-    author_email='marduk@python.net',
+    author_email='marduk@letterboxes.org',
     packages=['larry', 'larry.plugins'],
     zip_safe=True,
     install_requires=[
