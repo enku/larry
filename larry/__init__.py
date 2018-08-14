@@ -231,7 +231,7 @@ class Color(object):
 
         return int(number)
 
-    def colorify(self, color: 'Color', fix_bw: bool=True):
+    def colorify(self, color: 'Color', fix_bw: bool=True) -> 'Color':
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
@@ -249,7 +249,7 @@ class Color(object):
         return new_color
 
     @classmethod
-    def randcolor(cls, l: Optional[float]=None, comp: str='='):
+    def randcolor(cls, l: Optional[float]=None, comp: str='=') -> 'Color':
         """Return random color color.luminocity() = l """
 
         low_range = 0
@@ -340,7 +340,7 @@ class Color(object):
 
         yield to_color
 
-    def factor_tuple(self, mytuple):
+    def factor_tuple(self, mytuple) -> 'Color':
         """Same as factor_int, but multiply by a 3-tuple
         Return normalized color
         """
@@ -356,20 +356,20 @@ class Color(object):
 
         return Color((red, green, blue))
 
-    def factor(self, myint):
+    def factor(self, myint) -> 'Color':
         """Same as factor_tuple, but just one number"""
 
         return self.factor_tuple((myint, myint, myint))
 
     @classmethod
-    def randhue(cls, saturation, brightness):
+    def randhue(cls, saturation, brightness) -> 'Color':
         """Create color with random hue based on saturation and brightness"""
         saturation = float(saturation)
         brightness = float(brightness)
-        hue = randint(0, 360)
+        hue = random.randint(0, 360)
         return Color.fromHSV((hue, saturation, brightness))
 
-    def toHSV(self):
+    def toHSV(self) -> Tuple[float, float, float]:
         """Return a tuple containing (Hue, Saturation, Value)"""
 
         r, g, b = self.red / 255.0, self.green / 255.0, self.blue / 255.0
@@ -383,7 +383,7 @@ class Color(object):
         else:
             s = 0.0
         if s == 0.0:
-            h = -1
+            h = -1.0
         else:
             if r == maximum:
                 h = (g - b) / delta
@@ -397,7 +397,7 @@ class Color(object):
         return (h, s * 100.0, v * 100.0)
 
     @classmethod
-    def fromHSV(cls, HSV):
+    def fromHSV(cls, HSV: Tuple[float, float, float]) -> 'Color':
         """Create a color from HSV value (tuple)"""
         from math import floor
 
