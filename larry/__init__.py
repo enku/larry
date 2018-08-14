@@ -275,7 +275,7 @@ class Color(object):
         try:
             op = ops[comp]
         except KeyError:
-            raise BadColorSpecError('random(%r, %r)' % (comp, l))
+            raise BadColorSpecError('random(%s%s)' % (comp, l))
 
         while True:
             if op(color.luminocity(), l):
