@@ -20,5 +20,5 @@ It should be possible to write your own plugins (documentation forthcoming).
 Installable via pip:
 
 ```console
-$ pip install git+https://github/enku/larry
+$ pip install git+https://github.com/enku/larry
 ```
