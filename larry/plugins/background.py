@@ -5,10 +5,6 @@ from gi.repository import Gio
 from larry import Color, ConfigType
 
 SCHEMA = 'org.gnome.desktop.background'
-KEYS = (
-    '/org/gnome/desktop/background/primary-color',
-    '/org/gnome/desktop/background/secondary-color',
-)
 
 
 def plugin(colors: List[Color], config: ConfigType) -> None:
