@@ -489,7 +489,12 @@ def write_file(filename: str, text: str) -> int:
 
 
 async def watch_file(watcher, loop, handler):
-    await watcher.setup(loop)
+    try:
+        await watcher.setup(loop)
+    except OSError as error:
+        LOGGER.warn(error)
+
+        return
 
     while True:
         await watcher.get_event()
@@ -626,8 +631,15 @@ def rgba(color: str, theme_color: Color, css: str) -> str:
     return re.sub(re_str, new_str, css, flags=re.I)
 
 
+
+def init_config():
+    if 'larry' not in CONFIG:
+        CONFIG['larry'] = {}
+
+
 def main(args=None):
     """Main program entry point"""
+    init_config()
     args = parse_args(args or sys.argv[1:])
 
     if args.debug:
