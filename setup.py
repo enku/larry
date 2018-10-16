@@ -26,7 +26,6 @@ setup(
             'larry = larry:main',
         },
         'larry.plugins': {
-            'bash_prompt = larry.plugins.bash_prompt:plugin',
             'command = larry.plugins.command:plugin',
             'gnome_background = larry.plugins.background:plugin',
             'gnome_shell = larry.plugins.gnome_shell:plugin',
