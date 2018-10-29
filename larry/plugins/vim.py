@@ -17,15 +17,15 @@ def plugin(colors: List[Color], config: ConfigType) -> None:
         start(config)
         _IS_RUNNING = True
 
-    new_colors = get_new_colors(config['colors'], colors)
+    new_colors = get_new_colors(config["colors"], colors)
     VimProtocol.run(new_colors, config)
 
 
 def start(config):
-    address = config.get('listen_address', 'localhost')
-    port = int(config['port'])
+    address = config.get("listen_address", "localhost")
+    port = int(config["port"])
 
-    LOGGER.debug('Starting vim server on %s:%s', address, port)
+    LOGGER.debug("Starting vim server on %s:%s", address, port)
 
     loop = asyncio.get_event_loop()
     server = loop.create_server(VimProtocol, address, port)
@@ -39,11 +39,11 @@ def get_new_colors(config, from_colors):
     to_colors = []
 
     for group, layer, color in process_config(config):
-        target = fg_color if layer == 'fg' else bg_color
+        target = fg_color if layer == "fg" else bg_color
         to_color = color.colorify(target)
-        key = 'gui{0}'.format(layer)
+        key = "gui{0}".format(layer)
 
-        to_colors.append((group, '{0}={1}'.format(key, to_color)))
+        to_colors.append((group, "{0}={1}".format(key, to_color)))
 
     LOGGER.debug("vim colors: %s", to_colors)
 
@@ -51,7 +51,7 @@ def get_new_colors(config, from_colors):
 
 
 def process_config(config: str) -> Generator[Tuple[str, str, Color], None, None]:
-    lines = config.split('\n')
+    lines = config.split("\n")
 
     for line in lines:
         triplet = process_line(line)
@@ -66,19 +66,19 @@ def process_line(line: str) -> Optional[Tuple[str, str, Color]]:
     if not line:
         return None
 
-    group, delim, value = line.partition(':')
+    group, delim, value = line.partition(":")
 
     if not delim:
         return None
 
-    layer, delim, value = value.partition('=')
+    layer, delim, value = value.partition("=")
 
     if not delim:
         return None
 
     layer = layer.strip()
     value = value.strip()
-    color = Color('#' + value)
+    color = Color("#" + value)
 
     return (group, layer, color)
 
@@ -90,6 +90,7 @@ class VimProtocol(asyncio.Protocol):
     any of their input.  The class has the `run` method which the `vim`
     plugin uses to signal the sending of colors to the clients.
     """
+
     clients = WeakSet()
     colors = None
 
@@ -120,12 +121,12 @@ class VimProtocol(asyncio.Protocol):
         colors = cls.colors
 
         for label, colorspec in colors:
-            vi_cmd = 'hi {0} {1}'.format(label, colorspec)
-            cls.send(['ex', vi_cmd], transport)
+            vi_cmd = "hi {0} {1}".format(label, colorspec)
+            cls.send(["ex", vi_cmd], transport)
 
     @classmethod
     def set_termguicolors(cls, transport):
-        cls.send(['ex', 'set termguicolors'], transport)
+        cls.send(["ex", "set termguicolors"], transport)
 
     @classmethod
     def run(cls, colors, _):

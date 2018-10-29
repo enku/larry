@@ -7,8 +7,8 @@ from larry import LOGGER, Color, ConfigType
 
 def plugin(colors: List[Color], config: ConfigType) -> None:
     """run a command with the colors as arguments"""
-    LOGGER.debug('command plugin begin')
-    exe = config['command']
+    LOGGER.debug("command plugin begin")
+    exe = config["command"]
     colors_str = [str(i) for i in colors]
 
     LOGGER.debug('command="%s"', exe)

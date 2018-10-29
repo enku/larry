@@ -13,9 +13,9 @@ _FIRST_RUN = False
 def plugin(colors: List[Color], config: ConfigType) -> None:
     """gnome_shell plugin for larry"""
     theme_color = colors[0]
-    template = os.path.expanduser(config['template'])
-    outfile = os.path.expanduser(config['location'])
-    config_colors = config.get('colors', '').split()
+    template = os.path.expanduser(config["template"])
+    outfile = os.path.expanduser(config["location"])
+    config_colors = config.get("colors", "").split()
 
     with open(template) as myfile:
         orig_css = myfile.read()
@@ -23,7 +23,7 @@ def plugin(colors: List[Color], config: ConfigType) -> None:
     new_css = orig_css
 
     for color in config_colors:
-        num_commas = color.count(',')
+        num_commas = color.count(",")
 
         if num_commas == 0:
             # rrggbb
@@ -53,6 +53,6 @@ def gnome_shell_reload_theme() -> None:
         _FIRST_RUN = False
 
     bus = dbus.SessionBus()
-    obj = bus.get_object('org.gnome.Shell', '/org/gnome/Shell')
-    obj_iface = dbus.Interface(obj, 'org.gnome.Shell')
-    obj_iface.Eval('Main.loadTheme();')
+    obj = bus.get_object("org.gnome.Shell", "/org/gnome/Shell")
+    obj_iface = dbus.Interface(obj, "org.gnome.Shell")
+    obj_iface.Eval("Main.loadTheme();")

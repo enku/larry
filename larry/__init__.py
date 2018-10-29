@@ -11,39 +11,41 @@ import re
 import signal
 import subprocess
 import sys
-from typing import (Callable, List, MutableMapping, Optional, Set, Tuple,
-                    TypeVar, Union)
+from typing import Callable, List, MutableMapping, Optional, Set, Tuple, TypeVar, Union
 
 import aionotify
 import pkg_resources
 
-__version__ = '1.6.1'
+__version__ = "1.6.1"
 
 BASE_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+DATA_DIR = os.path.join(BASE_DIR, "data")
 COLOR_RE = re.compile(
-    '('
-    r'#[0-9a-f]{6}|'
-    r'#[0-9a-f]{3}|'
-    r'rgb\(\d+, *\d+, *\d+\)'
-    ')'
-, flags=re.I)
-ORIG_SVG_FILENAME = os.path.join(DATA_DIR, 'gentoo-cow-gdm-remake.svg')
+    r"""
+    (
+        \#[0-9a-f]{6}|          # rrggbb
+        \#[0-9]a-f{3}|          # rgb
+        rgb\(\d+, *\d+, *\d+\)  # rgb(d, d, d)
+    )
+""",
+    flags=re.X | re.I,
+)
+ORIG_SVG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
 INTERVAL = 8 * 60
-LOGGER = logging.getLogger('larry')
+LOGGER = logging.getLogger("larry")
 HANDLER = None
-CONFIG_PATH = os.path.expanduser('~/.config/larry.cfg')
+CONFIG_PATH = os.path.expanduser("~/.config/larry.cfg")
 CONFIG = configparser.ConfigParser()
-CONFIG['DEFAULT']['input'] = ORIG_SVG_FILENAME
-CONFIG['DEFAULT']['fuzz'] = '10'
+CONFIG["DEFAULT"]["input"] = ORIG_SVG_FILENAME
+CONFIG["DEFAULT"]["fuzz"] = "10"
 CONFIG.read(CONFIG_PATH)
-_COMPS = ('>', '<', '=')
+_COMPS = (">", "<", "=")
 
-ColorSpecType = Union[str, 'Color', Tuple[int, int, int]]
+ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 ConfigType = MutableMapping[str, str]
-PluginType = Callable[[List['Color'], ConfigType], None]
+PluginType = Callable[[List["Color"], ConfigType], None]
 
-PLUGINS = {} # type: MutableMapping[str, PluginType]
+PLUGINS = {}  # type: MutableMapping[str, PluginType]
 
 
 class BadColorSpecError(ValueError):
@@ -55,12 +57,13 @@ class BadColorSpecError(ValueError):
 # needs to be cleaned up or replaced with a different package.
 class Color(object):
     """tuple-like color class"""
+
     PASTEL_SATURATION = 50
     PASTEL_BRIGHTNESS = 100
-    RGB_FILENAME = '/usr/share/X11/rgb.txt'
-    rgb = {} # type: MutableMapping[str, Tuple[int, int, int]]
+    RGB_FILENAME = "/usr/share/X11/rgb.txt"
+    rgb = {}  # type: MutableMapping[str, Tuple[int, int, int]]
 
-    def __init__(self, colorspec: ColorSpecType='random') -> None:
+    def __init__(self, colorspec: ColorSpecType = "random") -> None:
         self.colorspec = colorspec
 
         if not self.rgb:
@@ -70,8 +73,11 @@ class Color(object):
 
         if isinstance(colorspec, Color):
             # copy color
-            self.red, self.green, self.blue = (colorspec.red, colorspec.green,
-                                               colorspec.blue)
+            self.red, self.green, self.blue = (
+                colorspec.red,
+                colorspec.green,
+                colorspec.blue,
+            )
             return
 
         if isinstance(colorspec, str):
@@ -86,7 +92,6 @@ class Color(object):
 
         self.color_string = str(self)
 
-
     def _handle_str_colorspec(self, colorspec: str):
         """Handle *colorspec* of type str"""
         self.color_string = colorspec
@@ -94,20 +99,20 @@ class Color(object):
         string_type = True
 
         ###rbg(r, g, b)
-        if colorspec.startswith('rgb('):
-            parts = colorspec[4:-2].split(',')
+        if colorspec.startswith("rgb("):
+            parts = colorspec[4:-2].split(",")
             self.red, self.green, self.blue = [int(i.strip()) for i in parts]
             return
 
         ####r/g/b
-        if len(colorspec.split('/')) == 3:
-            parts = colorspec.split('/')
+        if len(colorspec.split("/")) == 3:
+            parts = colorspec.split("/")
             self.red, self.green, self.blue = [int(i) for i in parts]
             return
 
         ####{ r, g, b}
-        if colorspec[0] == '{' and colorspec[-1] == '}':
-            red, green, blue = colorspec[1:-1].split(',')
+        if colorspec[0] == "{" and colorspec[-1] == "}":
+            red, green, blue = colorspec[1:-1].split(",")
             self.red = int(float(red) * 255)
             self.green = int(float(green) * 255)
             self.blue = int(float(blue) * 255)
@@ -118,17 +123,17 @@ class Color(object):
             return
 
         ####random
-        if colorspec == 'random':
+        if colorspec == "random":
             somecolor = self.randcolor()
             self.red = somecolor.red
             self.blue = somecolor.blue
             self.green = somecolor.green
             return
 
-        if colorspec[:7] == 'random(':
+        if colorspec[:7] == "random(":
             l = colorspec[7:-1]
-            comp = ''
-            value = ''
+            comp = ""
+            value = ""
             if l[0] in _COMPS:
                 comp = l[0]
                 start = 1
@@ -150,26 +155,29 @@ class Color(object):
             return
 
         ####randhue
-        if colorspec[:8] == 'randhue(':
-            parms = colorspec[8:-1].split(',', 1)
+        if colorspec[:8] == "randhue(":
+            parms = colorspec[8:-1].split(",", 1)
             saturation, brightness = float(parms[0]), float(parms[1])
             somecolor = self.randhue(saturation, brightness)
-            self.red, self.blue, self.green = (somecolor.red, somecolor.blue,
-                                               somecolor.green)
+            self.red, self.blue, self.green = (
+                somecolor.red,
+                somecolor.blue,
+                somecolor.green,
+            )
             return
 
         ####rrggbb
         if len(colorspec) in [6, 7]:
             triplet = colorspec
-            if triplet[0] == '#':
+            if triplet[0] == "#":
                 triplet = triplet[1:]
-            self.red = int('%s' % triplet[0:2], 16)
-            self.green = int('%s' % triplet[2:4], 16)
-            self.blue = int('%s' % triplet[4:6], 16)
+            self.red = int("%s" % triplet[0:2], 16)
+            self.green = int("%s" % triplet[2:4], 16)
+            self.blue = int("%s" % triplet[4:6], 16)
             return
 
         ####rgb
-        if re.match(r'#[0-9,[A-F]{3}$', colorspec, re.I):
+        if re.match(r"#[0-9,[A-F]{3}$", colorspec, re.I):
             self.red = int(colorspec[1], 16) * 17
             self.green = int(colorspec[2], 16) * 17
             self.blue = int(colorspec[3], 16) * 17
@@ -178,26 +186,25 @@ class Color(object):
         raise BadColorSpecError(repr(colorspec))
 
     def __repr__(self) -> str:
-        return '#%02x%02x%02x' % (self.red, self.green, self.blue)
+        return "#%02x%02x%02x" % (self.red, self.green, self.blue)
 
-    def __add__(self, value: Union['Color', float]) -> 'Color':
+    def __add__(self, value: Union["Color", float]) -> "Color":
         if isinstance(value, (int, float)):
             red = self.red + value
             blue = self.blue + value
             green = self.green + value
 
-            red, green, blue = [self._sanitize(component)
-                                for component in (red, green, blue)]
+            red, green, blue = [
+                self._sanitize(component) for component in (red, green, blue)
+            ]
 
             return Color((red, green, blue))
 
-        return Color((
-            self.red + value.red,
-            self.blue + value.blue,
-            self.green + value.green
-        ))
+        return Color(
+            (self.red + value.red, self.blue + value.blue, self.green + value.green)
+        )
 
-    def __mul__(self, value: Union['Color', float]) -> 'Color':
+    def __mul__(self, value: Union["Color", float]) -> "Color":
         """This should be used instead of __add__ as it makes more sense"""
 
         if isinstance(value, (int, float)):
@@ -214,7 +221,7 @@ class Color(object):
 
     __rmul__ = __mul__
 
-    def __div__(self, value: Union['Color', float]) -> 'Color':
+    def __div__(self, value: Union["Color", float]) -> "Color":
         """Just like __mul__"""
 
         if isinstance(value, (int, float)):
@@ -223,7 +230,7 @@ class Color(object):
         clum = value.luminocity()
         return self / clum
 
-    def __sub__(self, value: Union['Color', float]) -> 'Color':
+    def __sub__(self, value: Union["Color", float]) -> "Color":
         return self.__add__(-value)
 
     def _sanitize(self, number: float) -> int:
@@ -233,13 +240,13 @@ class Color(object):
 
         return int(number)
 
-    def colorify(self, color: 'Color', fix_bw: bool=True) -> 'Color':
+    def colorify(self, color: "Color", fix_bw: bool = True) -> "Color":
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
-        if fix_bw and self == Color('white'):
+        if fix_bw and self == Color("white"):
             my_color = Color((254, 254, 254))
-        elif fix_bw and self == Color('black'):
+        elif fix_bw and self == Color("black"):
             my_color = Color((1, 1, 1))
         else:
             my_color = Color(self)
@@ -251,25 +258,27 @@ class Color(object):
         return new_color
 
     @classmethod
-    def randcolor(cls, l: Optional[float]=None, comp: str='=') -> 'Color':
+    def randcolor(cls, l: Optional[float] = None, comp: str = "=") -> "Color":
         """Return random color color.luminocity() = l """
 
         low_range = 0
         high_range = 255
         ops = {
-            '<': operator.lt,
-            '<=': operator.le,
-            '=': operator.eq,
-            '>': operator.gt,
-            '>=': operator.ge,
+            "<": operator.lt,
+            "<=": operator.le,
+            "=": operator.eq,
+            ">": operator.gt,
+            ">=": operator.ge,
         }
         randint = random.randint
 
-        color = cls((
-            randint(low_range, high_range),
-            randint(low_range, high_range),
-            randint(low_range, high_range)
-        ))
+        color = cls(
+            (
+                randint(low_range, high_range),
+                randint(low_range, high_range),
+                randint(low_range, high_range),
+            )
+        )
 
         if not l:
             return color
@@ -277,50 +286,51 @@ class Color(object):
         try:
             op = ops[comp]
         except KeyError:
-            raise BadColorSpecError('random(%s%s)' % (comp, l))
+            raise BadColorSpecError("random(%s%s)" % (comp, l))
 
         while True:
             if op(color.luminocity(), l):
                 return color
 
-            color = cls((
-                randint(low_range, high_range),
-                randint(low_range, high_range),
-                randint(low_range, high_range)
-            ))
+            color = cls(
+                (
+                    randint(low_range, high_range),
+                    randint(low_range, high_range),
+                    randint(low_range, high_range),
+                )
+            )
 
-    def inverse(self) -> 'Color':
+    def inverse(self) -> "Color":
         """Return inverse of color"""
 
         return Color((255 - self.red, 255 - self.green, 255 - self.blue))
 
-    def winverse(self) -> 'Color':
+    def winverse(self) -> "Color":
         """Keep red part, change green to 255-, change blue to 0"""
 
         return Color((self.red // 2, 255 - self.green, 0))
 
     def to_gtk(self) -> str:
         """return string of Color in gtkrc format"""
-        return '{ %.2f, %.2f, %.2f }' % (self.red / 255.0, self.green /
-                                         255.0, self.blue / 255.0)
+        return "{ %.2f, %.2f, %.2f }" % (
+            self.red / 255.0,
+            self.green / 255.0,
+            self.blue / 255.0,
+        )
 
     def luminocity(self) -> float:
         """Return (int) luminocity of color"""
         # from http://tinyurl.com/8cve8
         return int(round(0.30 * self.red + 0.59 * self.green + 0.11 * self.blue))
 
-    def pastelize(self) -> 'Color':
+    def pastelize(self) -> "Color":
         """Return a "pastel" version of self"""
         hsv = self.toHSV()
 
-        return self.fromHSV((
-            hsv[0],
-            self.PASTEL_SATURATION,
-            self.PASTEL_BRIGHTNESS
-        ))
+        return self.fromHSV((hsv[0], self.PASTEL_SATURATION, self.PASTEL_BRIGHTNESS))
 
     @classmethod
-    def gradient(cls, from_color: 'Color', to_color:'Color', steps: int):
+    def gradient(cls, from_color: "Color", to_color: "Color", steps: int):
         """Generator for creating gradients"""
         yield from_color
 
@@ -342,7 +352,7 @@ class Color(object):
 
         yield to_color
 
-    def factor_tuple(self, mytuple) -> 'Color':
+    def factor_tuple(self, mytuple) -> "Color":
         """Same as factor_int, but multiply by a 3-tuple
         Return normalized color
         """
@@ -358,13 +368,13 @@ class Color(object):
 
         return Color((red, green, blue))
 
-    def factor(self, myint) -> 'Color':
+    def factor(self, myint) -> "Color":
         """Same as factor_tuple, but just one number"""
 
         return self.factor_tuple((myint, myint, myint))
 
     @classmethod
-    def randhue(cls, saturation, brightness) -> 'Color':
+    def randhue(cls, saturation, brightness) -> "Color":
         """Create color with random hue based on saturation and brightness"""
         saturation = float(saturation)
         brightness = float(brightness)
@@ -389,17 +399,17 @@ class Color(object):
         else:
             if r == maximum:
                 h = (g - b) / delta
-            elif (g == maximum):
+            elif g == maximum:
                 h = 2 + (b - r) / delta
-            elif (b == maximum):
+            elif b == maximum:
                 h = 4 + (r - g) / delta
             h = h * 60.0
-            if (h < 0):
+            if h < 0:
                 h = h + 360.0
         return (h, s * 100.0, v * 100.0)
 
     @classmethod
-    def fromHSV(cls, HSV: Tuple[float, float, float]) -> 'Color':
+    def fromHSV(cls, HSV: Tuple[float, float, float]) -> "Color":
         """Create a color from HSV value (tuple)"""
         from math import floor
 
@@ -435,10 +445,10 @@ class Color(object):
     # TODO: consider replacing with webcolors: https://pypi.org/project/webcolors/
     @classmethod
     def load_rgb(cls):
-        for line in open(cls.RGB_FILENAME, 'r'):
+        for line in open(cls.RGB_FILENAME, "r"):
             line = line.strip()
 
-            if not line or line[0] == '!':
+            if not line or line[0] == "!":
                 continue
 
             fields = line.split(None, 3)
@@ -454,31 +464,27 @@ class Color(object):
 def parse_args(args: tuple) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--version',
-        action='version',
-        version='%(prog)s {}'.format(__version__),
+        "--version", action="version", version="%(prog)s {}".format(__version__)
     )
-    parser.add_argument('--input', '-i', default=None)
-    parser.add_argument('--debug', action='store_true', default=False)
-    parser.add_argument('--fuzz', '-f', type=int, default=0)
-    parser.add_argument('--interval', '-n', type=int, default=INTERVAL)
-    parser.add_argument('output', type=str)
+    parser.add_argument("--input", "-i", default=None)
+    parser.add_argument("--debug", action="store_true", default=False)
+    parser.add_argument("--fuzz", "-f", type=int, default=0)
+    parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
+    parser.add_argument("output", type=str)
 
     return parser.parse_args(args)
 
 
 def read_file(filename: str) -> str:
-    pipe_exec = filename.startswith('!')
+    pipe_exec = filename.startswith("!")
 
     if pipe_exec:
         popen = subprocess.Popen(
-            os.path.expanduser(filename[1:]),
-            shell=True,
-            stdout=subprocess.PIPE,
+            os.path.expanduser(filename[1:]), shell=True, stdout=subprocess.PIPE
         )
         content = popen.stdout.read().decode()
     else:
-        with open(os.path.expanduser(filename), 'r') as myfile:
+        with open(os.path.expanduser(filename), "r") as myfile:
             content = myfile.read()
 
     return content
@@ -486,7 +492,7 @@ def read_file(filename: str) -> str:
 
 def write_file(filename: str, text: str) -> int:
     """write open *filename* and write *text* to it"""
-    with open(filename, 'w') as myfile:
+    with open(filename, "w") as myfile:
         return myfile.write(text)
 
 
@@ -507,43 +513,43 @@ def randsign(num: int) -> int:
     return random.choice([-1, 1]) * random.randint(0, num)
 
 
-def run(reload_config: bool=False) -> None:
+def run(reload_config: bool = False) -> None:
     if reload_config:
         CONFIG.read(CONFIG_PATH)
 
-    orig_svg = read_file(os.path.expanduser(CONFIG['larry']['input']))
+    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
     orig_colors = list(get_colors(orig_svg))
     orig_colors.sort(key=Color.luminocity)
-    orig_colors = [i for i in orig_colors
-                   if i.luminocity() not in (0, 255)]
-    fuzz = CONFIG.getint('larry', 'fuzz')
+    orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
+    fuzz = CONFIG.getint("larry", "fuzz")
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 1])
     lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 254])
     svg = orig_svg
-    colors_str = CONFIG['larry'].get('colors', '').strip().split()
+    colors_str = CONFIG["larry"].get("colors", "").strip().split()
 
     if colors_str:
-        LOGGER.debug('using colors from config')
+        LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
         colors = Color.gradient(
-            Color.randcolor(l=lum1), Color.randcolor(l=lum2), len(orig_colors))
+            Color.randcolor(l=lum1), Color.randcolor(l=lum2), len(orig_colors)
+        )
         colors = list(colors)
 
-    LOGGER.debug('new colors: %s', colors)
+    LOGGER.debug("new colors: %s", colors)
 
     for orig, new in zip(orig_colors, colors):
         color_str = str(new)
         svg = svg.replace(orig.colorspec, color_str)
 
-    outfile = CONFIG['larry']['output']
+    outfile = CONFIG["larry"]["output"]
     write_file(outfile, svg)
 
     # now run any plugins
-    if 'larry' not in CONFIG.sections():
+    if "larry" not in CONFIG.sections():
         return
 
-    plugins = CONFIG['larry'].get('plugins', '').split()
+    plugins = CONFIG["larry"].get("plugins", "").split()
     loop = asyncio.get_event_loop()
 
     for plugin_name in plugins:
@@ -554,12 +560,12 @@ def do_plugin(plugin_name: str, colors: List[Color]) -> None:
     plugin = load_plugin(plugin_name)
     config = get_plugin_config(plugin_name)
 
-    LOGGER.debug('Running plugin for %s', plugin_name)
+    LOGGER.debug("Running plugin for %s", plugin_name)
     plugin(colors, config)
 
 
 def get_plugin_config(plugin_name: str) -> ConfigType:
-    plugin_config_name = 'plugins:{}'.format(plugin_name)
+    plugin_config_name = "plugins:{}".format(plugin_name)
 
     if plugin_config_name in CONFIG:
         plugin_config = dict(CONFIG[plugin_config_name])
@@ -571,19 +577,19 @@ def get_plugin_config(plugin_name: str) -> ConfigType:
 
 def load_plugin(name: str):
     if name not in PLUGINS:
-        iter_ = pkg_resources.iter_entry_points('larry.plugins', name)
+        iter_ = pkg_resources.iter_entry_points("larry.plugins", name)
         plugin = next(iter_).load()
         PLUGINS[name] = plugin
 
     return PLUGINS[name]
 
 
-def run_every(interval: float, loop, reload_config: bool=False) -> None:
+def run_every(interval: float, loop, reload_config: bool = False) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
     global HANDLER
 
     if HANDLER:
-        LOGGER.warning('received signal to change wallpaper')
+        LOGGER.warning("received signal to change wallpaper")
         HANDLER.cancel()
 
     run(reload_config)
@@ -601,7 +607,7 @@ def get_colors(svg: str) -> Set[Color]:
 
 
 def rrggbb(color: str, theme_color: Color, css: str) -> str:
-    color = '#' + color
+    color = "#" + color
     orig_color = Color(color)
     new_color = orig_color.colorify(theme_color)
 
@@ -609,34 +615,31 @@ def rrggbb(color: str, theme_color: Color, css: str) -> str:
 
 
 def rgb(color: str, theme_color: Color, css: str) -> str:
-    red, green, blue = [int(float(i)) for i in color.split(',')]
+    red, green, blue = [int(float(i)) for i in color.split(",")]
     orig_color = Color((red, green, blue))
     new_color = orig_color.colorify(theme_color)
-    re_str = re.escape('rgb({})'.format(color))
+    re_str = re.escape("rgb({})".format(color))
 
     return re.sub(re_str, str(new_color), css, flags=re.I)
 
 
 def rgba(color: str, theme_color: Color, css: str) -> str:
-    parts = color.split(',')
+    parts = color.split(",")
     red, green, blue, *_ = [int(float(i)) for i in parts]
     orig_color = Color((red, green, blue))
     new_color = orig_color.colorify(theme_color)
-    re_str = re.escape('rgba({},{},{},'.format(*parts[:3]))
-    re_str = re_str + r'(' + re.escape(parts[-1]) + r')\)'
-    new_str = 'rgba({},{},{},\\1)'.format(
-        new_color.red,
-        new_color.green,
-        new_color.blue
+    re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
+    re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
+    new_str = "rgba({},{},{},\\1)".format(
+        new_color.red, new_color.green, new_color.blue
     )
 
     return re.sub(re_str, new_str, css, flags=re.I)
 
 
-
 def init_config():
-    if 'larry' not in CONFIG:
-        CONFIG['larry'] = {}
+    if "larry" not in CONFIG:
+        CONFIG["larry"] = {}
 
 
 def main(args=None):
@@ -647,42 +650,36 @@ def main(args=None):
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    LOGGER.debug('args=%s', args)
+    LOGGER.debug("args=%s", args)
 
     if args.input:
-        CONFIG['larry']['input'] = args.input
+        CONFIG["larry"]["input"] = args.input
 
     if args.fuzz is not None:
-        CONFIG['larry']['fuzz'] = str(args.fuzz)
+        CONFIG["larry"]["fuzz"] = str(args.fuzz)
 
-    CONFIG['larry']['output'] = args.output
+    CONFIG["larry"]["output"] = args.output
 
     loop = asyncio.get_event_loop()
-    loop.add_signal_handler(
-        signal.SIGUSR1,
-        run_every,
-        args.interval,
-        loop,
-        True,
-    )
+    loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, loop, True)
     loop.call_soon(run_every, args.interval, loop)
 
     watcher = aionotify.Watcher()
     watcher.watch(CONFIG_PATH, aionotify.Flags.MODIFY | aionotify.Flags.CREATE)
-    loop.create_task(watch_file(
-        watcher,
-        loop,
-        functools.partial(run_every, args.interval, loop, True),
-    ))
+    loop.create_task(
+        watch_file(
+            watcher, loop, functools.partial(run_every, args.interval, loop, True)
+        )
+    )
 
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        LOGGER.info('User interrupted')
+        LOGGER.info("User interrupted")
         loop.stop()
     finally:
         loop.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
