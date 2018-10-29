@@ -27,7 +27,7 @@ COLOR_RE = re.compile(
     r'#[0-9a-f]{3}|'
     r'rgb\(\d+, *\d+, *\d+\)'
     ')'
-)
+, flags=re.I)
 ORIG_SVG_FILENAME = os.path.join(DATA_DIR, 'gentoo-cow-gdm-remake.svg')
 INTERVAL = 8 * 60
 LOGGER = logging.getLogger('larry')
@@ -61,6 +61,8 @@ class Color(object):
     rgb = {} # type: MutableMapping[str, Tuple[int, int, int]]
 
     def __init__(self, colorspec: ColorSpecType='random') -> None:
+        self.colorspec = colorspec
+
         if not self.rgb:
             self.load_rgb()
 
@@ -532,7 +534,7 @@ def run(reload_config: bool=False) -> None:
 
     for orig, new in zip(orig_colors, colors):
         color_str = str(new)
-        svg = svg.replace(orig.color_string, color_str)
+        svg = svg.replace(orig.colorspec, color_str)
 
     outfile = CONFIG['larry']['output']
     write_file(outfile, svg)
