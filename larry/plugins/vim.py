@@ -41,9 +41,9 @@ def get_new_colors(config, from_colors):
     for group, layer, color in process_config(config):
         target = fg_color if layer == "fg" else bg_color
         to_color = color.colorify(target)
-        key = "gui{0}".format(layer)
+        key = f"gui{layer}"
 
-        to_colors.append((group, "{0}={1}".format(key, to_color)))
+        to_colors.append((group, f"{key}={to_color}"))
 
     LOGGER.debug("vim colors: %s", to_colors)
 
@@ -121,7 +121,7 @@ class VimProtocol(asyncio.Protocol):
         colors = cls.colors
 
         for label, colorspec in colors:
-            vi_cmd = "hi {0} {1}".format(label, colorspec)
+            vi_cmd = f"hi {label} {colorspec}"
             cls.send(["ex", vi_cmd], transport)
 
     @classmethod

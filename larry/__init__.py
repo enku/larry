@@ -464,7 +464,7 @@ class Color(object):
 def parse_args(args: tuple) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--version", action="version", version="%(prog)s {}".format(__version__)
+        "--version", action="version", version=f"%(prog)s {__version__}"
     )
     parser.add_argument("--input", "-i", default=None)
     parser.add_argument("--debug", action="store_true", default=False)
@@ -565,7 +565,7 @@ def do_plugin(plugin_name: str, colors: List[Color]) -> None:
 
 
 def get_plugin_config(plugin_name: str) -> ConfigType:
-    plugin_config_name = "plugins:{}".format(plugin_name)
+    plugin_config_name = f"plugins:{plugin_name}"
 
     if plugin_config_name in CONFIG:
         plugin_config = dict(CONFIG[plugin_config_name])
@@ -618,7 +618,7 @@ def rgb(color: str, theme_color: Color, css: str) -> str:
     red, green, blue = [int(float(i)) for i in color.split(",")]
     orig_color = Color((red, green, blue))
     new_color = orig_color.colorify(theme_color)
-    re_str = re.escape("rgb({})".format(color))
+    re_str = re.escape(f"rgb({color})")
 
     return re.sub(re_str, str(new_color), css, flags=re.I)
 
