@@ -24,7 +24,7 @@ COLOR_RE = re.compile(
     r"""
     (
         \#[0-9a-f]{6}|          # rrggbb
-        \#[0-9]a-f{3}|          # rgb
+        \#[0-9a-f]{3}|          # rgb
         rgb\(\d+, *\d+, *\d+\)  # rgb(d, d, d)
     )
 """,
