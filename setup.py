@@ -9,7 +9,7 @@ def readme():
 setup(
     name="larry",
     version="1.6.1",
-    url="http://starship.python.net/crew/marduk/",
+    url="https://github.com/enku/larry",
     license="MIT",
     description="Colorify your desktop with Larry the Cow",
     long_description=readme(),
