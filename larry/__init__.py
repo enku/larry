@@ -51,6 +51,10 @@ PluginType = Callable[[List["Color"], ConfigType], None]
 PLUGINS = {}  # type: MutableMapping[str, PluginType]
 
 
+class PluginNotFound(LookupError):
+    """Unable to find the requested plugin"""
+
+
 def parse_args(args: tuple) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -121,10 +125,17 @@ def run(reload_config: bool = False) -> None:
         LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
-        colors = Color.gradient(
-            Color.randcolor(l=lum1), Color.randcolor(l=lum2), len(orig_colors)
-        )
-        colors = list(colors)
+        colors = orig_colors[:]
+        algo_names = CONFIG["larry"].get("algo", "gradient").split()
+
+        for algo_name in algo_names:
+            try:
+                algo = load_algo(algo_name)
+            except PluginNotFound:
+                error_message = f"Color algo {algo_name} not found. Skipping."
+                sys.stderr.write(error_message)
+            else:
+                colors = algo(colors, CONFIG)
 
     LOGGER.debug("new colors: %s", colors)
 
@@ -168,10 +179,25 @@ def get_plugin_config(plugin_name: str) -> ConfigType:
 def load_plugin(name: str):
     if name not in PLUGINS:
         iter_ = pkg_resources.iter_entry_points("larry.plugins", name)
-        plugin = next(iter_).load()
+
+        try:
+            plugin = next(iter_).load()
+        except (ModuleNotFoundError, StopIteration):
+            raise PluginNotFound
+
         PLUGINS[name] = plugin
 
     return PLUGINS[name]
+
+
+def load_algo(name: str) -> Callable:
+    """Load the algo with the given name"""
+    iter_ = pkg_resources.iter_entry_points("larry.algos", name)
+
+    try:
+        return next(iter_).load()
+    except (ModuleNotFoundError, StopIteration):
+        raise PluginNotFound
 
 
 def run_every(interval: float, loop, reload_config: bool = False) -> None:
