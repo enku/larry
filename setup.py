@@ -29,6 +29,12 @@ setup(
             "gtk = larry.plugins.gtk:plugin",
             "vim = larry.plugins.vim:plugin",
         },
+        "larry.algos": {
+            "gradient = larry.algos:gradient_algo",
+            "inverse = larry.algos:inverse_algo",
+            "luminocity = larry.algos:luminocity_algo",
+            "zipgradient = larry.algos:zipgradient_algo",
+        }
     },
     include_package_data=True,
 )
