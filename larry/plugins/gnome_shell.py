@@ -4,6 +4,7 @@ from time import sleep
 from typing import List
 
 import dbus
+
 from larry import Color, ConfigType, rgb, rgba, rrggbb, write_file
 
 # Has this plugin been run before?

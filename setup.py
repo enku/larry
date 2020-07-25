@@ -1,9 +1,10 @@
+"""setup.py for larry"""
 from setuptools import setup
 
 
 def readme():
-    with open("README.md") as fp:
-        return fp.read()
+    with open("README.md") as readme_file:
+        return readme_file.read()
 
 
 setup(

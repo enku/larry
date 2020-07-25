@@ -86,11 +86,11 @@ def write_file(filename: str, text: str) -> int:
         return myfile.write(text)
 
 
-async def watch_file(watcher, loop, handler):
+async def watch_file(watcher: aionotify.Watcher, loop, handler):
     try:
         await watcher.setup(loop)
     except OSError as error:
-        LOGGER.warn(error)
+        LOGGER.warning(error)
 
         return
 

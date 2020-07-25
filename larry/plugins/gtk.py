@@ -2,7 +2,7 @@
 import os
 from typing import List
 
-from larry import Color, rgb, rgba, rrggbb, write_file, ConfigType
+from larry import Color, ConfigType, rgb, rgba, rrggbb, write_file
 
 
 def plugin(colors: List[Color], config: ConfigType):

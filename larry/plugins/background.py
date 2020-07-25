@@ -2,6 +2,7 @@
 from typing import List
 
 from gi.repository import Gio
+
 from larry import Color, ConfigType
 
 SCHEMA = "org.gnome.desktop.background"
