@@ -116,6 +116,9 @@ class VimProtocol(asyncio.Protocol):
         if self.colors:
             self.send_colors(transport)
 
+    def connection_lost(self, exc):
+        self.clients.remove(self.transport)
+
     @classmethod
     def send_colors(cls, transport):
         colors = cls.colors
