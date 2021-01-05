@@ -16,7 +16,7 @@ class BadColorSpecError(ValueError):
 # The following class was written a *long* time ago in Python 2.x and
 # was in a different package. It was hastily ported here and either
 # needs to be cleaned up or replaced with a different package.
-class Color(object):
+class Color:
     """tuple-like color class"""
 
     PASTEL_SATURATION = 50
