@@ -278,6 +278,23 @@ class Color:
             self.blue / 255.0,
         )
 
+    def to_ansi256(self) -> int:
+        """Return color's approximate equivalent in the ANSI 256-color pallette"""
+        if self.red == self.green and self.green == self.blue:
+            if self.red < 8:
+                return 16
+            if self.red > 248:
+                return 231
+
+            return round(((self.red - 8) / 247.0) * 24) + 232
+
+        ansi_red = 36 * round(self.red / 255.0 * 5.0)
+        ansi_green = 6 * round(self.green / 255.0 * 5.0)
+        ansi_blue = round(self.blue / 255.0 * 5.0)
+        ansi = 16 + ansi_red + ansi_green + ansi_blue
+
+        return ansi
+
     def luminocity(self) -> float:
         """Return (int) luminocity of color"""
         # from http://tinyurl.com/8cve8
