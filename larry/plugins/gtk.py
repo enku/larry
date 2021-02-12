@@ -30,4 +30,4 @@ def plugin(colors: List[Color], config: ConfigType):
             # r,g,b,a
             new_css = rgba(color, theme_color, new_css)
 
-    write_file(outfile, new_css)
+    write_file(outfile, new_css.encode())

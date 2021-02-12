@@ -36,7 +36,7 @@ def plugin(colors: List[Color], config: ConfigType) -> None:
             # r,g,b,a
             new_css = rgba(color, theme_color, new_css)
 
-    write_file(outfile, new_css)
+    write_file(outfile, new_css.encode())
 
     # tell gnome shell to reload the theme
     gnome_shell_reload_theme()

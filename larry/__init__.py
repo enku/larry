@@ -69,25 +69,25 @@ def parse_args(args: tuple) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def read_file(filename: str) -> str:
+def read_file(filename: str) -> bytes:
     pipe_exec = filename.startswith("!")
 
     if pipe_exec:
         popen = subprocess.Popen(
             os.path.expanduser(filename[1:]), shell=True, stdout=subprocess.PIPE
         )
-        content = popen.stdout.read().decode()
+        content = popen.stdout.read()
     else:
-        with open(os.path.expanduser(filename), "r") as myfile:
+        with open(os.path.expanduser(filename), "rb") as myfile:
             content = myfile.read()
 
     return content
 
 
-def write_file(filename: str, text: str) -> int:
+def write_file(filename: str, data: bytes) -> int:
     """write open *filename* and write *text* to it"""
-    with open(filename, "w") as myfile:
-        return myfile.write(text)
+    with open(filename, "wb") as myfile:
+        return myfile.write(data)
 
 
 async def watch_file(watcher: aionotify.Watcher, loop, handler):
@@ -111,7 +111,7 @@ def run(reload_config: bool = False) -> None:
     if reload_config:
         CONFIG.read(CONFIG_PATH)
 
-    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
+    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"])).decode()
     orig_colors = list(get_colors(orig_svg))
     orig_colors.sort(key=Color.luminocity)
     orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
@@ -144,7 +144,7 @@ def run(reload_config: bool = False) -> None:
         svg = svg.replace(orig.colorspec, color_str)
 
     outfile = CONFIG["larry"]["output"]
-    write_file(outfile, svg)
+    write_file(outfile, svg.encode())
 
     # now run any plugins
     if "larry" not in CONFIG.sections():
