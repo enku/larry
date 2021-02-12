@@ -16,23 +16,12 @@ from typing import Callable, List, MutableMapping, Optional, Set, Tuple, TypeVar
 import aionotify
 import pkg_resources
 
-from .color import Color
-
+from larry.types import Color, SVGImage
 
 __version__ = "1.6.1"
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")
-COLOR_RE = re.compile(
-    r"""
-    (
-        \#[0-9a-f]{6}|          # rrggbb
-        \#[0-9a-f]{3}|          # rgb
-        rgb\(\d+, *\d+, *\d+\)  # rgb(d, d, d)
-    )
-""",
-    flags=re.X | re.I,
-)
 ORIG_SVG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
 INTERVAL = 8 * 60
 LOGGER = logging.getLogger("larry")
@@ -42,9 +31,7 @@ CONFIG = configparser.ConfigParser()
 CONFIG["DEFAULT"]["input"] = ORIG_SVG_FILENAME
 CONFIG["DEFAULT"]["fuzz"] = "10"
 CONFIG.read(CONFIG_PATH)
-_COMPS = (">", "<", "=")
 
-ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 ConfigType = MutableMapping[str, str]
 PluginType = Callable[[List["Color"], ConfigType], None]
 
@@ -111,14 +98,14 @@ def run(reload_config: bool = False) -> None:
     if reload_config:
         CONFIG.read(CONFIG_PATH)
 
-    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"])).decode()
-    orig_colors = list(get_colors(orig_svg))
+    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
+    svg = SVGImage(orig_svg)
+    orig_colors = list(svg.get_colors())
     orig_colors.sort(key=Color.luminocity)
     orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
     fuzz = CONFIG.getint("larry", "fuzz")
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 1])
     lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 254])
-    svg = orig_svg
     colors_str = CONFIG["larry"].get("colors", "").strip().split()
 
     if colors_str:
@@ -139,12 +126,10 @@ def run(reload_config: bool = False) -> None:
 
     LOGGER.debug("new colors: %s", colors)
 
-    for orig, new in zip(orig_colors, colors):
-        color_str = str(new)
-        svg = svg.replace(orig.colorspec, color_str)
+    svg.replace(orig_colors, colors)
 
     outfile = CONFIG["larry"]["output"]
-    write_file(outfile, svg.encode())
+    write_file(outfile, bytes(svg))
 
     # now run any plugins
     if "larry" not in CONFIG.sections():
@@ -214,12 +199,6 @@ def run_every(interval: float, loop, reload_config: bool = False) -> None:
         return
 
     HANDLER = loop.call_later(interval, run_every, interval, loop)
-
-
-def get_colors(svg: str) -> Set[Color]:
-    color_strings = {i for i in COLOR_RE.findall(svg)}
-
-    return {Color(i) for i in color_strings}
 
 
 def rrggbb(color: str, theme_color: Color, css: str) -> str:

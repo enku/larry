@@ -4,7 +4,8 @@ import json
 from typing import Generator, List, Optional, Tuple
 from weakref import WeakSet
 
-from larry import LOGGER, Color, ConfigType
+from larry import LOGGER, ConfigType
+from larry.types import Color
 
 _IS_RUNNING = False
 

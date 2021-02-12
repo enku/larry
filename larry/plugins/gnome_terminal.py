@@ -2,7 +2,9 @@
 from typing import List
 
 from gi.repository import Gio
-from larry import Color, ConfigType
+
+from larry import ConfigType
+from larry.types import Color
 
 # schema how to set gnome-terminal profiles
 SCHEMA = "org.gnome.Terminal.Legacy.Profile"

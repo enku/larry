@@ -5,7 +5,8 @@ from typing import List
 
 import dbus
 
-from larry import Color, ConfigType, rgb, rgba, rrggbb, write_file
+from larry import ConfigType, rgb, rgba, rrggbb, write_file
+from larry.types import Color
 
 # Has this plugin been run before?
 _FIRST_RUN = False

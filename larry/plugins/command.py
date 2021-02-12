@@ -2,7 +2,8 @@
 import subprocess
 from typing import List
 
-from larry import LOGGER, Color, ConfigType
+from larry import LOGGER, ConfigType
+from larry.types import Color
 
 
 def plugin(colors: List[Color], config: ConfigType) -> None:

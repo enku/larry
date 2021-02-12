@@ -2,7 +2,7 @@
 import itertools
 import random
 
-from .color import Color
+from larry.types import Color
 
 
 def randsign(num: int) -> int:
