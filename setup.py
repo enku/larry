@@ -16,6 +16,7 @@ setup(
     long_description=readme(),
     author="Albert Hopkins",
     author_email="marduk@letterboxes.org",
+    package_dir={"": "src"},
     packages=["larry", "larry.plugins"],
     zip_safe=True,
     install_requires=["aionotify", "dbus-python", "Pillow~=8.1.0"],
@@ -34,7 +35,7 @@ setup(
             "inverse = larry.algos:inverse_algo",
             "luminocity = larry.algos:luminocity_algo",
             "zipgradient = larry.algos:zipgradient_algo",
-        }
+        },
     },
     include_package_data=True,
 )
