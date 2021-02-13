@@ -100,7 +100,7 @@ def run(reload_config: bool = False) -> None:
 
     raw_image_data = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
     try:
-        image = SVG(raw_image_data)
+        image = SVGImage(raw_image_data)
     except UnicodeDecodeError:
         image = RasterImage(raw_image_data)
 
