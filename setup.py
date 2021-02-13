@@ -18,7 +18,7 @@ setup(
     author_email="marduk@letterboxes.org",
     packages=["larry", "larry.plugins"],
     zip_safe=True,
-    install_requires=["aionotify", "dbus-python"],
+    install_requires=["aionotify", "dbus-python", "Pillow~=8.1.0"],
     entry_points={
         "console_scripts": {"larry = larry:main"},
         "larry.plugins": {

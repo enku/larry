@@ -1,10 +1,13 @@
 """Larry data types"""
+import io
 import operator
 import random
 import re
 from abc import ABCMeta, abstractmethod
 from math import floor
 from typing import Iterable, Optional, Set, Tuple, Union
+
+from PIL import Image
 
 ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 _COMPS = (">", "<", "=")
@@ -493,3 +496,46 @@ class SVGImage(ImageType):
         for orig, new in zip(orig_colors, new_colors):
             color_str = str(new)
             self.svg = self.svg.replace(orig.colorspec, color_str)
+
+
+class RasterImage(ImageType):
+    """ImageType for Raster files"""
+
+    def __init__(self, data: bytes):
+        super().__init__(data)
+
+        bytes_io = io.BytesIO(data)
+        self.image = Image.open(bytes_io)
+
+    def get_colors(self) -> Set[Color]:
+        width, height = self.image.size
+        color_map = {}
+
+        for x in range(width):
+            for y in range(height):
+                pixel = self.image.getpixel((x, y))
+                pixel_color = Color(pixel[:3])
+
+                color_map[str(pixel_color)] = pixel_color
+
+        colors = set(color_map.values())
+        return colors
+
+    def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
+        """Mutate the Image by replacing orig_colors with new_colors"""
+        color_map = {str(k): v for k, v in zip(orig_colors, new_colors)}
+        width, height = self.image.size
+
+        for x in range(width):
+            for y in range(height):
+                pixel = self.image.getpixel((x, y))
+                pixel_color = Color(pixel[:3])
+
+                if new := color_map.get(str(pixel_color), None):
+                    self.image.putpixel((x, y), (new.red, new.green, new.blue))
+
+    def __bytes__(self):
+        bytes_io = io.BytesIO()
+        self.image.save(bytes_io, self.image.format)
+
+        return bytes_io.getvalue()

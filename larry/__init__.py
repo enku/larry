@@ -16,19 +16,19 @@ from typing import Callable, List, MutableMapping, Optional, Set, Tuple, TypeVar
 import aionotify
 import pkg_resources
 
-from larry.types import Color, SVGImage
+from larry.types import Color, RasterImage, SVGImage
 
 __version__ = "1.6.1"
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")
-ORIG_SVG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
+ORIG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
 INTERVAL = 8 * 60
 LOGGER = logging.getLogger("larry")
 HANDLER = None
 CONFIG_PATH = os.path.expanduser("~/.config/larry.cfg")
 CONFIG = configparser.ConfigParser()
-CONFIG["DEFAULT"]["input"] = ORIG_SVG_FILENAME
+CONFIG["DEFAULT"]["input"] = ORIG_FILENAME
 CONFIG["DEFAULT"]["fuzz"] = "10"
 CONFIG.read(CONFIG_PATH)
 
@@ -98,9 +98,13 @@ def run(reload_config: bool = False) -> None:
     if reload_config:
         CONFIG.read(CONFIG_PATH)
 
-    orig_svg = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
-    svg = SVGImage(orig_svg)
-    orig_colors = list(svg.get_colors())
+    raw_image_data = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
+    try:
+        image = SVG(raw_image_data)
+    except UnicodeDecodeError:
+        image = RasterImage(raw_image_data)
+
+    orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)
     orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
     fuzz = CONFIG.getint("larry", "fuzz")
@@ -126,10 +130,10 @@ def run(reload_config: bool = False) -> None:
 
     LOGGER.debug("new colors: %s", colors)
 
-    svg.replace(orig_colors, colors)
+    image.replace(orig_colors, colors)
 
     outfile = CONFIG["larry"]["output"]
-    write_file(outfile, bytes(svg))
+    write_file(outfile, bytes(image))
 
     # now run any plugins
     if "larry" not in CONFIG.sections():
