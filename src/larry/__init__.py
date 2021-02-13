@@ -171,8 +171,8 @@ def load_plugin(name: str):
 
         try:
             plugin = next(iter_).load()
-        except (ModuleNotFoundError, StopIteration):
-            raise PluginNotFound
+        except (ModuleNotFoundError, StopIteration) as error:
+            raise PluginNotFound(name) from error
 
         PLUGINS[name] = plugin
 
@@ -185,8 +185,8 @@ def load_algo(name: str) -> Callable:
 
     try:
         return next(iter_).load()
-    except (ModuleNotFoundError, StopIteration):
-        raise PluginNotFound
+    except (ModuleNotFoundError, StopIteration) as error:
+        raise PluginNotFound(name) from error
 
 
 def run_every(interval: float, loop, reload_config: bool = False) -> None:
