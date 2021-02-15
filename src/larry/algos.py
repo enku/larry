@@ -1,13 +1,8 @@
 """Color selection algorithms"""
 import itertools
-import random
 
+from larry import randsign
 from larry.types import Color
-
-
-def randsign(num: int) -> int:
-    """Return a number between -num and num"""
-    return random.choice([-1, 1]) * random.randint(0, num)
 
 
 def luminocity_algo(orig_colors, _config):
