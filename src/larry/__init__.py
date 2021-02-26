@@ -72,7 +72,12 @@ def read_file(filename: str) -> bytes:
 
 
 def write_file(filename: str, data: bytes) -> int:
-    """write open *filename* and write *text* to it"""
+    """write open *filename* and write *data* to it"""
+    head = os.path.split(filename)[0]
+
+    if head:
+        os.makedirs(head, exist_ok=True)
+
     with open(filename, "wb") as myfile:
         return myfile.write(data)
 

@@ -7,10 +7,10 @@ from larry.types import Color
 
 
 def plugin(colors: List[Color], config: ConfigType) -> None:
-    """run a command with the colors as arguments"""
+    """run a command with the colors as stdin"""
     LOGGER.debug("command plugin begin")
     exe = config["command"]
-    colors_str = [str(i) for i in colors]
+    colors_str = "\n".join(str(i) for i in colors)
 
     LOGGER.debug('command="%s"', exe)
-    subprocess.call([exe] + colors_str)
+    subprocess.run([exe], check=False, input=colors_str.encode())
