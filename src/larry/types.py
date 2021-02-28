@@ -82,17 +82,15 @@ class RasterImage(ImageType):
 
     def get_colors(self) -> Set[Color]:
         width, height = self.image.size
-        color_map = {}
 
-        for x in range(width):
-            for y in range(height):
-                pixel = self.image.getpixel((x, y))
-                pixel_color = Color(pixel[:3])
+        pixels = {
+            self.image.getpixel((x, y))[:3] for y in range(height) for x in range(width)
+        }
+        # for x in range(width):  # pylint: disable=invalid-name
+        #    for y in range(height):  # pylint: disable=invalid-name
+        #        pixels.add(self.image.getpixel((x, y))[:3])
 
-                color_map[str(pixel_color)] = pixel_color
-
-        colors = set(color_map.values())
-        return colors
+        return {Color(i) for i in pixels}
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the Image by replacing orig_colors with new_colors"""
