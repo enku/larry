@@ -112,9 +112,6 @@ def run(reload_config: bool = False) -> None:
     orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)
     orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
-    fuzz = CONFIG.getint("larry", "fuzz")
-    lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 1])
-    lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 254])
     colors_str = CONFIG["larry"].get("colors", "").strip().split()
 
     if colors_str:
