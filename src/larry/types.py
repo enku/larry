@@ -25,6 +25,29 @@ COLOR_RE = re.compile(
 )
 
 
+def color_names(filename):
+    """Load the rgb.txt name-to-value file"""
+    rgb = {}
+
+    with open(filename, "r") as rgbfile:
+        for line in rgbfile:
+            line = line.strip()
+
+            if not line or line[0] == "!":
+                continue
+
+            fields = line.split(None, 3)
+
+            try:
+                color_t = tuple(int(i) for i in fields[:3])
+                color_name = fields[3]
+                rgb[color_name.lower()] = color_t
+            except ValueError:
+                continue
+
+    return rgb
+
+
 class BadColorSpecError(ValueError):
     """Exception when an invalid spec was passed to the Color initializer"""
 
@@ -38,73 +61,80 @@ class Color:
     PASTEL_SATURATION = 50
     PASTEL_BRIGHTNESS = 100
     RGB_FILENAME = "/usr/share/X11/rgb.txt"
-    rgb = {}  # type: MutableMapping[str, Tuple[int, int, int]]
+    names = color_names(RGB_FILENAME)
 
     def __init__(self, colorspec: ColorSpecType = "random") -> None:
         self.colorspec = colorspec
 
-        if not self.rgb:
-            self.load_rgb()
+        ####(r, g , b)
+        if isinstance(colorspec, (tuple, list)):
+            self.__rgb = tuple(int(i) for i in colorspec)
 
-        self.red = self.green = self.blue = 0
-
-        if isinstance(colorspec, Color):
+        elif isinstance(colorspec, Color):
             # copy color
-            self.red, self.green, self.blue = (
-                colorspec.red,
-                colorspec.green,
-                colorspec.blue,
-            )
+            self.__rgb = colorspec.rgb
             return
 
-        if isinstance(colorspec, str):
-            self._handle_str_colorspec(colorspec)
-
-        ####(r, g , b)
-        elif isinstance(colorspec, (tuple, list)):
-            self.red, self.green, self.blue = [int(i) for i in colorspec]
+        elif isinstance(colorspec, str):
+            self.__rgb = self._handle_str_colorspec(colorspec)
 
         else:
             raise BadColorSpecError(repr(colorspec))
 
-        self.color_string = str(self)
+    @property
+    def red(self):
+        """Red value"""
+        return self.__rgb[0]
+
+    @property
+    def green(self):
+        """Green value"""
+        return self.__rgb[1]
+
+    @property
+    def blue(self):
+        """Blue value"""
+        return self.__rgb[2]
+
+    @property
+    def rgb(self):
+        return self.__rgb
+
+    def __eq__(self, other):
+        return self.rgb == other.rgb
+
+    def __hash__(self):
+        return hash(self.__rgb)
 
     def _handle_str_colorspec(self, colorspec: str):
         """Handle *colorspec* of type str"""
-        self.color_string = colorspec
         colorspec = colorspec.strip('"')
 
         ###rbg(r, g, b)
         if colorspec.startswith("rgb("):
             parts = colorspec[4:-2].split(",")
-            self.red, self.green, self.blue = [int(i.strip()) for i in parts]
-            return
+            return tuple(int(i.strip()) for i in parts)
 
         ####r/g/b
         if len(colorspec.split("/")) == 3:
             parts = colorspec.split("/")
-            self.red, self.green, self.blue = [int(i) for i in parts]
-            return
+            return tuple(int(i) for i in parts)
 
         ####{ r, g, b}
         if colorspec[0] == "{" and colorspec[-1] == "}":
             red, green, blue = colorspec[1:-1].split(",")
-            self.red = int(float(red) * 255)
-            self.green = int(float(green) * 255)
-            self.blue = int(float(blue) * 255)
-            return
+            return (
+                int(float(red) * 255),
+                int(float(green) * 255),
+                int(float(blue) * 255),
+            )
 
-        if colorspec.lower() in self.rgb:
-            self.red, self.green, self.blue = self.rgb[colorspec.lower()]
-            return
+        if val := self.names.get(colorspec.lower()):
+            return val
 
         ####random
         if colorspec == "random":
-            somecolor = self.randcolor()
-            self.red = somecolor.red
-            self.blue = somecolor.blue
-            self.green = somecolor.green
-            return
+            return self.randcolor().rgb
 
         if colorspec[:7] == "random(":
             lum = colorspec[7:-1]
@@ -125,44 +155,42 @@ class Color:
             except ValueError:
                 raise BadColorSpecError(colorspec)
 
-            self.red = somecolor.red
-            self.blue = somecolor.blue
-            self.green = somecolor.green
-            return
+            return somecolor.rgb
 
         ####randhue
         if colorspec[:8] == "randhue(":
             parms = colorspec[8:-1].split(",", 1)
             saturation, brightness = float(parms[0]), float(parms[1])
-            somecolor = self.randhue(saturation, brightness)
-            self.red, self.blue, self.green = (
-                somecolor.red,
-                somecolor.blue,
-                somecolor.green,
-            )
-            return
+
+            return self.randhue(saturation, brightness).rgb
 
         ####rrggbb
         if len(colorspec) in [6, 7]:
             triplet = colorspec
             if triplet[0] == "#":
                 triplet = triplet[1:]
-            self.red = int("%s" % triplet[0:2], 16)
-            self.green = int("%s" % triplet[2:4], 16)
-            self.blue = int("%s" % triplet[4:6], 16)
-            return
+            return (
+                int("%s" % triplet[0:2], 16),
+                int("%s" % triplet[2:4], 16),
+                int("%s" % triplet[4:6], 16),
+            )
 
         ####rgb
         if re.match(r"#[0-9,[A-F]{3}$", colorspec, re.I):
-            self.red = int(colorspec[1], 16) * 17
-            self.green = int(colorspec[2], 16) * 17
-            self.blue = int(colorspec[3], 16) * 17
-            return
+            return (
+                int(colorspec[1], 16) * 17,
+                int(colorspec[2], 16) * 17,
+                int(colorspec[3], 16) * 17,
+            )
 
         raise BadColorSpecError(repr(colorspec))
 
+    def __str__(self) -> str:
+        return "#%02x%02x%02x" % self.__rgb
+
     def __repr__(self) -> str:
-        return "#%02x%02x%02x" % (self.red, self.green, self.blue)
+        name = type(self).__name__
+        return f"{name}({self.__rgb})"
 
     def __add__(self, value: Union["Color", float]) -> "Color":
         if isinstance(value, (int, float)):
@@ -204,10 +232,11 @@ class Color:
             return self * (1.0 / value)
 
         clum = value.luminocity()
-        return self / clum
+
+        return self * (1 / clum)
 
     def __sub__(self, value: Union["Color", float]) -> "Color":
-        return self.__add__(-value)
+        return self.__add__(-1 * value)
 
     def _sanitize(self, number: float) -> int:
         """Make sure 0 <= number <= 255"""
@@ -433,24 +462,6 @@ class Color:
                 red, green, blue = value, aa, bb
 
         return cls((int(red * 255), int(green * 255), int(blue * 255)))
-
-    @classmethod
-    def load_rgb(cls):
-        """Load the rgb.txt name-to-value file"""
-        for line in open(cls.RGB_FILENAME, "r"):
-            line = line.strip()
-
-            if not line or line[0] == "!":
-                continue
-
-            fields = line.split(None, 3)
-
-            try:
-                color_t = tuple([int(i) for i in fields[:3]])
-                color_name = fields[3]
-                cls.rgb[color_name.lower()] = color_t
-            except ValueError:
-                continue
 
 
 class ImageType(metaclass=ABCMeta):
