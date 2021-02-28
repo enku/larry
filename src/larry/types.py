@@ -74,6 +74,12 @@ class RasterImage(ImageType):
         bytes_io = io.BytesIO(data)
         self.image = Image.open(bytes_io)
 
+        # We want to deal with everything as an RGBA but but go back to the orignal
+        # format/mode when converting to bytes
+        self.image_format = self.image.format
+        self.image_mode = self.image.mode
+        self.image = self.image.convert("RGBA")
+
     def get_colors(self) -> Set[Color]:
         width, height = self.image.size
         color_map = {}
@@ -90,19 +96,30 @@ class RasterImage(ImageType):
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the Image by replacing orig_colors with new_colors"""
-        color_map = {str(k): v for k, v in zip(orig_colors, new_colors)}
         width, height = self.image.size
 
-        for x in range(width):
-            for y in range(height):
-                pixel = self.image.getpixel((x, y))
-                pixel_color = Color(pixel[:3])
+        # map original rgb tuples to new
+        color_map = dict(
+            (orig.rgb, new.rgb) for orig, new in zip(orig_colors, new_colors)
+        )
 
-                if new := color_map.get(str(pixel_color), None):
-                    self.image.putpixel((x, y), (new.red, new.green, new.blue))
+        for x in range(width):  # pylint: disable=invalid-name
+            for y in range(height):  # pylint: disable=invalid-name
+                *rgb, alpha = self.image.getpixel((x, y))
+
+                try:
+                    new = color_map[(*rgb,)]
+                except KeyError:
+                    continue
+
+                self.image.putpixel((x, y), (*new, alpha))
 
     def __bytes__(self):
         bytes_io = io.BytesIO()
-        self.image.save(bytes_io, self.image.format)
+
+        try:
+            self.image.save(bytes_io, self.image_format)
+        except OSError:
+            self.image.convert("RGB").save(bytes_io, self.image_format)
 
         return bytes_io.getvalue()
