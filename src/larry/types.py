@@ -29,7 +29,7 @@ class ImageType(metaclass=ABCMeta):
 
     @abstractmethod
     def __bytes__(self) -> bytes:
-        pass
+        """Convert to a byte stream"""
 
     @abstractmethod
     def get_colors(self) -> Iterable[Color]:
