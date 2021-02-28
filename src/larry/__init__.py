@@ -132,7 +132,8 @@ def run(reload_config: bool = False) -> None:
 
     LOGGER.debug("new colors: %s", colors)
 
-    image.replace(orig_colors, colors)
+    if colors != orig_colors:
+        image.replace(orig_colors, colors)
 
     outfile = CONFIG["larry"]["output"]
     write_file(outfile, bytes(image))
