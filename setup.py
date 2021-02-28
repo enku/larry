@@ -1,46 +1,5 @@
 """setup.py for larry"""
-from setuptools import setup
+import setuptools
 
 
-def readme():
-    with open("README.md") as readme_file:
-        return readme_file.read()
-
-
-setup(
-    name="larry",
-    version="1.6.1",
-    url="https://github.com/enku/larry",
-    license="MIT",
-    description="Colorify your desktop with Larry the Cow",
-    long_description=readme(),
-    author="Albert Hopkins",
-    author_email="marduk@letterboxes.org",
-    package_dir={"": "src"},
-    packages=["larry", "larry.plugins"],
-    zip_safe=True,
-    install_requires=["aionotify", "dbus-python", "Pillow~=8.1.0"],
-    entry_points={
-        "console_scripts": {"larry = larry:main"},
-        "larry.plugins": {
-            "command = larry.plugins.command:plugin",
-            "gnome_background = larry.plugins.background:plugin",
-            "gnome_shell = larry.plugins.gnome_shell:plugin",
-            "gnome_terminal = larry.plugins.gnome_terminal:plugin",
-            "gtk = larry.plugins.gtk:plugin",
-            "vim = larry.plugins.vim:plugin",
-        },
-        "larry.algos": {
-            "gradient = larry.algos:gradient_algo",
-            "inverse = larry.algos:inverse_algo",
-            "luminocity = larry.algos:luminocity_algo",
-            "noop = larry.algos.noop",
-            "pastelize = larry.algos:pastelize",
-            "random = larry.algos:random_algo",
-            "shift = larry.algos:shift",
-            "shuffle = larry.algos:shuffle",
-            "zipgradient = larry.algos:zipgradient_algo",
-        },
-    },
-    include_package_data=True,
-)
+setuptools.setup()
