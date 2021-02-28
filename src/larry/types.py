@@ -62,7 +62,7 @@ class SVGImage(ImageType):
         """Mutate the image by replacing orig_colors with new_colors"""
         for orig, new in zip(orig_colors, new_colors):
             color_str = str(new)
-            self.svg = self.svg.replace(orig.colorspec, color_str)
+            self.svg = self.svg.replace(str(orig.colorspec), color_str)
 
 
 class RasterImage(ImageType):
