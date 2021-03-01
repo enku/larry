@@ -121,7 +121,6 @@ def random_algo(orig_colors, config):
 
     for _ in range(iters):
         plugin = random.choice(plugins)
-        print(plugin.name)
         algo = plugin.load()
         new_colors = algo(new_colors, config)
 
