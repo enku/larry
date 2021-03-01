@@ -1,3 +1,8 @@
+<p align="center">
+<img src=".github/screenshot.png" alt="Example Screenshot" width="100%">
+</p>
+<br>
+
 ## larry
 
 `larry` is a Python script and framework for colorizing your
@@ -14,6 +19,8 @@ colorizing lots of things. Included plugins are:
 * gtk: for colorizing a GTK+ theme
 
 * vim: for colorizing a vim colorscheme
+
+* command: for running an arbitrary command (build your own)
 
 It should be possible to write your own plugins (documentation forthcoming).
 
