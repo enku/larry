@@ -2,7 +2,8 @@
 import os
 from typing import List
 
-from larry import ConfigType, rgb, rgba, rrggbb, write_file
+from larry import ConfigType, rgb, rgba, rrggbb
+from larry.io import write_file
 from larry.types import Color
 
 

@@ -93,7 +93,7 @@ class VimProtocol(asyncio.Protocol):
     """
 
     clients = WeakSet()
-    colors = None
+    colors = []
 
     def __init__(self):
         self.transport = None

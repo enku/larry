@@ -2,7 +2,7 @@
 import io
 import re
 from abc import ABCMeta, abstractmethod
-from typing import Iterable, Set
+from typing import Iterable, MutableMapping, Set
 
 from PIL import Image
 
@@ -18,6 +18,8 @@ COLOR_RE = re.compile(
 """,
     flags=re.X | re.I,
 )
+
+ConfigType = MutableMapping[str, str]
 
 
 class ImageType(metaclass=ABCMeta):

@@ -1,4 +1,6 @@
 """The ubiquitous Color class"""
+from __future__ import annotations
+
 import operator
 import random
 import re
@@ -178,7 +180,7 @@ class Color:
         name = type(self).__name__
         return f"{name}({self.__rgb})"
 
-    def __add__(self, value: Union["Color", float]) -> "Color":
+    def __add__(self, value: Union[Color, float]) -> Color:
         if isinstance(value, (int, float)):
             red = self.red + value
             blue = self.blue + value
@@ -192,7 +194,7 @@ class Color:
             (self.red + value.red, self.blue + value.blue, self.green + value.green)
         )
 
-    def __mul__(self, value: Union["Color", float]) -> "Color":
+    def __mul__(self, value: Union[Color, float]) -> Color:
         """This should be used instead of __add__ as it makes more sense"""
 
         if isinstance(value, (int, float)):
@@ -209,7 +211,7 @@ class Color:
 
     __rmul__ = __mul__
 
-    def __div__(self, value: Union["Color", float]) -> "Color":
+    def __div__(self, value: Union[Color, float]) -> Color:
         """Just like __mul__"""
 
         if isinstance(value, (int, float)):
@@ -219,10 +221,10 @@ class Color:
 
         return self * (1 / clum)
 
-    def __sub__(self, value: Union["Color", float]) -> "Color":
+    def __sub__(self, value: Union[Color, float]) -> Color:
         return self.__add__(-1 * value)
 
-    def colorify(self, color: "Color", fix_bw: bool = True) -> "Color":
+    def colorify(self, color: Color, fix_bw: bool = True) -> Color:
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
@@ -240,7 +242,7 @@ class Color:
         return new_color
 
     @classmethod
-    def randcolor(cls, lum: Optional[float] = None, comp: str = "=") -> "Color":
+    def randcolor(cls, lum: Optional[float] = None, comp: str = "=") -> Color:
         """Return random color color.luminocity() = lum"""
 
         low_range = 0
@@ -282,12 +284,12 @@ class Color:
                 )
             )
 
-    def inverse(self) -> "Color":
+    def inverse(self) -> Color:
         """Return inverse of color"""
 
         return Color((255 - self.red, 255 - self.green, 255 - self.blue))
 
-    def winverse(self) -> "Color":
+    def winverse(self) -> Color:
         """Keep red part, change green to 255-, change blue to 0"""
 
         return Color((self.red // 2, 255 - self.green, 0))
@@ -322,14 +324,14 @@ class Color:
         # from http://tinyurl.com/8cve8
         return int(round(0.30 * self.red + 0.59 * self.green + 0.11 * self.blue))
 
-    def pastelize(self) -> "Color":
+    def pastelize(self) -> Color:
         """Return a "pastel" version of self"""
         hsv = self.to_hsv()
 
         return self.from_hsv((hsv[0], self.PASTEL_SATURATION, self.PASTEL_BRIGHTNESS))
 
     @classmethod
-    def gradient(cls, from_color: "Color", to_color: "Color", steps: int):
+    def gradient(cls, from_color: Color, to_color: Color, steps: int):
         """Generator for creating gradients"""
         yield from_color
 
@@ -351,7 +353,7 @@ class Color:
 
         yield to_color
 
-    def factor_tuple(self, mytuple) -> "Color":
+    def factor_tuple(self, mytuple) -> Color:
         """Same as factor_int, but multiply by a 3-tuple
         Return normalized color
         """
@@ -367,13 +369,13 @@ class Color:
 
         return Color((red, green, blue))
 
-    def factor(self, myint) -> "Color":
+    def factor(self, myint) -> Color:
         """Same as factor_tuple, but just one number"""
 
         return self.factor_tuple((myint, myint, myint))
 
     @classmethod
-    def randhue(cls, saturation, brightness) -> "Color":
+    def randhue(cls, saturation, brightness) -> Color:
         """Create color with random hue based on saturation and brightness"""
         saturation = float(saturation)
         brightness = float(brightness)
@@ -408,7 +410,7 @@ class Color:
         return (hue, saturation * 100.0, value * 100.0)
 
     @classmethod
-    def from_hsv(cls, hsv: Tuple[float, float, float]) -> "Color":
+    def from_hsv(cls, hsv: Tuple[float, float, float]) -> Color:
         """Create a color from HSV value (tuple)"""
 
         hue, saturation, value = hsv[0] / 360.0, hsv[1] / 100.0, hsv[2] / 100.0
