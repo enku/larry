@@ -1,16 +1,16 @@
 """Larry plugin for vim"""
 import asyncio
 import json
-from typing import Generator, List, Optional, Tuple
+from typing import Generator, Optional, Tuple
 from weakref import WeakSet
 
 from larry import LOGGER, ConfigType
-from larry.types import Color
+from larry.types import Color, ColorList
 
 _IS_RUNNING = False
 
 
-def plugin(colors: List[Color], config: ConfigType) -> None:
+def plugin(colors: ColorList, config: ConfigType) -> None:
     """vim plugin"""
     global _IS_RUNNING
 

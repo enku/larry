@@ -1,15 +1,13 @@
 """Plugin to set the background colors in GNOME"""
-from typing import List
-
 from gi.repository import Gio
 
 from larry import ConfigType
-from larry.types import Color
+from larry.types import ColorList
 
 SCHEMA = "org.gnome.desktop.background"
 
 
-def plugin(colors: List[Color], config: ConfigType) -> None:
+def plugin(colors: ColorList, _config: ConfigType) -> None:
     """GNOME background color plugin"""
     primary_color = colors[0]
     secondary_color = colors[-1]

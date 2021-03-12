@@ -2,14 +2,12 @@
 import itertools
 import random
 from configparser import ConfigParser
-from typing import List
 
 import pkg_resources
 
 from larry import randsign
-from larry.types import Color
+from larry.types import Color, ColorList
 
-ColorList = List[Color]
 
 def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return colors with the same luminocity as the original"""

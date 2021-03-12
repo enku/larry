@@ -1,13 +1,12 @@
 """Larry plugin for gtk"""
 import os
-from typing import List
 
 from larry import ConfigType, rgb, rgba, rrggbb
 from larry.io import write_file
-from larry.types import Color
+from larry.types import ColorList
 
 
-def plugin(colors: List[Color], config: ConfigType):
+def plugin(colors: ColorList, config: ConfigType):
     """gtk.css plugin"""
     theme_color = colors[0]
     template = os.path.expanduser(config["template"])

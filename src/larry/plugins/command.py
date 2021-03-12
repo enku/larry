@@ -1,12 +1,11 @@
 """Larry plugin to run a shell command"""
 import subprocess
-from typing import List
 
 from larry import LOGGER, ConfigType
-from larry.types import Color
+from larry.types import ColorList
 
 
-def plugin(colors: List[Color], config: ConfigType) -> None:
+def plugin(colors: ColorList, config: ConfigType) -> None:
     """run a command with the colors as stdin"""
     LOGGER.debug("command plugin begin")
     exe = config["command"]

@@ -29,7 +29,6 @@ CONFIG["DEFAULT"]["fuzz"] = "10"
 CONFIG.read(CONFIG_PATH)
 
 ConfigType = MutableMapping[str, str]
-PluginType = Callable[[List["Color"], ConfigType], None]
 
 
 class PluginNotFound(LookupError):

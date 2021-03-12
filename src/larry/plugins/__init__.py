@@ -4,9 +4,9 @@ from typing import Callable, Dict, List
 import pkg_resources
 
 from larry import CONFIG, LOGGER
-from larry.types import Color, ConfigType
+from larry.types import Color, ColorList, ConfigType
 
-PluginType = Callable[[List["Color"], ConfigType], None]
+PluginType = Callable[[ColorList, ConfigType], None]
 PLUGINS: Dict[str, PluginType] = {}
 
 
@@ -14,7 +14,7 @@ class PluginNotFound(LookupError):
     """Unable to find the requested plugin"""
 
 
-def do_plugin(plugin_name: str, colors: List[Color]) -> None:
+def do_plugin(plugin_name: str, colors: ColorList) -> None:
     plugin = load(plugin_name)
     config = get_config(plugin_name)
 

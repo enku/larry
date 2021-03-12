@@ -1,17 +1,15 @@
 """Larry plugin for the Gnome Terminal"""
-from typing import List
-
 from gi.repository import Gio
 
 from larry import ConfigType
-from larry.types import Color
+from larry.types import Color, ColorList
 
 # schema how to set gnome-terminal profiles
 SCHEMA = "org.gnome.Terminal.Legacy.Profile"
 PATH = "/org/gnome/terminal/legacy/profiles:/:{profile}/"
 
 
-def plugin(colors: List[Color], config: ConfigType) -> None:
+def plugin(colors: ColorList, config: ConfigType) -> None:
     """larry plugin to set the gnome-terminal background color"""
     profiles = config.get("profiles", "").split()
     colorstr = config["color"]

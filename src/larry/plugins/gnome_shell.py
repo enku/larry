@@ -1,19 +1,15 @@
 """GNOME Shell plugin"""
 import os
 from time import sleep
-from typing import List
 
 import dbus
 
 from larry import ConfigType, rgb, rgba, rrggbb
 from larry.io import write_file
-from larry.types import Color
-
-# Has this plugin been run before?
-_FIRST_RUN = False
+from larry.types import ColorList
 
 
-def plugin(colors: List[Color], config: ConfigType) -> None:
+def plugin(colors: ColorList, config: ConfigType) -> None:
     """gnome_shell plugin for larry"""
     theme_color = colors[0]
     template = os.path.expanduser(config["template"])
@@ -43,17 +39,19 @@ def plugin(colors: List[Color], config: ConfigType) -> None:
     # tell gnome shell to reload the theme
     gnome_shell_reload_theme()
 
+# Has this plugin been run before?
+plugin.has_run = False
+
 
 def gnome_shell_reload_theme() -> None:
-    global _FIRST_RUN
-
-    if _FIRST_RUN:
+    """Tell gnome shell to reload the theme"""
+    if not plugin.has_run:
         # If larry is in your autostart, gnome-shell might not be
         # initialized all the way before this function is called.
         # Calling it too soon causes the original theme to not always
         # get loaded properly. We give it some time.
         sleep(10)
-        _FIRST_RUN = False
+        plugin.has_run = True
 
     bus = dbus.SessionBus()
     obj = bus.get_object("org.gnome.Shell", "/org/gnome/Shell")
