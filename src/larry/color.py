@@ -1,7 +1,6 @@
 """The ubiquitous Color class"""
 from __future__ import annotations
 
-import operator
 import random
 import re
 from math import floor
@@ -244,45 +243,34 @@ class Color:
     @classmethod
     def randcolor(cls, lum: Optional[float] = None, comp: str = "=") -> Color:
         """Return random color color.luminocity() = lum"""
-
-        low_range = 0
-        high_range = 255
-        ops = {
-            "<": operator.lt,
-            "<=": operator.le,
-            "=": operator.eq,
-            ">": operator.gt,
-            ">=": operator.ge,
-        }
         randint = random.randint
-
         color = cls(
             (
-                randint(low_range, high_range),
-                randint(low_range, high_range),
-                randint(low_range, high_range),
+                randint(0, 255),
+                randint(0, 255),
+                randint(0, 255),
             )
         )
 
         if not lum:
             return color
 
-        try:
-            oper = ops[comp]
-        except KeyError as error:
-            raise BadColorSpecError("random(%s%s)" % (comp, lum)) from error
+        lum = int(lum)
 
-        while True:
-            if oper(color.luminocity(), lum):
-                return color
+        if comp == "=":
+            pass
+        elif comp == "<":
+            lum = randint(0, lum - 1)
+        elif comp == "<=":
+            lum = randint(0, lum)
+        elif comp == ">":
+            lum = randint(lum + 1, 255)
+        elif comp == ">=":
+            lum = randint(lum, 255)
+        else:
+            raise BadColorSpecError("random(%s%s)" % (comp, lum))
 
-            color = cls(
-                (
-                    randint(low_range, high_range),
-                    randint(low_range, high_range),
-                    randint(low_range, high_range),
-                )
-            )
+        return color.luminize(lum)
 
     def inverse(self) -> Color:
         """Return inverse of color"""
@@ -329,6 +317,31 @@ class Color:
         hsv = self.to_hsv()
 
         return self.from_hsv((hsv[0], self.PASTEL_SATURATION, self.PASTEL_BRIGHTNESS))
+
+    def luminize(self, luminocity: float) -> Color:
+        """Return new color with given luminocity
+
+        E.g.::
+
+            >>> print(Color("#a4c875").luminize(40))
+            #242c1a
+        """
+        my_lum = self.luminocity()
+
+        if my_lum == 0.0:
+            # black
+            value = int(luminocity)
+            return type(self)((value, value, value))
+
+        lum = (luminocity - my_lum) / my_lum
+        parts = [*self.rgb]
+
+        for i in range(3):
+            part = parts[i]
+            part = round(min(max(0, part + (part * lum)), 255))
+            parts[i] = part
+
+        return type(self)(tuple(parts))
 
     @classmethod
     def gradient(cls, from_color: Color, to_color: Color, steps: int):
