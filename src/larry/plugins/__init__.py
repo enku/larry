@@ -15,14 +15,14 @@ class PluginNotFound(LookupError):
 
 
 def do_plugin(plugin_name: str, colors: List[Color]) -> None:
-    plugin = load_plugin(plugin_name)
-    config = get_plugin_config(plugin_name)
+    plugin = load(plugin_name)
+    config = get_config(plugin_name)
 
     LOGGER.debug("Running plugin for %s", plugin_name)
     plugin(colors, config)
 
 
-def get_plugin_config(plugin_name: str) -> ConfigType:
+def get_config(plugin_name: str) -> ConfigType:
     plugin_config_name = f"plugins:{plugin_name}"
 
     if plugin_config_name in CONFIG:
@@ -33,7 +33,7 @@ def get_plugin_config(plugin_name: str) -> ConfigType:
     return plugin_config
 
 
-def load_plugin(name: str):
+def load(name: str):
     if name not in PLUGINS:
         iter_ = pkg_resources.iter_entry_points("larry.plugins", name)
 
