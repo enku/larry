@@ -127,6 +127,26 @@ def random_algo(orig_colors: ColorList, config: ConfigParser):
     return new_colors
 
 
+def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    percent = config.getint("algos:brighten", "percent", fallback=-20)
+    colors: ColorList = []
+
+    for color in orig_colors:
+        lum = color.luminocity()
+        new_lum = lum + 0.01 * percent * lum
+        colors.append(color.luminize(new_lum))
+
+    return colors
+
+
+def subtract(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+    # pick a random color
+    color = random.choice(orig_colors)
+
+    # subtract it from all the colors
+    return [i - color for i in orig_colors]
+
+
 def randbright(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Each color is darkened/lightened by a random value"""
     return [i.luminize(random.randint(0, 255)) for i in orig_colors]
