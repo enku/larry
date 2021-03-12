@@ -1,26 +1,29 @@
 """Color selection algorithms"""
 import itertools
 import random
+from configparser import ConfigParser
+from typing import List
 
 import pkg_resources
 
 from larry import randsign
 from larry.types import Color
 
+ColorList = List[Color]
 
-def luminocity_algo(orig_colors, _config):
+def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return colors with the same luminocity as the original"""
     colors = [Color.randcolor(lum=i) for i in [j.luminocity() for j in orig_colors]]
 
     return colors
 
 
-def inverse_algo(orig_colors, _config):
+def inverse_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return `luminocity_algo of orig_colors inversed"""
     return gradient_algo([i.inverse() for i in orig_colors], _config)
 
 
-def gradient_algo(orig_colors, config):
+def gradient_algo(orig_colors: ColorList, config: ConfigParser):
     """Return gradient within the same luminocity range as the orignal"""
     fuzz = config.getint("larry", "fuzz")
 
@@ -35,7 +38,7 @@ def gradient_algo(orig_colors, config):
     return colors
 
 
-def zipgradient_algo(orig_colors, config):
+def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
     """Return the result of n gradients zipped"""
     fuzz = config.getint("larry", "fuzz")
     gradient_count = config.getint("larry", "zipgradient_colors", fallback=2)
@@ -56,7 +59,7 @@ def zipgradient_algo(orig_colors, config):
     return colors
 
 
-def shuffle(orig_colors, _config):
+def shuffle(orig_colors: ColorList, _config: ConfigParser):
     """Shuffle the rgb for each color.
 
     But keep the same saturation and brightness as the original
@@ -75,7 +78,7 @@ def shuffle(orig_colors, _config):
     return colors
 
 
-def shift(orig_colors, _config):
+def shift(orig_colors: ColorList, _config: ConfigParser):
     """Shift colors by a random amount"""
     colors = list(orig_colors)
     num_colors = len(colors)
@@ -88,12 +91,12 @@ def shift(orig_colors, _config):
     return colors
 
 
-def pastelize(orig_colors, _config):
+def pastelize(orig_colors: ColorList, _config: ConfigParser):
     """Pastelize all the original colors"""
     return [orig_color.pastelize() for orig_color in orig_colors]
 
 
-def random_algo(orig_colors, config):
+def random_algo(orig_colors: ColorList, config: ConfigParser):
     """Yeah, coz how could we live without a random algo?"""
     exclude = ["random"]
 
@@ -127,7 +130,7 @@ def random_algo(orig_colors, config):
     return new_colors
 
 
-def noop(orig_colors, _):
+def noop(orig_colors: ColorList, _config: ConfigParser):
     """A NO-OP algo
 
     This is an algo that simply returns the original colors.
