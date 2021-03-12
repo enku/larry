@@ -127,6 +127,25 @@ def random_algo(orig_colors: ColorList, config: ConfigParser):
     return new_colors
 
 
+def randbright(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+    """Each color is darkened/lightened by a random value"""
+    return [i.luminize(random.randint(0, 255)) for i in orig_colors]
+
+
+def contrast(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+    """The darks are so dark and the brights are so bright"""
+    num_colors = len(orig_colors)
+    step = 255 / num_colors
+
+    colors = []
+    lum = 0.0
+    for color in orig_colors:
+        colors.append(color.luminize(lum))
+        lum += step
+
+    return colors
+
+
 def noop(orig_colors: ColorList, _config: ConfigParser):
     """A NO-OP algo
 
