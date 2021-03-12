@@ -45,7 +45,6 @@ def run(reload_config: bool = False) -> None:
 
     orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)
-    orig_colors = [i for i in orig_colors if i.luminocity() not in (0, 255)]
     colors_str = CONFIG["larry"].get("colors", "").strip().split()
 
     if colors_str:
