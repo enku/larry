@@ -1,20 +1,14 @@
 """Replace colors on the Larry the Cow wallpaper"""
-import argparse
-import asyncio
 import configparser
 import logging
-import operator
 import os
 import random
 import re
-import signal
-import subprocess
-import sys
-from typing import Callable, List, MutableMapping, Optional, Set, Tuple, TypeVar, Union
+from typing import Callable, MutableMapping
 
 import pkg_resources
 
-from larry.types import Color, RasterImage, SVGImage
+from larry.types import Color
 
 __version__ = "1.6.1"
 
