@@ -141,9 +141,12 @@ def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 def subtract(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     # pick a random color
     color = random.choice(orig_colors)
+    sign = random.choice([-1, 1])
 
-    # subtract it from all the colors
-    return [i - color for i in orig_colors]
+    if sign == -1:
+        return [i - color for i in orig_colors]
+
+    return [i + color for i in orig_colors]
 
 
 def randbright(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
