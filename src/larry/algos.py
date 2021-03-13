@@ -6,7 +6,8 @@ from configparser import ConfigParser
 import pkg_resources
 
 from larry import randsign
-from larry.types import Color, ColorList
+from larry.io import read_file
+from larry.types import Color, ColorList, Image
 
 
 def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
@@ -162,6 +163,29 @@ def contrast(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
         lum += step
 
     return colors
+
+
+def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Swap colors from source"""
+    if source := config.get("algos:swap", "source"):
+        source_colors = [
+            Color((0, 0, 0)),
+            Color((28, 52, 63)),
+            Color((37, 67, 81)),
+            Color((102, 102, 102)),
+            Color((124, 142, 150)),
+            Color((255, 255, 255)),
+        ]
+
+    else:
+        raw_image_data = read_file(source)
+        image = Image.from_bytes(raw_image_data)
+
+        source_colors = [*image.get_colors()]
+
+    source_colors.sort(key=Color.luminocity)
+
+    return [*Color.generate_from(source_colors, len(orig_colors), randomize=False)]
 
 
 def noop(orig_colors: ColorList, _config: ConfigParser):
