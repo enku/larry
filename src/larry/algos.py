@@ -22,7 +22,7 @@ def inverse_algo(orig_colors: ColorList, _config: ConfigParser):
 
 def gradient_algo(orig_colors: ColorList, config: ConfigParser):
     """Return gradient within the same luminocity range as the orignal"""
-    fuzz = config.getint("larry", "fuzz", fallback=0)
+    fuzz = config.getint("algos:gradient", "fuzz", fallback=0)
 
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
     lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 255])
@@ -36,8 +36,8 @@ def gradient_algo(orig_colors: ColorList, config: ConfigParser):
 
 def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
     """Return the result of n gradients zipped"""
-    fuzz = config.getint("larry", "fuzz", fallback=0)
-    gradient_count = config.getint("larry", "zipgradient_colors", fallback=2)
+    fuzz = config.getint("algos:zipgradient", "fuzz", fallback=0)
+    gradient_count = config.getint("algos:zipgradient", "colors", fallback=2)
 
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
     lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 255])

@@ -26,7 +26,6 @@ def parse_args(args: tuple) -> argparse.Namespace:
     )
     parser.add_argument("--input", "-i", default=None)
     parser.add_argument("--debug", action="store_true", default=False)
-    parser.add_argument("--fuzz", "-f", type=int, default=0)
     parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
     parser.add_argument("output", type=str)
 
@@ -107,9 +106,6 @@ def main(args=None):
 
     if args.input:
         CONFIG["larry"]["input"] = args.input
-
-    if args.fuzz is not None:
-        CONFIG["larry"]["fuzz"] = str(args.fuzz)
 
     CONFIG["larry"]["output"] = args.output
 
