@@ -31,6 +31,12 @@ ConfigType = MutableMapping[str, str]
 class Image(metaclass=ABCMeta):
     """A type of image instantiated from a byte stream"""
 
+    implementations: List[Image] = []
+
+    @classmethod
+    def __init_subclass__(cls):
+        Image.implementations.insert(0, cls)
+
     @abstractmethod
     def __init__(self, data: bytes):
         pass
@@ -46,6 +52,17 @@ class Image(metaclass=ABCMeta):
     @abstractmethod
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the Image by replacing orig_colors with new_colors"""
+
+    @classmethod
+    def from_bytes(cls, data: bytes) -> Image:
+        """Return an instance of Image using data"""
+        for implementation in cls.implementations:
+            try:
+                return implementation(data)
+            except Exception as error:
+                continue
+
+        raise error
 
 
 class SVGImage(Image):

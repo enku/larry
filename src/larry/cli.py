@@ -12,7 +12,7 @@ import aionotify
 from larry import CONFIG, CONFIG_PATH, LOGGER, PluginNotFound, __version__, load_algo
 from larry.io import read_file, watch_file, write_file
 from larry.plugins import do_plugin
-from larry.types import Color, RasterImage, SVGImage
+from larry.types import Color, Image
 
 HANDLER = None
 INTERVAL = 8 * 60
@@ -38,10 +38,7 @@ def run(reload_config: bool = False) -> None:
         CONFIG.read(CONFIG_PATH)
 
     raw_image_data = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
-    try:
-        image = SVGImage(raw_image_data)
-    except UnicodeDecodeError:
-        image = RasterImage(raw_image_data)
+    image = Image.from_bytes(raw_image_data)
 
     orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)
