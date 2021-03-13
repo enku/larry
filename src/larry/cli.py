@@ -33,10 +33,7 @@ def parse_args(args: tuple) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def run(reload_config: bool = False) -> None:
-    if reload_config:
-        CONFIG.read(CONFIG_PATH)
-
+def run() -> None:
     raw_image_data = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
     image = Image.from_bytes(raw_image_data)
 
@@ -79,7 +76,7 @@ def run(reload_config: bool = False) -> None:
         loop.call_soon(do_plugin, plugin_name, colors)
 
 
-def run_every(interval: float, loop, reload_config: bool = False) -> None:
+def run_every(interval: float, loop) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
     global HANDLER
 
@@ -87,12 +84,16 @@ def run_every(interval: float, loop, reload_config: bool = False) -> None:
         LOGGER.warning("received signal to change wallpaper")
         HANDLER.cancel()
 
-    run(reload_config)
+    run()
 
     if interval == 0:
         return
 
     HANDLER = loop.call_later(interval, run_every, interval, loop)
+
+
+def load_config(path: str=CONFIG_PATH):
+    CONFIG.read(path)
 
 
 def main(args=None):
@@ -113,16 +114,12 @@ def main(args=None):
     CONFIG["larry"]["output"] = args.output
 
     loop = asyncio.get_event_loop()
-    loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, loop, True)
+    loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, loop)
     loop.call_soon(run_every, args.interval, loop)
 
     watcher = aionotify.Watcher()
     watcher.watch(CONFIG_PATH, aionotify.Flags.MODIFY | aionotify.Flags.CREATE)
-    loop.create_task(
-        watch_file(
-            watcher, loop, functools.partial(run_every, args.interval, loop, True)
-        )
-    )
+    loop.create_task(watch_file(watcher, loop, load_config))
 
     try:
         loop.run_forever()
