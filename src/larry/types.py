@@ -1,12 +1,14 @@
 """Larry data types"""
+from __future__ import annotations
+
 import io
 import re
 from abc import ABCMeta, abstractmethod
-from typing import Iterable, List, MutableMapping, Set
+from typing import Iterable, MutableMapping, Set
 
 from PIL import Image
 
-from larry.color import Color
+from larry.color import Color, ColorList  # pylint: disable=unused-import
 
 COLOR_RE = re.compile(
     r"""
@@ -19,7 +21,6 @@ COLOR_RE = re.compile(
     flags=re.X | re.I,
 )
 
-ColorList = List[Color]
 ConfigType = MutableMapping[str, str]
 
 

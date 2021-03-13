@@ -4,7 +4,7 @@ from __future__ import annotations
 import random
 import re
 from math import floor
-from typing import Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 
@@ -454,6 +454,9 @@ class Color:
                 red, green, blue = value, aa, bb
 
         return cls((int(red * 255), int(green * 255), int(blue * 255)))
+
+
+ColorList = List[Color]
 
 
 def sanitize(number: float) -> int:
