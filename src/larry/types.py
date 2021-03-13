@@ -8,7 +8,11 @@ from typing import Iterable, MutableMapping, Set
 
 from PIL import Image
 
-from larry.color import Color, ColorList  # pylint: disable=unused-import
+from larry.color import (  # pylint: disable=unused-import
+    Color,
+    ColorGenerator,
+    ColorList,
+)
 
 COLOR_RE = re.compile(
     r"""

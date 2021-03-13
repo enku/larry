@@ -4,7 +4,7 @@ from __future__ import annotations
 import random
 import re
 from math import floor
-from typing import List, Optional, Tuple, Union
+from typing import Generator, List, Optional, Tuple, Union
 
 ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 
@@ -344,7 +344,7 @@ class Color:
         return type(self)(tuple(parts))
 
     @classmethod
-    def gradient(cls, from_color: Color, to_color: Color, steps: int):
+    def gradient(cls, from_color: Color, to_color: Color, steps: int) -> ColorGenerator:
         """Generator for creating gradients"""
         yield from_color
 
@@ -365,6 +365,49 @@ class Color:
             yield new_color
 
         yield to_color
+
+    @classmethod
+    def generate_from(
+        cls, colors: ColorList, needed: int, randomize=True
+    ) -> ColorGenerator:
+        """return exactly needed colors"""
+        if needed < 0:
+            raise ValueError("needed argument must be non-negative", needed)
+
+        num_colors = len(colors)
+
+        if not num_colors:
+            yield from (Color.randcolor() for _ in range(needed))
+            return
+
+        # If the number of colors is the number requested, return those colors shuffled
+        if num_colors == needed:
+            if randomize:
+                random.shuffle(colors)
+            yield from colors
+            return
+
+        # If we don't have any colors (left), return a random selection
+        if num_colors == 0:
+            yield from (cls() for _ in range(needed))
+            return
+
+        # If the number needed is less than the number available, return a random sample
+        if needed < num_colors:
+            yield from random.sample(colors, needed)
+            return
+
+        # If there are only 2 available colors, return a gradient from darkest to lightest
+        if num_colors == 2:
+            colors.sort(key=Color.luminocity)
+            yield from Color.gradient(colors[0], colors[1], needed)
+            return
+
+        # Split the colors in half
+        split = needed // 2
+
+        yield from cls.generate_from(colors[:split], split)
+        yield from cls.generate_from(colors[split:], needed - split)
 
     def factor_tuple(self, mytuple) -> Color:
         """Same as factor_int, but multiply by a 3-tuple
@@ -457,6 +500,7 @@ class Color:
 
 
 ColorList = List[Color]
+ColorGenerator = Generator[Color, None, None]
 
 
 def sanitize(number: float) -> int:
