@@ -6,7 +6,7 @@ import re
 from abc import ABCMeta, abstractmethod
 from typing import Iterable, MutableMapping, Set
 
-from PIL import Image
+from PIL import Image as PillowImage
 
 from larry.color import (  # pylint: disable=unused-import
     Color,
@@ -28,7 +28,7 @@ COLOR_RE = re.compile(
 ConfigType = MutableMapping[str, str]
 
 
-class ImageType(metaclass=ABCMeta):
+class Image(metaclass=ABCMeta):
     """A type of image instantiated from a byte stream"""
 
     @abstractmethod
@@ -41,14 +41,14 @@ class ImageType(metaclass=ABCMeta):
 
     @abstractmethod
     def get_colors(self) -> Iterable[Color]:
-        """Return the Colors of this ImageType"""
+        """Return the Colors of this Image"""
 
     @abstractmethod
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
-        """Mutate the ImageType by replacing orig_colors with new_colors"""
+        """Mutate the Image by replacing orig_colors with new_colors"""
 
 
-class SVGImage(ImageType):
+class SVGImage(Image):
     """An SVG image"""
 
     def __init__(self, data: bytes):
@@ -73,14 +73,14 @@ class SVGImage(ImageType):
             self.svg = self.svg.replace(str(orig.colorspec), color_str)
 
 
-class RasterImage(ImageType):
-    """ImageType for Raster files"""
+class RasterImage(Image):
+    """Image for Raster files"""
 
     def __init__(self, data: bytes):
         super().__init__(data)
 
         bytes_io = io.BytesIO(data)
-        self.image = Image.open(bytes_io)
+        self.image = PillowImage.open(bytes_io)
 
         # We want to deal with everything as an RGBA but but go back to the orignal
         # format/mode when converting to bytes
