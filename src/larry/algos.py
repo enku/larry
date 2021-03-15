@@ -197,3 +197,35 @@ def noop(orig_colors: ColorList, _config: ConfigParser):
     This is an algo that simply returns the original colors.
     """
     return list(orig_colors)
+
+
+def vga(orig_colors: ColorList, config: ConfigParser):
+    """A blast from the past"""
+    colors: ColorList = []
+    bits = config.getint("algos:vga", "bits", fallback=8)
+    div = 256 / bits
+
+    for color in orig_colors:
+        red, green, blue = color.rgb
+        red = red // div * div
+        green = green // div * div
+        blue = blue // div * div
+        colors.append(Color((red, green, blue)))
+
+    return colors
+
+
+def grayscale(orig_colors: ColorList, config: ConfigParser):
+    """Convert colors to grayscale"""
+    num_grays = config.getint("algos:grayscale", "grays", fallback=512)
+    div = 255 / num_grays
+    black = Color((0, 0, 0))
+    white = Color((255, 255, 255))
+    grays = [*Color.gradient(black, white, num_grays)]
+    colors: ColorList = []
+
+    for color in orig_colors:
+        lum = color.luminocity()
+        colors.append(grays[int(lum // div) - 1])
+
+    return colors
