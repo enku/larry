@@ -7,16 +7,12 @@ from weakref import WeakSet
 from larry import LOGGER, ConfigType
 from larry.types import Color, ColorList
 
-_IS_RUNNING = False
-
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """vim plugin"""
-    global _IS_RUNNING
 
-    if not _IS_RUNNING:
+    if not VimProtocol.is_running:
         start(config)
-        _IS_RUNNING = True
 
     new_colors = get_new_colors(config["colors"], colors)
     VimProtocol.run(new_colors, config)
@@ -93,7 +89,8 @@ class VimProtocol(asyncio.Protocol):
     """
 
     clients = WeakSet()
-    colors = []
+    colors = None
+    is_running = False
 
     def __init__(self):
         self.transport = None
@@ -134,6 +131,7 @@ class VimProtocol(asyncio.Protocol):
 
     @classmethod
     def run(cls, colors, _):
+        cls.is_running = True
         cls.colors = colors
         loop = asyncio.get_event_loop()
 
