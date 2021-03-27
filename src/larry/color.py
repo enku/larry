@@ -190,7 +190,11 @@ class Color:
             return Color((red, green, blue))
 
         return Color(
-            (self.red + value.red, self.blue + value.blue, self.green + value.green)
+            (
+                sanitize(self.red + value.red),
+                sanitize(self.blue + value.blue),
+                sanitize(self.green + value.green),
+            )
         )
 
     def __mul__(self, value: Union[Color, float]) -> Color:
