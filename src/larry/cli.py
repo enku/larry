@@ -91,7 +91,7 @@ def run_every(interval: float, loop) -> None:
     HANDLER = loop.call_later(interval, run_every, interval, loop)
 
 
-def load_config(path: str=CONFIG_PATH):
+def load_config(path: str = CONFIG_PATH):
     CONFIG.read(path)
 
 

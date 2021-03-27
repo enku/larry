@@ -39,6 +39,7 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
     # tell gnome shell to reload the theme
     gnome_shell_reload_theme()
 
+
 # Has this plugin been run before?
 plugin.has_run = False
 
