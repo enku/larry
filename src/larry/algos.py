@@ -36,23 +36,24 @@ def gradient_algo(orig_colors: ColorList, config: ConfigParser):
 
 def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
     """Return the result of n gradients zipped"""
-    fuzz = config.getint("algos:zipgradient", "fuzz", fallback=0)
+    num_colors = len(orig_colors)
     gradient_count = config.getint("algos:zipgradient", "colors", fallback=2)
+    steps = num_colors // gradient_count
 
-    lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
-    lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 255])
+    i = steps
+    color = Color.randcolor(lum=orig_colors[0].luminocity())
 
-    gradients = [
-        Color.gradient(
-            Color.randcolor(lum=lum1),
-            Color.randcolor(lum=lum2),
-            len(orig_colors) // gradient_count,
+    colors: ColorList = []
+    while len(colors) < num_colors:
+        next_color = Color.randcolor(
+            lum=orig_colors[min(i, num_colors - 1)].luminocity()
         )
-        for i in range(gradient_count)
-    ]
-    colors = itertools.chain(*zip(*gradients))
+        grad = Color.gradient(color, next_color, steps)
+        colors += [*grad][1:]
+        i += steps
+        color = next_color
 
-    return [*colors]
+    return colors[:num_colors]
 
 
 def shuffle(orig_colors: ColorList, _config: ConfigParser):
