@@ -40,6 +40,10 @@ def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
     gradient_count = config.getint("algos:zipgradient", "colors", fallback=2)
     steps = num_colors // gradient_count
 
+    # You need at least 2 steps to make a gradient
+    if steps < 2:
+        return orig_colors
+
     i = steps
     color = Color.randcolor(lum=orig_colors[0].luminocity())
 
