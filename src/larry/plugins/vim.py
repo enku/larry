@@ -103,7 +103,7 @@ class VimProtocol(asyncio.Protocol):
     @classmethod
     def send(cls, data, transport):
         """encode *data* as JSON and send it over *transport*"""
-        return transport.write(cls.encode(data))
+        return transport.write(cls.encode(data) + b'\n')
 
     def connection_made(self, transport):
         self.transport = transport
@@ -124,6 +124,8 @@ class VimProtocol(asyncio.Protocol):
         for label, colorspec in colors:
             vi_cmd = f"hi {label} {colorspec}"
             cls.send(["ex", vi_cmd], transport)
+
+        cls.send(["redraw", ""], transport)
 
     @classmethod
     def set_termguicolors(cls, transport):
