@@ -1,9 +1,9 @@
 """Larry plugin for gtk"""
 import os
 
-from larry import ConfigType, rgb, rgba, rrggbb
+from larry import rgb, rgba, rrggbb
 from larry.io import write_file
-from larry.types import ColorList
+from larry.types import ColorList, ConfigType
 
 
 def plugin(colors: ColorList, config: ConfigType):

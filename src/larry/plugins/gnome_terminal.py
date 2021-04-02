@@ -1,8 +1,7 @@
 """Larry plugin for the Gnome Terminal"""
 from gi.repository import Gio
 
-from larry import ConfigType
-from larry.types import Color, ColorList
+from larry.types import Color, ColorList, ConfigType
 
 # schema how to set gnome-terminal profiles
 SCHEMA = "org.gnome.Terminal.Legacy.Profile"

@@ -26,9 +26,9 @@ def get_config(plugin_name: str) -> ConfigType:
     plugin_config_name = f"plugins:{plugin_name}"
 
     if plugin_config_name in CONFIG:
-        plugin_config = dict(CONFIG[plugin_config_name])
+        plugin_config = CONFIG[plugin_config_name]
     else:
-        plugin_config = {}
+        plugin_config = CONFIG[plugin_config_name] = {}
 
     return plugin_config
 

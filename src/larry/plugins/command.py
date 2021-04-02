@@ -1,8 +1,8 @@
 """Larry plugin to run a shell command"""
 import subprocess
 
-from larry import LOGGER, ConfigType
-from larry.types import ColorList
+from larry import LOGGER
+from larry.types import ColorList, ConfigType
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:

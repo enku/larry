@@ -4,8 +4,8 @@ import json
 from typing import Generator, Optional, Tuple
 from weakref import WeakSet
 
-from larry import LOGGER, ConfigType
-from larry.types import Color, ColorList
+from larry import LOGGER
+from larry.types import Color, ColorList, ConfigType
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:

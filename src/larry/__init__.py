@@ -4,7 +4,7 @@ import logging
 import os
 import random
 import re
-from typing import Callable, MutableMapping
+from typing import Callable
 
 import pkg_resources
 
@@ -21,8 +21,6 @@ CONFIG = configparser.ConfigParser()
 CONFIG["DEFAULT"]["input"] = ORIG_FILENAME
 CONFIG["DEFAULT"]["fuzz"] = "10"
 CONFIG.read(CONFIG_PATH)
-
-ConfigType = MutableMapping[str, str]
 
 
 class PluginNotFound(LookupError):

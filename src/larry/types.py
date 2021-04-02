@@ -1,10 +1,11 @@
 """Larry data types"""
 from __future__ import annotations
 
+import configparser
 import io
 import re
 from abc import ABCMeta, abstractmethod
-from typing import Iterable, MutableMapping, Set
+from typing import Iterable, Set
 
 from PIL import Image as PillowImage
 
@@ -25,7 +26,7 @@ COLOR_RE = re.compile(
     flags=re.X | re.I,
 )
 
-ConfigType = MutableMapping[str, str]
+ConfigType = configparser.SectionProxy
 
 
 class Image(metaclass=ABCMeta):
