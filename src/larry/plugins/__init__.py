@@ -33,6 +33,10 @@ def get_config(plugin_name: str) -> ConfigType:
     return plugin_config
 
 
+def plugins_list():
+    return [(i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.plugins")]
+
+
 def load(name: str):
     if name not in PLUGINS:
         iter_ = pkg_resources.iter_entry_points("larry.plugins", name)
