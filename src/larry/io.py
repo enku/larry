@@ -2,8 +2,6 @@
 import os
 import subprocess
 
-from larry import LOGGER
-
 
 def read_file(filename: str) -> bytes:
     pipe_exec = filename.startswith("!")
