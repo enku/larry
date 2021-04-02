@@ -15,7 +15,7 @@ from PIL import Image as PillowImage
 
 from larry.color import Color, ColorGenerator, ColorList
 
-__version__ = "1.6.1"
+__version__ = pkg_resources.get_distribution("larry").version
 
 BASE_DIR = os.path.dirname(__file__)
 CONFIG_PATH = os.path.expanduser("~/.config/larry.cfg")
