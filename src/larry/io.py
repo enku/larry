@@ -2,8 +2,6 @@
 import os
 import subprocess
 
-import aionotify
-
 from larry import LOGGER
 
 
@@ -31,16 +29,3 @@ def write_file(filename: str, data: bytes) -> int:
 
     with open(filename, "wb") as myfile:
         return myfile.write(data)
-
-
-async def watch_file(watcher: aionotify.Watcher, loop, handler):
-    try:
-        await watcher.setup(loop)
-    except OSError as error:
-        LOGGER.warning(error)
-
-        return
-
-    while True:
-        await watcher.get_event()
-        handler()
