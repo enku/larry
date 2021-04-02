@@ -15,7 +15,12 @@ def color_names(filename):
     """Load the rgb.txt name-to-value file"""
     rgb = {}
 
-    with open(filename, "r") as rgbfile:
+    try:
+        rgbfile = open(filename, "r")
+    except FileNotFoundError:
+        return rgb
+
+    with rgbfile:
         for line in rgbfile:
             line = line.strip()
 
