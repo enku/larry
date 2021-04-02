@@ -22,7 +22,6 @@ def parse_args(args: tuple) -> argparse.Namespace:
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
     )
-    parser.add_argument("--input", "-i", default=None)
     parser.add_argument("--debug", action="store_true", default=False)
     parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
     parser.add_argument(
@@ -66,7 +65,7 @@ def run() -> None:
     if colors != orig_colors:
         image.replace(orig_colors, colors)
 
-    outfile = CONFIG["larry"]["output"]
+    outfile = os.path.expanduser(CONFIG["larry"]["output"])
     write_file(outfile, bytes(image))
 
     # now run any plugins
@@ -136,15 +135,6 @@ def main(args=None):
     if args.list_algos:
         list_algos()
         return
-
-    if args.input:
-        CONFIG["larry"]["input"] = args.input
-
-    if not args.output:
-        print("Output filename required", file=sys.stderr)
-        sys.exit(1)
-
-    CONFIG["larry"]["output"] = args.output
 
     loop = asyncio.get_event_loop()
     loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, loop)
