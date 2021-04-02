@@ -232,7 +232,7 @@ class Color:
     def __sub__(self, value: Union[Color, float]) -> Color:
         return self.__add__(-1 * value)
 
-    def colorify(self, color: Color, fix_bw: bool = True) -> Color:
+    def colorify(self, color: Color, fix_bw: bool = False) -> Color:
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
