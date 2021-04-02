@@ -12,4 +12,4 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
     colors_str = "\n".join(str(i) for i in colors)
 
     LOGGER.debug('command="%s"', exe)
-    subprocess.run([exe], check=False, input=colors_str.encode())
+    subprocess.run(exe, check=False, shell=True, input=colors_str.encode())
