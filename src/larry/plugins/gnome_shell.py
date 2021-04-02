@@ -4,9 +4,9 @@ from time import sleep
 
 import dbus
 
-from larry import rgb, rgba, rrggbb
+from larry import ColorList, ConfigType
+from larry.color import rgb, rgba, rrggbb
 from larry.io import write_file
-from larry.types import ColorList, ConfigType
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:

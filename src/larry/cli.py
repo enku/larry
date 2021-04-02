@@ -6,11 +6,10 @@ import os
 import signal
 import sys
 
-from larry import CONFIG, CONFIG_PATH, LOGGER, PluginNotFound, __version__, load_algo
-from larry.algos import algos_list
+from larry import LOGGER, Color, Image, __version__, load_config
+from larry.algos import AlgoNotFound, algos_list, load_algo
 from larry.io import read_file, write_file
-from larry.plugins import do_plugin, plugins_list
-from larry.types import Color, Image
+from larry.plugins import PluginNotFound, do_plugin, plugins_list
 
 HANDLER = None
 INTERVAL = 8 * 60
@@ -36,43 +35,43 @@ def parse_args(args: tuple) -> argparse.Namespace:
 
 
 def run() -> None:
-    load_config()
-    raw_image_data = read_file(os.path.expanduser(CONFIG["larry"]["input"]))
+    config = load_config()
+    raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
     image = Image.from_bytes(raw_image_data)
 
     orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)
-    colors_str = CONFIG["larry"].get("colors", "").strip().split()
+    colors_str = config["larry"].get("colors", "").strip().split()
 
     if colors_str:
         LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
         colors = orig_colors.copy()
-        algo_names = CONFIG["larry"].get("algo", "gradient").split()
+        algo_names = config["larry"].get("algo", "gradient").split()
 
         for algo_name in algo_names:
             try:
                 algo = load_algo(algo_name)
-            except PluginNotFound:
+            except AlgoNotFound:
                 error_message = f"Color algo {algo_name} not found. Skipping."
                 sys.stderr.write(error_message)
             else:
-                colors = algo(colors, CONFIG)
+                colors = algo(colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 
     if colors != orig_colors:
         image.replace(orig_colors, colors)
 
-    outfile = os.path.expanduser(CONFIG["larry"]["output"])
+    outfile = os.path.expanduser(config["larry"]["output"])
     write_file(outfile, bytes(image))
 
     # now run any plugins
-    if "larry" not in CONFIG.sections():
+    if "larry" not in config.sections():
         return
 
-    plugins = CONFIG["larry"].get("plugins", "").split()
+    plugins = config["larry"].get("plugins", "").split()
     loop = asyncio.get_event_loop()
 
     for plugin_name in plugins:
@@ -95,13 +94,10 @@ def run_every(interval: float, loop) -> None:
     HANDLER = loop.call_later(interval, run_every, interval, loop)
 
 
-def load_config(path: str = CONFIG_PATH):
-    CONFIG.read(path)
-
-
 def list_plugins(output=sys.stdout):
     """List all the beautiful plugins"""
-    enabled_plugins = CONFIG["larry"].get("plugins", "").split()
+    config = load_config()
+    enabled_plugins = config["larry"].get("plugins", "").split()
 
     for name, func in plugins_list():
         doc = func.__doc__.split("\n", 1)[0].strip()
@@ -110,7 +106,8 @@ def list_plugins(output=sys.stdout):
 
 
 def list_algos(output=sys.stdout):
-    enabled_algo = CONFIG["larry"].get("algo", "gradient").split()
+    config = load_config()
+    enabled_algo = config["larry"].get("algo", "gradient").split()
 
     for name, func in algos_list():
         doc = func.__doc__.split("\n", 1)[0].strip()

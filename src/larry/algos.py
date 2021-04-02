@@ -1,17 +1,31 @@
 """Color selection algorithms"""
-import itertools
 import random
 from configparser import ConfigParser
+from typing import Callable
 
 import pkg_resources
 
-from larry import randsign
+from larry import Color, ColorList, Image, randsign
 from larry.io import read_file
-from larry.types import Color, ColorList, Image
+
+
+class AlgoNotFound(LookupError):
+    """Unable to find the requested plugin"""
+
+
+def load_algo(name: str) -> Callable:
+    """Load the algo with the given name"""
+    iter_ = pkg_resources.iter_entry_points("larry.algos", name)
+
+    try:
+        return next(iter_).load()
+    except (ModuleNotFoundError, StopIteration) as error:
+        raise AlgoNotFound(name) from error
 
 
 def algos_list():
     return [(i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.algos")]
+
 
 def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return colors with the same luminocity as the original"""

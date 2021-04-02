@@ -518,3 +518,34 @@ def sanitize(number: float) -> int:
     number = max(0, number)
 
     return int(number)
+
+
+def rrggbb(color: str, theme_color: Color, css: str) -> str:
+    color = "#" + color
+    orig_color = Color(color)
+    new_color = orig_color.colorify(theme_color)
+
+    return re.sub(str(color), str(new_color), css, flags=re.I)
+
+
+def rgb(color: str, theme_color: Color, css: str) -> str:
+    red, green, blue = [int(float(i)) for i in color.split(",")]
+    orig_color = Color((red, green, blue))
+    new_color = orig_color.colorify(theme_color)
+    re_str = re.escape(f"rgb({color})")
+
+    return re.sub(re_str, str(new_color), css, flags=re.I)
+
+
+def rgba(color: str, theme_color: Color, css: str) -> str:
+    parts = color.split(",")
+    red, green, blue, *_ = [int(float(i)) for i in parts]
+    orig_color = Color((red, green, blue))
+    new_color = orig_color.colorify(theme_color)
+    re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
+    re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
+    new_str = "rgba({},{},{},\\1)".format(
+        new_color.red, new_color.green, new_color.blue
+    )
+
+    return re.sub(re_str, new_str, css, flags=re.I)

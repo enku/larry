@@ -3,8 +3,7 @@ from typing import Callable, Dict, List
 
 import pkg_resources
 
-from larry import CONFIG, LOGGER
-from larry.types import Color, ColorList, ConfigType
+from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
 PluginType = Callable[[ColorList, ConfigType], None]
 PLUGINS: Dict[str, PluginType] = {}
@@ -23,18 +22,21 @@ def do_plugin(plugin_name: str, colors: ColorList) -> None:
 
 
 def get_config(plugin_name: str) -> ConfigType:
+    config = load_config()
     plugin_config_name = f"plugins:{plugin_name}"
 
-    if plugin_config_name in CONFIG:
-        plugin_config = CONFIG[plugin_config_name]
+    if plugin_config_name in config:
+        plugin_config = config[plugin_config_name]
     else:
-        plugin_config = CONFIG[plugin_config_name] = {}
+        plugin_config = config[plugin_config_name] = {}
 
     return plugin_config
 
 
 def plugins_list():
-    return [(i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.plugins")]
+    return [
+        (i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.plugins")
+    ]
 
 
 def load(name: str):
