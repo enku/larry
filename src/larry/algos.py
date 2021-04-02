@@ -10,6 +10,9 @@ from larry.io import read_file
 from larry.types import Color, ColorList, Image
 
 
+def algos_list():
+    return [(i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.algos")]
+
 def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return colors with the same luminocity as the original"""
     return [Color.randcolor(lum=i.luminocity()) for i in orig_colors]
@@ -61,7 +64,7 @@ def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
 
 
 def shuffle(orig_colors: ColorList, _config: ConfigParser):
-    """Shuffle the rgb for each color.
+    """Shuffle the rgb for each color
 
     But keep the same saturation and brightness as the original
     """
@@ -132,6 +135,7 @@ def random_algo(orig_colors: ColorList, config: ConfigParser):
 
 
 def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Return brightened (or darkend) version of the colors"""
     percent = config.getint("algos:brighten", "percent", fallback=-20)
     colors: ColorList = []
 
@@ -144,7 +148,7 @@ def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
 
 def subtract(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
-    # pick a random color
+    """XXX"""
     color = random.choice(orig_colors)
     sign = random.choice([-1, 1])
 

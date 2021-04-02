@@ -7,6 +7,7 @@ import signal
 import sys
 
 from larry import CONFIG, CONFIG_PATH, LOGGER, PluginNotFound, __version__, load_algo
+from larry.algos import algos_list
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, plugins_list
 from larry.types import Color, Image
@@ -26,6 +27,9 @@ def parse_args(args: tuple) -> argparse.Namespace:
     parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
     parser.add_argument(
         "--list-plugins", action="store_true", default=False, help="List known plugins"
+    )
+    parser.add_argument(
+        "--list-algos", action="store_true", default=False, help="List known algos"
     )
     parser.add_argument("output", type=str, nargs="?")
 
@@ -106,6 +110,16 @@ def list_plugins(output=sys.stdout):
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
+def list_algos(output=sys.stdout):
+    enabled_algo = CONFIG["larry"].get("algo", "gradient").split()
+
+    for name, func in algos_list():
+        doc = func.__doc__.split("\n", 1)[0].strip()
+        enabled = "X" if name in enabled_algo else " "
+
+        print(f"[{enabled}] {name:20} {doc}", file=output)
+
+
 def main(args=None):
     """Main program entry point"""
     args = parse_args(args or sys.argv[1:])
@@ -117,6 +131,10 @@ def main(args=None):
 
     if args.list_plugins:
         list_plugins()
+        return
+
+    if args.list_algos:
+        list_algos()
         return
 
     if args.input:
