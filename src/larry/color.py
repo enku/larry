@@ -236,9 +236,9 @@ class Color:
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
-        if fix_bw and self == Color("white"):
+        if fix_bw and self == Color((255, 255, 255)):
             my_color = Color((254, 254, 254))
-        elif fix_bw and self == Color("black"):
+        elif fix_bw and self == Color((0, 0, 0)):
             my_color = Color((1, 1, 1))
         else:
             my_color = Color(self)
