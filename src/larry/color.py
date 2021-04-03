@@ -6,37 +6,10 @@ import re
 from math import floor
 from typing import Generator, List, Optional, Tuple, Union
 
+
 ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
-
-
-def color_names(filename):
-    """Load the rgb.txt name-to-value file"""
-    rgb = {}
-
-    try:
-        rgbfile = open(filename, "r")
-    except FileNotFoundError:
-        return rgb
-
-    with rgbfile:
-        for line in rgbfile:
-            line = line.strip()
-
-            if not line or line[0] == "!":
-                continue
-
-            fields = line.split(None, 3)
-
-            try:
-                color_t = tuple(int(i) for i in fields[:3])
-                color_name = fields[3]
-                rgb[color_name.lower()] = color_t
-            except ValueError:
-                continue
-
-    return rgb
 
 
 class BadColorSpecError(ValueError):
@@ -51,8 +24,6 @@ class Color:
 
     PASTEL_SATURATION = 50
     PASTEL_BRIGHTNESS = 100
-    RGB_FILENAME = "/usr/share/X11/rgb.txt"
-    names = color_names(RGB_FILENAME)
 
     def __init__(self, colorspec: ColorSpecType = "random") -> None:
         self.colorspec = colorspec
@@ -100,6 +71,8 @@ class Color:
 
     def _handle_str_colorspec(self, colorspec: str):
         """Handle *colorspec* of type str"""
+        from larry.names import NAMES  # pylint: disable=import-outside-toplevel
+
         colorspec = colorspec.strip('"')
 
         ###rbg(r, g, b)
@@ -121,7 +94,7 @@ class Color:
                 int(float(blue) * 255),
             )
 
-        if val := self.names.get(colorspec.lower()):
+        if val := NAMES.get(colorspec.lower()):
             return val
 
         ####random
