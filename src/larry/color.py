@@ -11,6 +11,10 @@ ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
 
+# (default) values for Color.pastelize
+PASTEL_SATURATION = 50
+PASTEL_BRIGHTNESS = 100
+
 
 class BadColorSpecError(ValueError):
     """Exception when an invalid spec was passed to the Color initializer"""
@@ -21,9 +25,6 @@ class BadColorSpecError(ValueError):
 # needs to be cleaned up or replaced with a different package.
 class Color:
     """tuple-like color class"""
-
-    PASTEL_SATURATION = 50
-    PASTEL_BRIGHTNESS = 100
 
     def __init__(self, colorspec: ColorSpecType = "random") -> None:
         self.colorspec = colorspec
@@ -294,11 +295,19 @@ class Color:
         # from http://tinyurl.com/8cve8
         return int(round(0.30 * self.red + 0.59 * self.green + 0.11 * self.blue))
 
-    def pastelize(self) -> Color:
+    def pastelize(
+        self, *, saturation: Optional[int] = None, brightness: Optional[int] = None
+    ) -> Color:
         """Return a "pastel" version of self"""
+        if saturation is None:
+            saturation = PASTEL_SATURATION
+
+        if brightness is None:
+            brightness = PASTEL_BRIGHTNESS
+
         hsv = self.to_hsv()
 
-        return self.from_hsv((hsv[0], self.PASTEL_SATURATION, self.PASTEL_BRIGHTNESS))
+        return self.from_hsv((hsv[0], saturation, brightness))
 
     def luminize(self, luminocity: float) -> Color:
         """Return new color with given luminocity
