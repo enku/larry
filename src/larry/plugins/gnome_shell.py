@@ -1,24 +1,21 @@
 """GNOME Shell plugin"""
-import os
 from time import sleep
 
 import dbus
 
-from larry import ColorList, ConfigType
+from larry import Color, ColorList, ConfigType
 from larry.color import rgb, rgba, rrggbb
-from larry.io import write_file
+from larry.io import read_file, write_file
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """gnome_shell plugin for larry"""
-    theme_color = colors[0]
-    template = os.path.expanduser(config["template"])
-    outfile = os.path.expanduser(config["location"])
+    theme_color = next(Color.generate_from(colors, 1))
+    template = config["template"]
+    outfile = config["location"]
     config_colors = config.get("colors", "").split()
 
-    with open(template) as myfile:
-        orig_css = myfile.read()
-
+    orig_css = read_file(template).decode()
     new_css = orig_css
 
     for color in config_colors:

@@ -20,6 +20,7 @@ def read_file(filename: str) -> bytes:
 
 def write_file(filename: str, data: bytes) -> int:
     """write open *filename* and write *data* to it"""
+    filename = os.path.expanduser(filename)
     head = os.path.split(filename)[0]
 
     if head:
