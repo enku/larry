@@ -509,32 +509,56 @@ def sanitize(number: float) -> int:
     return int(number)
 
 
-def rrggbb(color: str, theme_color: Color, css: str) -> str:
-    color = "#" + color
-    orig_color = Color(color)
-    new_color = orig_color.colorify(theme_color)
+def replace_string(string: str, color_str: str, color: Color) -> str:
+    """Replace each occurence of color_str in string with this color
 
-    return re.sub(str(color), str(new_color), css, flags=re.I)
+    Where `color_str` is one of the following formats:
+
+        * rrggbb   e.g. "ffc0cb"
+        * r,g,b    e.g. "255,192,203"
+        * r,g,b,a  e.g. "255,192,203,0.8"
+    """
+    num_commas = color_str.count(",")
+
+    if num_commas == 0:
+        # rrggbb
+        string = rrggbb(color_str, color, string)
+    elif num_commas == 2:
+        # r,g,b
+        string = rgb(color_str, color, string)
+    elif num_commas == 3:
+        # r,g,b,a
+        string = rgba(color_str, color, string)
+
+    return string
 
 
-def rgb(color: str, theme_color: Color, css: str) -> str:
-    red, green, blue = [int(float(i)) for i in color.split(",")]
+def rrggbb(color_str: str, color: Color, string: str) -> str:
+    color_str = "#" + color_str
+    orig_color = Color(color_str)
+    new_color = orig_color.colorify(color)
+
+    return re.sub(str(color_str), str(new_color), string, flags=re.I)
+
+
+def rgb(color_str: str, color: Color, string: str) -> str:
+    red, green, blue = [int(float(i)) for i in color_str.split(",")]
     orig_color = Color((red, green, blue))
-    new_color = orig_color.colorify(theme_color)
-    re_str = re.escape(f"rgb({color})")
+    new_color = orig_color.colorify(color)
+    re_str = re.escape(f"rgb({color_str})")
 
-    return re.sub(re_str, str(new_color), css, flags=re.I)
+    return re.sub(re_str, str(new_color), string, flags=re.I)
 
 
-def rgba(color: str, theme_color: Color, css: str) -> str:
-    parts = color.split(",")
+def rgba(color_str: str, color: Color, string: str) -> str:
+    parts = color_str.split(",")
     red, green, blue, *_ = [int(float(i)) for i in parts]
     orig_color = Color((red, green, blue))
-    new_color = orig_color.colorify(theme_color)
+    new_color = orig_color.colorify(color)
     re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
     re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
     new_str = "rgba({},{},{},\\1)".format(
         new_color.red, new_color.green, new_color.blue
     )
 
-    return re.sub(re_str, new_str, css, flags=re.I)
+    return re.sub(re_str, new_str, string, flags=re.I)
