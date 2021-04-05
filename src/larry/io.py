@@ -1,25 +1,45 @@
 """I/O stuff for larry"""
 import os
-import subprocess
+import subprocess as sp
 
 
 def read_file(filename: str) -> bytes:
+    """open filename and read data from it
+
+    If filename starts with "!" then treat the rest as a shell command, run it in a
+    shell and return it's standout output
+    """
     pipe_exec = filename.startswith("!")
 
     if pipe_exec:
-        popen = subprocess.Popen(
-            os.path.expanduser(filename[1:]), shell=True, stdout=subprocess.PIPE
-        )
-        content = popen.stdout.read()
-    else:
-        with open(os.path.expanduser(filename), "rb") as myfile:
-            content = myfile.read()
+        command = filename[1:]
+        popen = sp.Popen(command, shell=True, stdout=sp.PIPE)
+        return popen.stdout.read()
 
-    return content
+    filename = os.path.expanduser(filename)
+    with open(filename, "rb") as myfile:
+        return myfile.read()
 
 
 def write_file(filename: str, data: bytes) -> int:
-    """write open *filename* and write *data* to it"""
+    """open filename and write data to it
+
+    If filename starts with "!" then treat the rest as a shell command, run it in a
+    shell and write data to it's standard input
+
+    Returns bytes written if it is a regular filename else returns the status code of
+    the shell command.
+    """
+    pipe_exec = filename.startswith("!")
+
+    if pipe_exec:
+        command = filename[1:]
+        popen = sp.Popen(command, shell=True, stdin=sp.PIPE)
+        popen.stdin.write(data)
+        popen.stdin.close()
+
+        return popen.wait()
+
     filename = os.path.expanduser(filename)
     head = os.path.split(filename)[0]
 
