@@ -1,4 +1,44 @@
+from collections import namedtuple
+
 from larry import Color
+
+TERMINAL_COLOR_NAMES = [
+    "black",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "white",
+    "brightblack",
+    "brightred",
+    "brightgreen",
+    "brightyellow",
+    "brightblue",
+    "brightmagenta",
+    "brightcyan",
+    "brightwhite",
+]
+
+Terminal = namedtuple("Terminal", TERMINAL_COLOR_NAMES)(
+    black=Color((0, 0, 0)),
+    red=Color((204, 0, 0)),
+    green=Color((78, 154, 6)),
+    yellow=Color((196, 160, 0)),
+    blue=Color((114, 159, 207)),
+    magenta=Color((117, 80, 123)),
+    cyan=Color((6, 152, 154)),
+    white=Color((211, 215, 207)),
+    brightblack=Color((85, 87, 83)),
+    brightred=Color((239, 41, 41)),
+    brightgreen=Color((138, 226, 52)),
+    brightyellow=Color((252, 233, 79)),
+    brightblue=Color((50, 175, 255)),
+    brightmagenta=Color((173, 127, 168)),
+    brightcyan=Color((52, 226, 226)),
+    brightwhite=Color((255, 255, 255)),
+)
 
 
 NAMES = {
