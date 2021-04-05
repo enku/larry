@@ -31,6 +31,13 @@ class Color:
 
         ####(r, g , b)
         if isinstance(colorspec, (tuple, list)):
+            if len(colorspec) != 3:
+                raise ValueError("Must be 3 (r, g, b) values")
+
+            for value in colorspec:
+                if not 0 <= value <= 255:
+                    raise ValueError("All values must be in range [0, 255]")
+
             self.__rgb = tuple(int(i) for i in colorspec)
 
         elif isinstance(colorspec, Color):
