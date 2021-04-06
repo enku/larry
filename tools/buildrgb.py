@@ -12,7 +12,7 @@ def main():
             if not line or line[0] == "#":
                 continue
             red, green, blue, name = line.split(None, 3)
-            print(f"    {name.lower()!r}: Color(({red}, {green}, {blue})),")
+            print(f"    {name.lower()!r}: Color({red}, {green}, {blue}),")
     print("}")
 
 

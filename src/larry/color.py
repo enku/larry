@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import random
 import re
+from collections import namedtuple
 from math import floor
 from typing import Generator, List, Optional, Tuple, Union
-
 
 ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
 
@@ -20,97 +20,73 @@ class BadColorSpecError(ValueError):
     """Exception when an invalid spec was passed to the Color initializer"""
 
 
-# The following class was written a *long* time ago in Python 2.x and
-# was in a different package. It was hastily ported here and either
-# needs to be cleaned up or replaced with a different package.
-class Color:
+class Color(namedtuple("Color", ["red", "green", "blue"])):
     """tuple-like color class"""
 
-    def __init__(self, colorspec: ColorSpecType = "random") -> None:
-        self.colorspec = colorspec
+    __slots__ = ()
+
+    def __new__(cls, *colorspec) -> None:
+        # self.colorspec = colorspec
+
+        if not colorspec:
+            colorspec = ("random",)
 
         ####(r, g , b)
-        if isinstance(colorspec, (tuple, list)):
-            if len(colorspec) != 3:
-                raise ValueError("Must be 3 (r, g, b) values")
-
+        if len(colorspec) == 3:
             for value in colorspec:
                 if not 0 <= value <= 255:
                     raise ValueError("All values must be in range [0, 255]")
 
-            self.__rgb = tuple(int(i) for i in colorspec)
+            return super().__new__(cls, *colorspec)
 
-        elif isinstance(colorspec, Color):
-            # copy color
-            self.__rgb = colorspec.rgb
-            return
-
-        elif isinstance(colorspec, str):
-            self.__rgb = self._handle_str_colorspec(colorspec)
-
-        else:
+        if len(colorspec) != 1:
             raise BadColorSpecError(repr(colorspec))
 
-    @property
-    def red(self):
-        """Red value"""
-        return self.__rgb[0]
+        if isinstance(colorspec[0], Color):
+            # copy color
+            return super().__new__(
+                cls, colorspec[0].red, colorspec[0].green, colorspec[0].blue
+            )
+        if isinstance(colorspec[0], str):
+            return super().__new__(cls, *cls._handle_str_colorspec(colorspec[0]))
 
-    @property
-    def green(self):
-        """Green value"""
-        return self.__rgb[1]
+        raise BadColorSpecError(repr(colorspec))
 
-    @property
-    def blue(self):
-        """Blue value"""
-        return self.__rgb[2]
-
-    @property
-    def rgb(self):
-        """Return color as an (r, g, b) tuple"""
-        return self.__rgb
-
-    def __eq__(self, other):
-        return self.rgb == other.rgb
-
-    def __hash__(self):
-        return hash(self.__rgb)
-
-    def _handle_str_colorspec(self, colorspec: str):
+    @classmethod
+    def _handle_str_colorspec(cls, color_str: str):
         """Handle *colorspec* of type str"""
         from larry.names import NAMES  # pylint: disable=import-outside-toplevel
 
-        colorspec = colorspec.strip('"')
+        color_str = color_str.strip('"')
 
         ###rbg(r, g, b)
-        if colorspec.startswith("rgb("):
-            parts = colorspec[4:-2].split(",")
+        if color_str.startswith("rgb("):
+            parts = color_str[4:-2].split(",")
             return tuple(int(i.strip()) for i in parts)
 
         ####r/g/b
-        if len(colorspec.split("/")) == 3:
-            parts = colorspec.split("/")
+        if len(color_str.split("/")) == 3:
+            parts = color_str.split("/")
             return tuple(int(i) for i in parts)
 
         ####{ r, g, b}
-        if colorspec[0] == "{" and colorspec[-1] == "}":
-            red, green, blue = colorspec[1:-1].split(",")
+        if color_str[0] == "{" and color_str[-1] == "}":
+            red, green, blue = color_str[1:-1].split(",")
             return (
                 int(float(red) * 255),
                 int(float(green) * 255),
                 int(float(blue) * 255),
             )
 
-        if val := NAMES.get(colorspec.lower()):
+        if val := NAMES.get(color_str.lower()):
             return val
 
         ####random
-        if colorspec == "random":
-            return self.randcolor().rgb
+        if color_str == "random":
+            return cls.randcolor()
 
-        if colorspec[:7] == "random(":
-            lum = colorspec[7:-1]
+        if color_str[:7] == "random(":
+            lum = color_str[7:-1]
             comp = ""
             value = ""
             if lum[0] in _COMPS:
@@ -124,22 +100,22 @@ class Color:
                 value = lum
 
             try:
-                somecolor = self.randcolor(int(value))
+                somecolor = cls.randcolor(int(value))
             except ValueError as error:
-                raise BadColorSpecError(colorspec) from error
+                raise BadColorSpecError(color_str) from error
 
-            return somecolor.rgb
+            return somecolor
 
         ####randhue
-        if colorspec[:8] == "randhue(":
-            parms = colorspec[8:-1].split(",", 1)
+        if color_str[:8] == "randhue(":
+            parms = color_str[8:-1].split(",", 1)
             saturation, brightness = float(parms[0]), float(parms[1])
 
-            return self.randhue(saturation, brightness).rgb
+            return cls.randhue(saturation, brightness)
 
         ####rrggbb
-        if len(colorspec) in [6, 7]:
-            triplet = colorspec
+        if len(color_str) in [6, 7]:
+            triplet = color_str
             if triplet[0] == "#":
                 triplet = triplet[1:]
             return (
@@ -149,21 +125,17 @@ class Color:
             )
 
         ####rgb
-        if re.match(r"#[0-9,[A-F]{3}$", colorspec, re.I):
+        if re.match(r"#[0-9,[A-F]{3}$", color_str, re.I):
             return (
-                int(colorspec[1], 16) * 17,
-                int(colorspec[2], 16) * 17,
-                int(colorspec[3], 16) * 17,
+                int(color_str[1], 16) * 17,
+                int(color_str[2], 16) * 17,
+                int(color_str[3], 16) * 17,
             )
 
-        raise BadColorSpecError(repr(colorspec))
+        raise BadColorSpecError(repr(color_str))
 
     def __str__(self) -> str:
-        return "#%02x%02x%02x" % self.__rgb
-
-    def __repr__(self) -> str:
-        name = type(self).__name__
-        return f"{name}({self.__rgb})"
+        return "#%02x%02x%02x" % self
 
     def __add__(self, value: Union[Color, float]) -> Color:
         if isinstance(value, (int, float)):
@@ -173,14 +145,12 @@ class Color:
 
             red, green, blue = [sanitize(component) for component in (red, green, blue)]
 
-            return Color((red, green, blue))
+            return Color(red, green, blue)
 
         return Color(
-            (
-                sanitize(self.red + value.red),
-                sanitize(self.blue + value.blue),
-                sanitize(self.green + value.green),
-            )
+            sanitize(self.red + value.red),
+            sanitize(self.blue + value.blue),
+            sanitize(self.green + value.green),
         )
 
     def __mul__(self, value: Union[Color, float]) -> Color:
@@ -193,7 +163,7 @@ class Color:
 
             red, green, blue = [sanitize(i) for i in (red, green, blue)]
 
-            return Color((red, green, blue))
+            return Color(red, green, blue)
 
         clum = value.luminocity()
         return self * clum
@@ -217,12 +187,12 @@ class Color:
         """Return new color with color's hue and self's saturation and value"""
         # black and white don't make good HSV values, so we make them
         # imperfect
-        if fix_bw and self == Color((255, 255, 255)):
-            my_color = Color((254, 254, 254))
-        elif fix_bw and self == Color((0, 0, 0)):
-            my_color = Color((1, 1, 1))
+        if fix_bw and self == Color(255, 255, 255):
+            my_color = Color(254, 254, 254)
+        elif fix_bw and self == Color(0, 0, 0):
+            my_color = Color(1, 1, 1)
         else:
-            my_color = Color(self)
+            my_color = Color(*self)
 
         my_hsv = my_color.to_hsv()
         color_hsv = color.to_hsv()
@@ -234,13 +204,7 @@ class Color:
     def randcolor(cls, lum: Optional[float] = None, comp: str = "=") -> Color:
         """Return random color color.luminocity() = lum"""
         randint = random.randint
-        color = cls(
-            (
-                randint(0, 255),
-                randint(0, 255),
-                randint(0, 255),
-            )
-        )
+        color = cls(randint(0, 255), randint(0, 255), randint(0, 255))
 
         if not lum:
             return color
@@ -265,12 +229,12 @@ class Color:
     def inverse(self) -> Color:
         """Return inverse of color"""
 
-        return Color((255 - self.red, 255 - self.green, 255 - self.blue))
+        return Color(255 - self.red, 255 - self.green, 255 - self.blue)
 
     def winverse(self) -> Color:
         """Keep red part, change green to 255-, change blue to 0"""
 
-        return Color((self.red // 2, 255 - self.green, 0))
+        return Color(self.red // 2, 255 - self.green, 0)
 
     def to_gtk(self) -> str:
         """return string of Color in gtkrc format"""
@@ -329,17 +293,17 @@ class Color:
         if my_lum == 0.0:
             # black
             value = int(luminocity)
-            return type(self)((value, value, value))
+            return type(self)(value, value, value)
 
         lum = (luminocity - my_lum) / my_lum
-        parts = [*self.rgb]
+        parts = [*self]
 
         for i in range(3):
             part = parts[i]
             part = round(min(max(0, part + (part * lum)), 255))
             parts[i] = part
 
-        return type(self)(tuple(parts))
+        return type(self)(*parts)
 
     @classmethod
     def gradient(cls, from_color: Color, to_color: Color, steps: int) -> ColorGenerator:
@@ -359,7 +323,7 @@ class Color:
             new_red = new_red + inc_red
             new_green = new_green + inc_green
             new_blue = new_blue + inc_blue
-            new_color = cls((int(new_red), int(new_green), int(new_blue)))
+            new_color = cls(int(new_red), int(new_green), int(new_blue))
             yield new_color
 
         yield to_color
@@ -421,7 +385,7 @@ class Color:
         green = int(max(green, 0))
         blue = int(max(blue, 0))
 
-        return Color((red, green, blue))
+        return Color(red, green, blue)
 
     def factor(self, myint) -> Color:
         """Same as factor_tuple, but just one number"""
@@ -494,7 +458,7 @@ class Color:
             elif i == 5:
                 red, green, blue = value, aa, bb
 
-        return cls((int(red * 255), int(green * 255), int(blue * 255)))
+        return cls(int(red * 255), int(green * 255), int(blue * 255))
 
 
 ColorList = List[Color]
@@ -543,7 +507,7 @@ def rrggbb(color_str: str, color: Color, string: str) -> str:
 
 def rgb(color_str: str, color: Color, string: str) -> str:
     red, green, blue = [int(float(i)) for i in color_str.split(",")]
-    orig_color = Color((red, green, blue))
+    orig_color = Color(red, green, blue)
     new_color = orig_color.colorify(color)
     re_str = re.escape(f"rgb({color_str})")
 
@@ -553,7 +517,7 @@ def rgb(color_str: str, color: Color, string: str) -> str:
 def rgba(color_str: str, color: Color, string: str) -> str:
     parts = color_str.split(",")
     red, green, blue, *_ = [int(float(i)) for i in parts]
-    orig_color = Color((red, green, blue))
+    orig_color = Color(red, green, blue)
     new_color = orig_color.colorify(color)
     re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
     re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"

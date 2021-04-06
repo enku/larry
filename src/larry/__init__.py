@@ -88,16 +88,22 @@ class SVGImage(Image):
     def __str__(self):
         return self.svg
 
-    def get_colors(self) -> Set[Color]:
-        color_strings = COLOR_RE.findall(self.svg)
+    def color_strings(self) -> List[str]:
+        """Return a list of all the colors strings in the SVGImage"""
+        return COLOR_RE.findall(self.svg)
 
-        return {Color(i) for i in color_strings}
+    def get_colors(self) -> Set[Color]:
+        return {Color(i) for i in self.color_strings()}
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the image by replacing orig_colors with new_colors"""
-        for orig, new in zip(orig_colors, new_colors):
-            color_str = str(new)
-            self.svg = self.svg.replace(str(orig.colorspec), color_str)
+        color_map = dict((orig, new) for orig, new in zip(orig_colors, new_colors))
+
+        for color_string in self.color_strings():
+            color = Color(color_string)
+
+            if color in orig_colors:
+                self.svg = self.svg.replace(color_string, str(color_map[color]))
 
 
 class RasterImage(Image):
@@ -121,20 +127,15 @@ class RasterImage(Image):
         pixels = {
             self.image.getpixel((x, y))[:3] for y in range(height) for x in range(width)
         }
-        # for x in range(width):  # pylint: disable=invalid-name
-        #    for y in range(height):  # pylint: disable=invalid-name
-        #        pixels.add(self.image.getpixel((x, y))[:3])
 
-        return {Color(i) for i in pixels}
+        return {Color(*i) for i in pixels}
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the Image by replacing orig_colors with new_colors"""
         width, height = self.image.size
 
         # map original rgb tuples to new
-        color_map = dict(
-            (orig.rgb, new.rgb) for orig, new in zip(orig_colors, new_colors)
-        )
+        color_map = dict((orig, new) for orig, new in zip(orig_colors, new_colors))
 
         for x in range(width):  # pylint: disable=invalid-name
             for y in range(height):  # pylint: disable=invalid-name

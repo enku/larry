@@ -85,9 +85,9 @@ def shuffle(orig_colors: ColorList, _config: ConfigParser):
     colors = []
 
     for orig_color in orig_colors:
-        rgb = [orig_color.red, orig_color.green, orig_color.blue]
+        rgb = [*orig_color]
         random.shuffle(rgb)
-        tmp_color = Color(rgb)
+        tmp_color = Color(*rgb)
         saturation, brightness = orig_color.to_hsv()[1:]
         hue = tmp_color.to_hsv()[0]
         color = Color.from_hsv((hue, saturation, brightness))
@@ -195,12 +195,12 @@ def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Swap colors from source"""
     if source := config.get("algos:swap", "source"):
         source_colors = [
-            Color((0, 0, 0)),
-            Color((28, 52, 63)),
-            Color((37, 67, 81)),
-            Color((102, 102, 102)),
-            Color((124, 142, 150)),
-            Color((255, 255, 255)),
+            Color(0, 0, 0),
+            Color(28, 52, 63),
+            Color(37, 67, 81),
+            Color(102, 102, 102),
+            Color(124, 142, 150),
+            Color(255, 255, 255),
         ]
 
     else:
@@ -229,11 +229,11 @@ def vga(orig_colors: ColorList, config: ConfigParser):
     div = 256 / bits
 
     for color in orig_colors:
-        red, green, blue = color.rgb
+        red, green, blue = color
         red = red // div * div
         green = green // div * div
         blue = blue // div * div
-        colors.append(Color((red, green, blue)))
+        colors.append(Color(red, green, blue))
 
     return colors
 
@@ -242,8 +242,8 @@ def grayscale(orig_colors: ColorList, config: ConfigParser):
     """Convert colors to grayscale"""
     num_grays = config.getint("algos:grayscale", "grays", fallback=512)
     div = 255 / num_grays
-    black = Color((0, 0, 0))
-    white = Color((255, 255, 255))
+    black = Color(0, 0, 0)
+    white = Color(255, 255, 255)
     grays = [*Color.gradient(black, white, num_grays)]
     colors: ColorList = []
 
