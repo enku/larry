@@ -1,6 +1,4 @@
 """Larry plugin for the Gnome Terminal"""
-from gi.repository import Gio
-
 from larry import Color, ColorList, ConfigType
 
 # schema how to set gnome-terminal profiles
@@ -10,6 +8,8 @@ PATH = "/org/gnome/terminal/legacy/profiles:/:{profile}/"
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """larry plugin to set the gnome-terminal background color"""
+    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
+
     profiles = config.get("profiles", "").split()
     colorstr = config["color"]
     color = Color("#" + colorstr)

@@ -1,8 +1,6 @@
 """GNOME Shell plugin"""
 from time import sleep
 
-import dbus
-
 from larry import Color, ColorList, ConfigType
 from larry.color import replace_string
 from larry.io import read_file, write_file
@@ -33,6 +31,8 @@ plugin.has_run = False
 
 def gnome_shell_reload_theme() -> None:
     """Tell gnome shell to reload the theme"""
+    import dbus  # pylint: disable=import-outside-toplevel
+
     if not plugin.has_run:
         # If larry is in your autostart, gnome-shell might not be
         # initialized all the way before this function is called.
