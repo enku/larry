@@ -82,7 +82,7 @@ def run_every(interval: float, loop) -> None:
     global HANDLER
 
     if HANDLER:
-        LOGGER.warning("received signal to change wallpaper")
+        LOGGER.info("received signal to change wallpaper")
         HANDLER.cancel()
 
     run()
