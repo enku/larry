@@ -29,7 +29,6 @@ def parse_args(args: tuple) -> argparse.Namespace:
     parser.add_argument(
         "--list-algos", action="store_true", default=False, help="List known algos"
     )
-    parser.add_argument("output", type=str, nargs="?")
 
     return parser.parse_args(args)
 
