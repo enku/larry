@@ -116,33 +116,28 @@ def pastelize(orig_colors: ColorList, _config: ConfigParser):
 
 def random_algo(orig_colors: ColorList, config: ConfigParser):
     """Yeah, coz how could we live without a random algo?"""
-    exclude = ["random"]
-
     try:
-        exclude_str = config["algos:random"]["exclude"]
+        include_str = config["algos:random"]["include"]
     except KeyError:
-        pass
+        algo_names = [*{i.name for i in pkg_resources.iter_entry_points("larry.algos")}]
+        algo_names.remove("random")
     else:
-        exclude += [i.strip() for i in exclude_str.split()]
+        algo_names = [*{i.strip() for i in include_str.split()}]
 
-    plugins = [
-        i
-        for i in pkg_resources.iter_entry_points("larry.algos")
-        if i.name not in exclude
-    ]
-    chains = 1
+    if not algo_names:
+        return orig_colors
 
     try:
         chains = int(config["algos:random"]["chains"])
-    except KeyError:
-        pass
+    except (KeyError, ValueError):
+        chains = 1
 
-    new_colors = list(orig_colors)
+    new_colors = orig_colors
     iters = random.randint(1, chains)
 
     for _ in range(iters):
-        plugin = random.choice(plugins)
-        algo = plugin.load()
+        algo_name = random.choice(algo_names)
+        algo = load_algo(algo_name)
         new_colors = algo(new_colors, config)
 
     return new_colors
