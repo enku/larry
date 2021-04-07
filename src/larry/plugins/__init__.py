@@ -28,7 +28,7 @@ def get_config(plugin_name: str) -> ConfigType:
     if plugin_config_name in config:
         plugin_config = config[plugin_config_name]
     else:
-        plugin_config = config[plugin_config_name] = {}
+        plugin_config = config[plugin_config_name] = config["DEFAULT"]
 
     return plugin_config
 
