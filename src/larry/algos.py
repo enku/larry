@@ -188,7 +188,8 @@ def contrast(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
 
 def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Swap colors from source"""
-    if source := config.get("algos:swap", "source"):
+    source = config.get("algos:swap", "source", fallback=None)
+    if source is None:
         source_colors = [
             Color(0, 0, 0),
             Color(28, 52, 63),
