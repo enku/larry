@@ -1,5 +1,8 @@
 <p align="center">
-<img src=".github/screenshot.png" alt="Example Screenshot" width="100%">
+<img src=".github/screenshot1.png" alt="Example Screenshot" width="100%">
+</p>
+<p align="center">
+<img src=".github/screenshot2.png" alt="Example Screenshot" width="100%">
 </p>
 <br>
 
