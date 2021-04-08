@@ -9,7 +9,7 @@ import sys
 from larry import LOGGER, Color, Image, __version__, load_config
 from larry.algos import AlgoNotFound, algos_list, load_algo
 from larry.io import read_file, write_file
-from larry.plugins import PluginNotFound, do_plugin, plugins_list
+from larry.plugins import do_plugin, plugins_list
 
 HANDLER = None
 INTERVAL = 8 * 60
