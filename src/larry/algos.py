@@ -5,7 +5,7 @@ from typing import Callable
 
 import pkg_resources
 
-from larry import Color, ColorList, Image, randsign
+from larry import LOGGER, Color, ColorList, Image, randsign
 from larry.io import read_file
 
 
@@ -138,6 +138,7 @@ def random_algo(orig_colors: ColorList, config: ConfigParser):
     for _ in range(iters):
         algo_name = random.choice(algo_names)
         algo = load_algo(algo_name)
+        LOGGER.debug("random: running algo: %s", algo_name)
         new_colors = algo(new_colors, config)
 
     return new_colors

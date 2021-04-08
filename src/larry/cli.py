@@ -54,8 +54,9 @@ def run() -> None:
                 algo = load_algo(algo_name)
             except AlgoNotFound:
                 error_message = f"Color algo {algo_name} not found. Skipping."
-                sys.stderr.write(error_message)
+                LOGGER.exception(error_message)
             else:
+                LOGGER.debug("Calling algo %s", algo_name)
                 colors = algo(colors, config)
 
     LOGGER.debug("new colors: %s", colors)
