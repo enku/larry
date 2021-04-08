@@ -34,7 +34,7 @@ def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
 
 def inverse_algo(orig_colors: ColorList, _config: ConfigParser):
     """Return `luminocity_algo of orig_colors inversed"""
-    return gradient_algo([i.inverse() for i in orig_colors], _config)
+    return [i.inverse() for i in orig_colors]
 
 
 def gradient_algo(orig_colors: ColorList, config: ConfigParser):
