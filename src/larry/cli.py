@@ -118,10 +118,13 @@ def list_algos(output=sys.stdout):
 
 def main(args=None):
     """Main program entry point"""
-    args = parse_args(args or sys.argv[1:])
+    logging.basicConfig()
 
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
+    args = parse_args(args or sys.argv[1:])
+    config = load_config()
+
+    if args.debug or config["larry"].getboolean("debug", fallback=False):
+        LOGGER.setLevel("DEBUG")
 
     LOGGER.debug("args=%s", args)
 
