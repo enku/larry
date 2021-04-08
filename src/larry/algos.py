@@ -227,9 +227,9 @@ def vga(orig_colors: ColorList, config: ConfigParser):
 
     for color in orig_colors:
         red, green, blue = color
-        red = red // div * div
-        green = green // div * div
-        blue = blue // div * div
+        red = int(red // div * div)
+        green = int(green // div * div)
+        blue = int(blue // div * div)
         colors.append(Color(red, green, blue))
 
     return colors
