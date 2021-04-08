@@ -261,7 +261,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         return ansi
 
-    def luminocity(self) -> float:
+    def luminocity(self) -> int:
         """Return (int) luminocity of color"""
         # from http://tinyurl.com/8cve8
         return int(round(0.30 * self.red + 0.59 * self.green + 0.11 * self.blue))
