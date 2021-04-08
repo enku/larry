@@ -6,7 +6,7 @@ from larry.io import read_file, write_file
 
 def plugin(colors: ColorList, config: ConfigType):
     """gtk.css plugin"""
-    theme_color = next(Color.generate_from(colors, 1))
+    theme_color = next(Color.generate_from(colors, 1, randomize=False))
     template = config["template"]
     outfile = config["location"]
     config_colors = config.get("colors", "").split()
