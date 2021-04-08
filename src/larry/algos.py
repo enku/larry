@@ -248,3 +248,32 @@ def grayscale(orig_colors: ColorList, config: ConfigParser):
         colors.append(grays[int(lum // div) - 1])
 
     return colors
+
+
+def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Reduce the number of distinct colors"""
+    if not orig_colors:
+        return []
+
+    percent: int = 10
+
+    try:
+        percent: int = config["algos:reduce"].getint("amount", fallback=percent)
+    except KeyError:
+        pass
+
+    if percent == 0:
+        return orig_colors
+
+    amount = int(percent / 100 * len(orig_colors))
+
+    last_color = orig_colors[0]
+    new_colors = [last_color]
+
+    for i, color in enumerate(orig_colors[1:], start=1):
+        if i % amount == 0:
+            last_color = color
+
+        new_colors.append(last_color)
+
+    return new_colors
