@@ -1,7 +1,6 @@
-"""Color selection algorithms"""
-import random
+"""Color selection filters"""
+import random as rand
 from configparser import ConfigParser
-from typing import Callable
 
 import pkg_resources
 
@@ -9,37 +8,39 @@ from larry import LOGGER, Color, ColorList, Image, randsign
 from larry.io import read_file
 
 
-class AlgoNotFound(LookupError):
-    """Unable to find the requested plugin"""
+class FilterNotFound(LookupError):
+    """Unable to find the requested filter"""
 
 
-def load_algo(name: str) -> Callable:
-    """Load the algo with the given name"""
-    iter_ = pkg_resources.iter_entry_points("larry.algos", name)
+def load_filter(name):
+    """Load the filter with the given name"""
+    iter_ = pkg_resources.iter_entry_points("larry.filters", name)
 
     try:
         return next(iter_).load()
     except (ModuleNotFoundError, StopIteration) as error:
-        raise AlgoNotFound(name) from error
+        raise FilterNotFound(name) from error
 
 
-def algos_list():
-    return [(i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.algos")]
+def filters_list():
+    return [
+        (i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.filters")
+    ]
 
 
-def luminocity_algo(orig_colors: ColorList, _config: ConfigParser):
+def luminocity(orig_colors: ColorList, _config: ConfigParser):
     """Return colors with the same luminocity as the original"""
     return [Color.randcolor(lum=i.luminocity()) for i in orig_colors]
 
 
-def inverse_algo(orig_colors: ColorList, _config: ConfigParser):
-    """Return `luminocity_algo of orig_colors inversed"""
+def inverse(orig_colors: ColorList, _config: ConfigParser):
+    """Return orig_colors inversed"""
     return [i.inverse() for i in orig_colors]
 
 
-def gradient_algo(orig_colors: ColorList, config: ConfigParser):
+def gradient(orig_colors: ColorList, config: ConfigParser):
     """Return gradient within the same luminocity range as the orignal"""
-    fuzz = config.getint("algos:gradient", "fuzz", fallback=0)
+    fuzz = config.getint("filters:gradient", "fuzz", fallback=0)
 
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
     lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 255])
@@ -51,10 +52,10 @@ def gradient_algo(orig_colors: ColorList, config: ConfigParser):
     return [*colors]
 
 
-def zipgradient_algo(orig_colors: ColorList, config: ConfigParser):
+def zipgradient(orig_colors: ColorList, config: ConfigParser):
     """Return the result of n gradients zipped"""
     num_colors = len(orig_colors)
-    gradient_count = config.getint("algos:zipgradient", "colors", fallback=2)
+    gradient_count = config.getint("filters:zipgradient", "colors", fallback=2)
     steps = num_colors // gradient_count
 
     # You need at least 2 steps to make a gradient
@@ -86,7 +87,7 @@ def shuffle(orig_colors: ColorList, _config: ConfigParser):
 
     for orig_color in orig_colors:
         rgb = [*orig_color]
-        random.shuffle(rgb)
+        rand.shuffle(rgb)
         tmp_color = Color(*rgb)
         saturation, brightness = orig_color.to_hsv()[1:]
         hue = tmp_color.to_hsv()[0]
@@ -114,39 +115,41 @@ def pastelize(orig_colors: ColorList, _config: ConfigParser):
     return [orig_color.pastelize() for orig_color in orig_colors]
 
 
-def random_algo(orig_colors: ColorList, config: ConfigParser):
-    """Yeah, coz how could we live without a random algo?"""
+def random(orig_colors: ColorList, config: ConfigParser):
+    """Yeah, coz how could we live without a random filter?"""
     try:
-        include_str = config["algos:random"]["include"]
+        include_str = config["filters:random"]["include"]
     except KeyError:
-        algo_names = [*{i.name for i in pkg_resources.iter_entry_points("larry.algos")}]
-        algo_names.remove("random")
+        filter_names = [
+            *{i.name for i in pkg_resources.iter_entry_points("larry.filters")}
+        ]
+        filter_names.remove("random")
     else:
-        algo_names = [*{i.strip() for i in include_str.split()}]
+        filter_names = [*{i.strip() for i in include_str.split()}]
 
-    if not algo_names:
+    if not filter_names:
         return orig_colors
 
     try:
-        chains = int(config["algos:random"]["chains"])
+        chains = int(config["filters:random"]["chains"])
     except (KeyError, ValueError):
         chains = 1
 
     new_colors = orig_colors
-    iters = random.randint(1, chains)
+    iters = rand.randint(1, chains)
 
     for _ in range(iters):
-        algo_name = random.choice(algo_names)
-        algo = load_algo(algo_name)
-        LOGGER.debug("random: running algo: %s", algo_name)
-        new_colors = algo(new_colors, config)
+        filter_name = rand.choice(filter_names)
+        filter_ = load_filter(filter_name)
+        LOGGER.debug("random: running filter: %s", filter_name)
+        new_colors = filter_(new_colors, config)
 
     return new_colors
 
 
 def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Return brightened (or darkend) version of the colors"""
-    percent = config.getint("algos:brighten", "percent", fallback=-20)
+    percent = config.getint("filters:brighten", "percent", fallback=-20)
     colors: ColorList = []
 
     for color in orig_colors:
@@ -159,8 +162,8 @@ def brighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
 def subtract(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """XXX"""
-    color = random.choice(orig_colors)
-    sign = random.choice([-1, 1])
+    color = rand.choice(orig_colors)
+    sign = rand.choice([-1, 1])
 
     if sign == -1:
         return [i - color for i in orig_colors]
@@ -170,7 +173,7 @@ def subtract(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
 
 def randbright(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Each color is darkened/lightened by a random value"""
-    return [i.luminize(random.randint(0, 255)) for i in orig_colors]
+    return [i.luminize(rand.randint(0, 255)) for i in orig_colors]
 
 
 def contrast(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
@@ -189,7 +192,7 @@ def contrast(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
 
 def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Swap colors from source"""
-    source = config.get("algos:swap", "source", fallback=None)
+    source = config.get("filters:swap", "source", fallback=None)
     if source is None:
         source_colors = [
             Color(0, 0, 0),
@@ -211,10 +214,10 @@ def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     return [*Color.generate_from(source_colors, len(orig_colors), randomize=False)]
 
 
-def noop(orig_colors: ColorList, _config: ConfigParser):
-    """A NO-OP algo
+def none(orig_colors: ColorList, _config: ConfigParser):
+    """A NO-OP filter
 
-    This is an algo that simply returns the original colors.
+    This is an filter that simply returns the original colors.
     """
     return list(orig_colors)
 
@@ -222,7 +225,7 @@ def noop(orig_colors: ColorList, _config: ConfigParser):
 def vga(orig_colors: ColorList, config: ConfigParser):
     """A blast from the past"""
     colors: ColorList = []
-    bits = config.getint("algos:vga", "bits", fallback=8)
+    bits = config.getint("filters:vga", "bits", fallback=8)
     div = 256 / bits
 
     for color in orig_colors:
@@ -237,7 +240,7 @@ def vga(orig_colors: ColorList, config: ConfigParser):
 
 def grayscale(orig_colors: ColorList, config: ConfigParser):
     """Convert colors to grayscale"""
-    num_grays = config.getint("algos:grayscale", "grays", fallback=512)
+    num_grays = config.getint("filters:grayscale", "grays", fallback=512)
     div = 255 / num_grays
     black = Color(0, 0, 0)
     white = Color(255, 255, 255)
@@ -259,7 +262,7 @@ def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     percent: int = 10
 
     try:
-        percent: int = config["algos:reduce"].getint("amount", fallback=percent)
+        percent: int = config["filters:reduce"].getint("amount", fallback=percent)
     except KeyError:
         pass
 

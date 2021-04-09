@@ -7,7 +7,7 @@ import signal
 import sys
 
 from larry import LOGGER, Color, Image, __version__, load_config
-from larry.algos import AlgoNotFound, algos_list, load_algo
+from larry.filters import FilterNotFound, filters_list, load_filter
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, plugins_list
 
@@ -27,7 +27,7 @@ def parse_args(args: tuple) -> argparse.Namespace:
         "--list-plugins", action="store_true", default=False, help="List known plugins"
     )
     parser.add_argument(
-        "--list-algos", action="store_true", default=False, help="List known algos"
+        "--list-filters", action="store_true", default=False, help="List known filters"
     )
 
     return parser.parse_args(args)
@@ -47,17 +47,17 @@ def run() -> None:
         colors = [Color(i.strip()) for i in colors_str]
     else:
         colors = orig_colors.copy()
-        algo_names = config["larry"].get("algo", "gradient").split()
+        filter_names = config["larry"].get("filter", "gradient").split()
 
-        for algo_name in algo_names:
+        for filter_name in filter_names:
             try:
-                algo = load_algo(algo_name)
-            except AlgoNotFound:
-                error_message = f"Color algo {algo_name} not found. Skipping."
+                filter_ = load_filter(filter_name)
+            except FilterNotFound:
+                error_message = f"Color filter {filter_name} not found. Skipping."
                 LOGGER.exception(error_message)
             else:
-                LOGGER.debug("Calling algo %s", algo_name)
-                colors = algo(colors, config)
+                LOGGER.debug("Calling filter %s", filter_name)
+                colors = filter_(colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 
@@ -105,13 +105,13 @@ def list_plugins(output=sys.stdout):
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
-def list_algos(output=sys.stdout):
+def list_filters(output=sys.stdout):
     config = load_config()
-    enabled_algo = config["larry"].get("algo", "gradient").split()
+    enabled_filter = config["larry"].get("filter", "gradient").split()
 
-    for name, func in algos_list():
+    for name, func in filters_list():
         doc = func.__doc__.split("\n", 1)[0].strip()
-        enabled = "X" if name in enabled_algo else " "
+        enabled = "X" if name in enabled_filter else " "
 
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
@@ -132,8 +132,8 @@ def main(args=None):
         list_plugins()
         return
 
-    if args.list_algos:
-        list_algos()
+    if args.list_filters:
+        list_filters()
         return
 
     loop = asyncio.get_event_loop()
