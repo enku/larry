@@ -251,28 +251,26 @@ def grayscale(orig_colors: ColorList, config: ConfigParser):
 
 def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Reduce the number of distinct colors"""
-    if not orig_colors:
-        return []
-
-    percent: int = 10
+    num_colors = len(orig_colors)
+    amount = num_colors // 20
+    new_colors = []
 
     try:
-        percent: int = config["filters:reduce"].getint("amount", fallback=percent)
+        amount: int = config["filters:reduce"].getint("amount", fallback=amount)
     except KeyError:
         pass
 
-    if percent == 0:
+    if amount == 0:
         return orig_colors
 
-    amount = int(percent / 100 * len(orig_colors))
+    chunk_size = 2 * amount + 1
 
-    last_color = orig_colors[0]
-    new_colors = [last_color]
+    for i in range(num_colors):
+        div = i // chunk_size
+        middle = chunk_size * div + amount
 
-    for i, color in enumerate(orig_colors[1:], start=1):
-        if i % amount == 0:
-            last_color = color
-
-        new_colors.append(last_color)
+        new_colors.append(
+            orig_colors[middle] if middle < num_colors else orig_colors[-1]
+        )
 
     return new_colors
