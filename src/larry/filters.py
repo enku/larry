@@ -240,16 +240,11 @@ def vga(orig_colors: ColorList, config: ConfigParser):
 
 def grayscale(orig_colors: ColorList, config: ConfigParser):
     """Convert colors to grayscale"""
-    num_grays = config.getint("filters:grayscale", "grays", fallback=512)
-    div = 255 / num_grays
-    black = Color(0, 0, 0)
-    white = Color(255, 255, 255)
-    grays = [*Color.gradient(black, white, num_grays)]
     colors: ColorList = []
 
     for color in orig_colors:
-        lum = color.luminocity()
-        colors.append(grays[int(lum // div) - 1])
+        lum = int(color.luminocity())
+        colors.append(Color(lum, lum, lum))
 
     return colors
 
