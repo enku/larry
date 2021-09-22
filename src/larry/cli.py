@@ -35,6 +35,11 @@ def parse_args(args: tuple) -> argparse.Namespace:
 
 def run() -> None:
     config = load_config()
+
+    if config["larry"].getboolean("pause", False):
+        LOGGER.info("Larry is paused")
+        return
+
     raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
     image = Image.from_bytes(raw_image_data)
 
