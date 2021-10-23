@@ -102,7 +102,7 @@ class VimProtocol(asyncio.Protocol):
     @classmethod
     def send(cls, data, transport):
         """encode *data* as JSON and send it over *transport*"""
-        return transport.write(cls.encode(data) + b'\n')
+        return transport.write(cls.encode(data) + b"\n")
 
     def connection_made(self, transport):
         self.transport = transport
