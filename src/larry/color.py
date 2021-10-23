@@ -5,9 +5,9 @@ import random
 import re
 from collections import namedtuple
 from math import floor
-from typing import Generator, List, Optional, Tuple, Union
+from typing import Iterator, Optional, Union
 
-ColorSpecType = Union[str, "Color", Tuple[int, int, int]]
+ColorSpecType = Union[str, "Color", tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
 
@@ -400,7 +400,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         hue = random.randint(0, 360)
         return Color.from_hsv((hue, saturation, brightness))
 
-    def to_hsv(self) -> Tuple[float, float, float]:
+    def to_hsv(self) -> tuple[float, float, float]:
         """Return a tuple containing (Hue, Saturation, Value)"""
 
         red, green, blue = self.red / 255.0, self.green / 255.0, self.blue / 255.0
@@ -428,7 +428,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         return (hue, saturation * 100.0, value * 100.0)
 
     @classmethod
-    def from_hsv(cls, hsv: Tuple[float, float, float]) -> Color:
+    def from_hsv(cls, hsv: tuple[float, float, float]) -> Color:
         """Create a color from HSV value (tuple)"""
 
         hue, saturation, value = hsv[0] / 360.0, hsv[1] / 100.0, hsv[2] / 100.0
@@ -461,8 +461,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         return cls(int(red * 255), int(green * 255), int(blue * 255))
 
 
-ColorList = List[Color]
-ColorGenerator = Generator[Color, None, None]
+ColorList = list[Color]
+ColorGenerator = Iterator[Color]
 
 
 def sanitize(number: float) -> int:

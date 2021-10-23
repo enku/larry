@@ -1,11 +1,11 @@
 """Larry plugins"""
 from importlib.metadata import entry_points
-from typing import Callable, Dict, List
+from typing import Callable
 
 from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
 PluginType = Callable[[ColorList, ConfigType], None]
-PLUGINS: Dict[str, PluginType] = {}
+PLUGINS: dict[str, PluginType] = {}
 
 
 class PluginNotFound(LookupError):

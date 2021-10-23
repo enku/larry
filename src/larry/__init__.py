@@ -9,7 +9,7 @@ import re
 from abc import ABCMeta, abstractmethod
 from importlib.metadata import distribution
 from io import BytesIO
-from typing import Callable, Iterable, List, Set
+from typing import Callable, Iterable
 
 from PIL import Image as PillowImage
 
@@ -41,7 +41,7 @@ ConfigType = configparser.SectionProxy
 class Image(metaclass=ABCMeta):
     """A type of image instantiated from a byte stream"""
 
-    implementations: List[Image] = []
+    implementations: list[Image] = []
 
     @classmethod
     def __init_subclass__(cls):
@@ -88,11 +88,11 @@ class SVGImage(Image):
     def __str__(self):
         return self.svg
 
-    def color_strings(self) -> List[str]:
+    def color_strings(self) -> list[str]:
         """Return a list of all the colors strings in the SVGImage"""
         return COLOR_RE.findall(self.svg)
 
-    def get_colors(self) -> Set[Color]:
+    def get_colors(self) -> set[Color]:
         return {Color(i) for i in self.color_strings()}
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
@@ -121,7 +121,7 @@ class RasterImage(Image):
         self.image_mode = self.image.mode
         self.image = self.image.convert("RGBA")
 
-    def get_colors(self) -> Set[Color]:
+    def get_colors(self) -> set[Color]:
         width, height = self.image.size
 
         pixels = {

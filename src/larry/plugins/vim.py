@@ -1,7 +1,8 @@
 """Larry plugin for vim"""
 import asyncio
 import json
-from typing import Generator, Optional, Tuple
+from collections.abc import Iterator
+from typing import Optional
 from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList, ConfigType
@@ -46,7 +47,7 @@ def get_new_colors(config, from_colors):
     return to_colors
 
 
-def process_config(config: str) -> Generator[Tuple[str, str, Color], None, None]:
+def process_config(config: str) -> Iterator[tuple[str, str, Color]]:
     lines = config.split("\n")
 
     for line in lines:
@@ -56,7 +57,7 @@ def process_config(config: str) -> Generator[Tuple[str, str, Color], None, None]
             yield triplet
 
 
-def process_line(line: str) -> Optional[Tuple[str, str, Color]]:
+def process_line(line: str) -> Optional[tuple[str, str, Color]]:
     line = line.strip()
 
     if not line:
