@@ -7,15 +7,15 @@ import os
 import random
 import re
 from abc import ABCMeta, abstractmethod
+from importlib.metadata import distribution
 from io import BytesIO
 from typing import Callable, Iterable, List, Set
 
-import pkg_resources
 from PIL import Image as PillowImage
 
 from larry.color import Color, ColorGenerator, ColorList
 
-__version__ = pkg_resources.get_distribution("larry").version
+__version__ = distribution("larry").version
 
 BASE_DIR = os.path.dirname(__file__)
 CONFIG_PATH = os.path.expanduser("~/.config/larry.cfg")

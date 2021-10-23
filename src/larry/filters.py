@@ -1,8 +1,7 @@
 """Color selection filters"""
 import random as rand
 from configparser import ConfigParser
-
-import pkg_resources
+from importlib.metadata import entry_points
 
 from larry import LOGGER, Color, ColorList, Image, randsign
 from larry.io import read_file
@@ -14,18 +13,19 @@ class FilterNotFound(LookupError):
 
 def load_filter(name):
     """Load the filter with the given name"""
-    iter_ = pkg_resources.iter_entry_points("larry.filters", name)
+    filters = [i for i in entry_points()["larry.filters"] if i.name == name]
+
+    if not filters:
+        raise FilterNotFound(name)
 
     try:
-        return next(iter_).load()
-    except (ModuleNotFoundError, StopIteration) as error:
+        return filters[0].load()
+    except ModuleNotFoundError as error:
         raise FilterNotFound(name) from error
 
 
 def filters_list():
-    return [
-        (i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.filters")
-    ]
+    return [(i.name, i.load()) for i in entry_points()["larry.filters"]]
 
 
 def luminocity(orig_colors: ColorList, _config: ConfigParser):
@@ -120,9 +120,7 @@ def random(orig_colors: ColorList, config: ConfigParser):
     try:
         include_str = config["filters:random"]["include"]
     except KeyError:
-        filter_names = [
-            *{i.name for i in pkg_resources.iter_entry_points("larry.filters")}
-        ]
+        filter_names = [*{i.name for i in entry_points()["larry.filters"]}]
         filter_names.remove("random")
     else:
         filter_names = [*{i.strip() for i in include_str.split()}]

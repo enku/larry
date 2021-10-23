@@ -1,7 +1,6 @@
 """Larry plugins"""
+from importlib.metadata import entry_points
 from typing import Callable, Dict, List
-
-import pkg_resources
 
 from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
@@ -34,18 +33,19 @@ def get_config(plugin_name: str) -> ConfigType:
 
 
 def plugins_list():
-    return [
-        (i.name, i.load()) for i in pkg_resources.iter_entry_points("larry.plugins")
-    ]
+    return [(i.name, i.load()) for i in entry_points()["larry.plugins"]]
 
 
 def load(name: str):
     if name not in PLUGINS:
-        iter_ = pkg_resources.iter_entry_points("larry.plugins", name)
+        plugins = [i for i in entry_points()["larry.plugins"] if i.name == name]
+
+        if not plugins:
+            raise PluginNotFound(name)
 
         try:
-            plugin = next(iter_).load()
-        except (ModuleNotFoundError, StopIteration) as error:
+            plugin = plugins[0].load()
+        except ModuleNotFoundError as error:
             raise PluginNotFound(name) from error
 
         PLUGINS[name] = plugin
