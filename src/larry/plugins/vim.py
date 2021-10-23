@@ -2,10 +2,18 @@
 import asyncio
 import json
 from collections.abc import Iterator
+from dataclasses import dataclass
 from typing import Optional
 from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList, ConfigType
+
+
+@dataclass
+class HighlightGroup:
+    name: str
+    key: str
+    color: Color
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
@@ -32,52 +40,53 @@ def start(config):
 
 def get_new_colors(config, from_colors):
     bg_color = from_colors[0]
-    fg_color = from_colors[-1]
+    vim_configs = [*process_config(config)]
+    targets = Color.generate_from(list(from_colors), len(vim_configs))
     to_colors = []
 
-    for group, layer, color in process_config(config):
-        target = fg_color if layer == "fg" else bg_color
-        to_color = color.colorify(target)
-        key = f"gui{layer}"
+    for vim_config in vim_configs:
+        target = next(targets) if vim_config.key == "fg" else bg_color
+        to_color = vim_config.color.colorify(target)
+        key = f"gui{vim_config.key}"
 
-        to_colors.append((group, f"{key}={to_color}"))
+        to_colors.append((vim_config.name, f"{key}={to_color}"))
 
     LOGGER.debug("vim colors: %s", to_colors)
 
     return to_colors
 
 
-def process_config(config: str) -> Iterator[tuple[str, str, Color]]:
+def process_config(config: str) -> Iterator[HighlightGroup]:
     lines = config.split("\n")
 
     for line in lines:
-        triplet = process_line(line)
+        vim_config = process_line(line)
 
-        if triplet:
-            yield triplet
+        if vim_config:
+            yield vim_config
 
 
-def process_line(line: str) -> Optional[tuple[str, str, Color]]:
+def process_line(line: str) -> Optional[HighlightGroup]:
     line = line.strip()
 
     if not line:
         return None
 
-    group, delim, value = line.partition(":")
+    name, delim, value = line.partition(":")
 
     if not delim:
         return None
 
-    layer, delim, value = value.partition("=")
+    key, delim, value = value.partition("=")
 
     if not delim:
         return None
 
-    layer = layer.strip()
+    key = key.strip()
     value = value.strip()
     color = Color("#" + value)
 
-    return (group, layer, color)
+    return HighlightGroup(name=name, key=key, color=color)
 
 
 class VimProtocol(asyncio.Protocol):
