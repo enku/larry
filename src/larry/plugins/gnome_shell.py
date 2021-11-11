@@ -5,6 +5,10 @@ from larry import Color, ColorList, ConfigType
 from larry.color import replace_string
 from larry.io import read_file, write_file
 
+THEME_EXT_NAME = "user-theme@gnome-shell-extensions.gcampax.github.com"
+THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
+THEME_GSETTINGS_NAME = "name"
+
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """gnome_shell plugin for larry"""
@@ -31,7 +35,7 @@ plugin.has_run = False
 
 def gnome_shell_reload_theme() -> None:
     """Tell gnome shell to reload the theme"""
-    import dbus  # pylint: disable=import-outside-toplevel
+    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
 
     if not plugin.has_run:
         # If larry is in your autostart, gnome-shell might not be
@@ -41,7 +45,8 @@ def gnome_shell_reload_theme() -> None:
         sleep(10)
         plugin.has_run = True
 
-    bus = dbus.SessionBus()
-    obj = bus.get_object("org.gnome.Shell", "/org/gnome/Shell")
-    obj_iface = dbus.Interface(obj, "org.gnome.Shell")
-    obj_iface.Eval("Main.loadTheme();")
+    settings = Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    name = settings.get_string(THEME_GSETTINGS_NAME)
+    settings.set_string(THEME_GSETTINGS_NAME, "")
+    sleep(0.1)
+    settings.set_string(THEME_GSETTINGS_NAME, name)
