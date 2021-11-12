@@ -1,52 +1,90 @@
 """GNOME Shell plugin"""
-from time import sleep
+import pathlib
+import shutil
+import tempfile
 
 from larry import Color, ColorList, ConfigType
 from larry.color import replace_string
 from larry.io import read_file, write_file
 
 THEME_EXT_NAME = "user-theme@gnome-shell-extensions.gcampax.github.com"
-THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 THEME_GSETTINGS_NAME = "name"
+THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
-    """gnome_shell plugin for larry"""
+def get_current_theme() -> str:
+    """Return the name of the current gnome-shell theme"""
+    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
+
+    settings = Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    return settings.get_string(THEME_GSETTINGS_NAME)
+
+
+def copy_theme(template: str) -> pathlib.Path:
+    """Create a new theme (dir) using the template gnome-shell directory"""
+    template_dir = pathlib.Path(template).expanduser()
+    base_dir = pathlib.Path("~/.themes").expanduser()
+    theme_dir = pathlib.Path(tempfile.mkdtemp(prefix="larry-", dir=base_dir))
+    shutil.copytree(template_dir, theme_dir / "gnome-shell")
+
+    index = f"""\
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name={theme_dir.name}
+Comment=Author: Larry the Cow
+Version=v1.0
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Adwaita
+"""
+    write_file(str(theme_dir / "index.theme"), index.encode())
+
+    return theme_dir
+
+
+def create_new_theme(template: str, colors: ColorList, config: ConfigType) -> str:
+    """Create new gnome-shell theme base on the given template"""
+    theme_dir = copy_theme(template)
+    template_dir = pathlib.Path(template).expanduser()
+
     theme_color = next(Color.generate_from(colors, 1, randomize=False))
-    template = config["template"]
-    outfile = config["location"]
     config_colors = config.get("colors", "").split()
+    orig_css = read_file(str(template_dir / "gnome-shell.css")).decode()
 
-    orig_css = read_file(template).decode()
     new_css = orig_css
 
     for color in config_colors:
         new_css = replace_string(new_css, color, theme_color)
 
-    write_file(outfile, new_css.encode())
+    write_file(str(theme_dir / "gnome-shell" / "gnome-shell.css"), new_css.encode())
 
-    # tell gnome shell to reload the theme
-    gnome_shell_reload_theme()
-
-
-# Has this plugin been run before?
-plugin.has_run = False
+    return theme_dir.name
 
 
-def gnome_shell_reload_theme() -> None:
-    """Tell gnome shell to reload the theme"""
+def set_theme(name: str) -> None:
+    """Sets the GNOME Shell theme to the given theme"""
     from gi.repository import Gio  # pylint: disable=import-outside-toplevel
 
-    if not plugin.has_run:
-        # If larry is in your autostart, gnome-shell might not be
-        # initialized all the way before this function is called.
-        # Calling it too soon causes the original theme to not always
-        # get loaded properly. We give it some time.
-        sleep(10)
-        plugin.has_run = True
-
     settings = Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
-    name = settings.get_string(THEME_GSETTINGS_NAME)
-    settings.set_string(THEME_GSETTINGS_NAME, "")
-    sleep(0.1)
     settings.set_string(THEME_GSETTINGS_NAME, name)
+
+
+def delete_theme(name: str) -> None:
+    """Delete the given theme dir from ~/.themes"""
+    theme_dir = pathlib.Path(f"~/.themes/{name}").expanduser()
+
+    if theme_dir.is_dir():
+        shutil.rmtree(theme_dir)
+
+
+def plugin(colors: ColorList, config: ConfigType) -> None:
+    """Plugin runner"""
+    current_theme = get_current_theme()
+    template = config["template"]
+    new_theme = create_new_theme(template, colors, config)
+
+    set_theme(new_theme)
+
+    if current_theme.startswith("larry-"):
+        delete_theme(current_theme)
