@@ -7,7 +7,6 @@ from larry import Color, ColorList, ConfigType
 from larry.color import replace_string
 from larry.io import read_file, write_file
 
-THEME_EXT_NAME = "user-theme@gnome-shell-extensions.gcampax.github.com"
 THEME_GSETTINGS_NAME = "name"
 THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 
