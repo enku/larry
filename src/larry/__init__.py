@@ -69,10 +69,10 @@ class Image(metaclass=ABCMeta):
         for implementation in cls.implementations:
             try:
                 return implementation(data)
-            except Exception as error:
+            except Exception:  # pylint: disable=broad-except
                 continue
 
-        raise error
+        raise ValueError("Could not instantiate image type from data provided")
 
 
 class SVGImage(Image):
