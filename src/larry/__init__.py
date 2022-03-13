@@ -9,7 +9,7 @@ import re
 from abc import ABCMeta, abstractmethod
 from importlib.metadata import distribution
 from io import BytesIO
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Type
 
 from PIL import Image as PillowImage
 
@@ -41,7 +41,7 @@ ConfigType = configparser.SectionProxy
 class Image(metaclass=ABCMeta):
     """A type of image instantiated from a byte stream"""
 
-    implementations: list[Image] = []
+    implementations: list[Type[Image]] = []
 
     @classmethod
     def __init_subclass__(cls):
