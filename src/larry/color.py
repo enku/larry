@@ -25,7 +25,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
     __slots__ = ()
 
-    def __new__(cls, *colorspec) -> None:
+    def __new__(cls, *colorspec) -> Color:
         # self.colorspec = colorspec
 
         if not colorspec:
@@ -53,7 +53,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         raise BadColorSpecError(repr(colorspec))
 
     @classmethod
-    def _handle_str_colorspec(cls, color_str: str):
+    def _handle_str_colorspec(cls, color_str: str) -> tuple[int, int, int]:
         """Handle *colorspec* of type str"""
         from larry.names import NAMES  # pylint: disable=import-outside-toplevel
 
@@ -119,9 +119,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             if triplet[0] == "#":
                 triplet = triplet[1:]
             return (
-                int("%s" % triplet[0:2], 16),
-                int("%s" % triplet[2:4], 16),
-                int("%s" % triplet[4:6], 16),
+                int(triplet[0:2], 16),
+                int(triplet[2:4], 16),
+                int(triplet[4:6], 16),
             )
 
         ####rgb
@@ -135,7 +135,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         raise BadColorSpecError(repr(color_str))
 
     def __str__(self) -> str:
-        return "#%02x%02x%02x" % self
+        return f"#{self.red:02x}{self.green:02x}{self.blue:02x}"
 
     def __add__(self, value: Union[Color, float]) -> Color:
         if isinstance(value, (int, float)):
@@ -222,7 +222,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         elif comp == ">=":
             lum = randint(lum, 255)
         else:
-            raise BadColorSpecError("random(%s%s)" % (comp, lum))
+            raise BadColorSpecError(f"random({comp}{lum})")
 
         return color.luminize(lum)
 
@@ -238,11 +238,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
     def to_gtk(self) -> str:
         """return string of Color in gtkrc format"""
-        return "{ %.2f, %.2f, %.2f }" % (
-            self.red / 255.0,
-            self.green / 255.0,
-            self.blue / 255.0,
-        )
+        return f"{self.red / 255:.2f}, {self.green / 255:.2f}, {self.blue / 255:.2f}"
 
     def to_ansi256(self) -> int:
         """Return color's approximate equivalent in the ANSI 256-color pallette"""
@@ -359,7 +355,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             yield from random.sample(colors, needed)
             return
 
-        # If there are only 2 available colors, return a gradient from darkest to lightest
+        # If there are only 2 available colors, return a gradient from darkest to
+        # lightest
         if num_colors == 2:
             colors.sort(key=Color.luminocity)
             yield from Color.gradient(colors[0], colors[1], needed)
@@ -521,8 +518,6 @@ def rgba(color_str: str, color: Color, string: str) -> str:
     new_color = orig_color.colorify(color)
     re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
     re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
-    new_str = "rgba({},{},{},\\1)".format(
-        new_color.red, new_color.green, new_color.blue
-    )
+    new_str = f"rgba({new_color.red},{new_color.green},{new_color.blue},\\1)"
 
     return re.sub(re_str, new_str, string, flags=re.I)

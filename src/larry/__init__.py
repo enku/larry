@@ -148,7 +148,7 @@ class RasterImage(Image):
 
                 self.image.putpixel((x, y), (*new, alpha))
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         bytes_io = BytesIO()
 
         try:
@@ -160,10 +160,12 @@ class RasterImage(Image):
 
 
 def randsign(num: int) -> int:
+    """Return a random integer between -num and num"""
     return random.choice([-1, 1]) * random.randint(0, num)
 
 
 def load_config(path: str = CONFIG_PATH) -> configparser.ConfigParser:
+    """Return ConfigParser instance given the path"""
     config = configparser.ConfigParser()
     config["DEFAULT"]["input"] = ORIG_FILENAME
     config.read(path)
