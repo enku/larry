@@ -27,15 +27,14 @@ def copy_theme(template: str) -> pathlib.Path:
     shutil.copytree(template_dir, theme_dir / "gnome-shell")
 
     index = f"""\
-[Desktop Entry]
-Type=X-GNOME-Metatheme
+[X-GNOME-Metatheme]
 Name={theme_dir.name}
 Comment=Author: Larry the Cow
-Version=v1.0
 Encoding=UTF-8
-
-[X-GNOME-Metatheme]
 GtkTheme=Adwaita
+IconTheme=Adwaita
+CursorTheme=Adwaita
+CursorSize=24
 """
     write_file(str(theme_dir / "index.theme"), index.encode())
 
