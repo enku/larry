@@ -3,7 +3,7 @@ import asyncio
 import json
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional, Tuple
 from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList, ConfigType
@@ -22,11 +22,12 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
     if not VimProtocol.is_running:
         start(config)
 
-    new_colors = get_new_colors(config["colors"], colors)
+    conversions = config.get("colors", "")
+    new_colors = get_new_colors(conversions, colors)
     VimProtocol.run(new_colors, config)
 
 
-def start(config):
+def start(config: ConfigType) -> None:
     address = config.get("listen_address", "localhost")
     port = int(config["port"])
 
@@ -38,11 +39,11 @@ def start(config):
     loop.create_task(server)
 
 
-def get_new_colors(config, from_colors):
+def get_new_colors(config: str, from_colors: ColorList):
     bg_color = from_colors[0]
     vim_configs = [*process_config(config)]
     targets = Color.generate_from(list(from_colors), len(vim_configs))
-    to_colors = []
+    to_colors: List[Tuple[str, str]] = []
 
     for vim_config in vim_configs:
         target = next(targets) if vim_config.key == "fg" else bg_color
@@ -98,7 +99,7 @@ class VimProtocol(asyncio.Protocol):
     """
 
     clients = WeakSet()
-    colors = None
+    colors: List[Tuple[str, str]] = []
     is_running = False
 
     def __init__(self):
@@ -141,7 +142,7 @@ class VimProtocol(asyncio.Protocol):
         cls.send(["ex", "set termguicolors"], transport)
 
     @classmethod
-    def run(cls, colors, _):
+    def run(cls, colors: List[Tuple[str, str]], _):
         cls.is_running = True
         cls.colors = colors
         loop = asyncio.get_event_loop()
