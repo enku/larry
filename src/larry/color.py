@@ -515,7 +515,7 @@ def rgb(color_str: str, color: Color, string: str) -> str:
     red, green, blue = [int(float(i)) for i in color_str.split(",")]
     orig_color = Color(red, green, blue)
     new_color = orig_color.colorify(color)
-    re_str = re.escape(f"rgb({color_str})")
+    re_str = re.escape(f"rgb\\({red}, *{green}, *{blue}\\)")
 
     return re.sub(re_str, str(new_color), string, flags=re.I)
 
@@ -525,8 +525,8 @@ def rgba(color_str: str, color: Color, string: str) -> str:
     red, green, blue, *_ = [int(float(i)) for i in parts]
     orig_color = Color(red, green, blue)
     new_color = orig_color.colorify(color)
-    re_str = re.escape("rgba({},{},{},".format(*parts[:3]))
+    re_str = f"rgba\\({parts[0]}, *{parts[1]}, *{parts[2]}, *"
     re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
-    new_str = f"rgba({new_color.red},{new_color.green},{new_color.blue},\\1)"
+    new_str = f"rgba({new_color.red}, {new_color.green}, {new_color.blue}, \\1)"
 
     return re.sub(re_str, new_str, string, flags=re.I)
