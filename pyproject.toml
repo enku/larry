@@ -1,3 +1,56 @@
+[project]
+name = "larry"
+dynamic = ["version"]
+description = "Colorify your desktop with Larry the Cow"
+readme = "README.md"
+authors = [
+    {name = "Albert Hopkins", email = "marduk@letterboxes.org"}
+]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20",
+    "Pillow>=8.1.0"
+]
+
+[project.urls]
+homepage = "https://github.com/enku/larry"
+repository = "https://github.com/enku/lary"
+
+[project.optional-dependencies]
+gnome = ["dbus-python"]
+
+[project.scripts]
+larry = "larry.cli:main"
+
+[project.entry-points."larry.plugins"]
+command = "larry.plugins.command:plugin"
+gnome_background = "larry.plugins.background:plugin"
+gnome_shell = "larry.plugins.gnome_shell:plugin"
+gnome_terminal = "larry.plugins.gnome_terminal:plugin"
+gtk = "larry.plugins.gtk:plugin"
+vim = "larry.plugins.vim:plugin"
+
+[project.entry-points."larry.filters"]
+brighten = "larry.filters:brighten"
+contrast = "larry.filters:contrast"
+gradient = "larry.filters:gradient"
+grayscale = "larry.filters:grayscale"
+inverse = "larry.filters:inverse"
+luminocity = "larry.filters:luminocity"
+none = "larry.filters:none"
+pastelize = "larry.filters:pastelize"
+randbright = "larry.filters:randbright"
+random = "larry.filters:random"
+reduce = "larry.filters:reduce"
+shift = "larry.filters:shift"
+shuffle = "larry.filters:shuffle"
+subgradient = "larry.filters:subgradient"
+subtract = "larry.filters:subtract"
+swap = "larry.filters:swap"
+vga = "larry.filters:vga"
+zipgradient = "larry.filters:zipgradient"
+
 [build-system]
 requires = [
     "setuptools>=42",
@@ -8,3 +61,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
+
+[tool.pylint.FORMAT]
+max-line-length = 88
