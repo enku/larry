@@ -52,15 +52,11 @@ vga = "larry.filters:vga"
 zipgradient = "larry.filters:zipgradient"
 
 [build-system]
-requires = [
-    "setuptools>=42",
-    "setuptools_scm[toml]>=3.4",
-    "wheel"
-]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
 
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
+[tool.pdm]
+version = { source = "scm" }
 
 [tool.pylint.FORMAT]
 max-line-length = 88

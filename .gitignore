@@ -1,6 +1,6 @@
 .mypy_cache/
 .ropeproject/
+/.pdm.toml
 /.venv/
 /build/
 /dist/
-/src/larry.egg-info/
