@@ -69,3 +69,6 @@ dev = [
 
 [tool.pylint.FORMAT]
 max-line-length = 88
+
+[tool.isort]
+profile = "black"
