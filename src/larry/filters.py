@@ -236,7 +236,7 @@ def vga(orig_colors: ColorList, config: ConfigParser):
     return colors
 
 
-def grayscale(orig_colors: ColorList, config: ConfigParser):
+def grayscale(orig_colors: ColorList, _config: ConfigParser):
     """Convert colors to grayscale"""
     colors: ColorList = []
 
