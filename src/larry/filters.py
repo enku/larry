@@ -1,17 +1,20 @@
 """Color selection filters"""
 import random as rand
+import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
 from larry import LOGGER, Color, ColorList, Image, randsign
 from larry.io import read_file
 
+Filter = t.Callable[[ColorList, ConfigParser], ColorList]
+
 
 class FilterNotFound(LookupError):
     """Unable to find the requested filter"""
 
 
-def load_filter(name):
+def load_filter(name: str) -> Filter:
     """Load the filter with the given name"""
     filters = [i for i in entry_points()["larry.filters"] if i.name == name]
 
@@ -24,21 +27,22 @@ def load_filter(name):
         raise FilterNotFound(name) from error
 
 
-def filters_list():
+def filters_list() -> list[tuple[str, Filter]]:
+    """Return a list of tuple of (filter_name, filter_func) for all filters"""
     return [(i.name, i.load()) for i in entry_points()["larry.filters"]]
 
 
-def luminocity(orig_colors: ColorList, _config: ConfigParser):
+def luminocity(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Return colors with the same luminocity as the original"""
     return [Color.randcolor(lum=i.luminocity()) for i in orig_colors]
 
 
-def inverse(orig_colors: ColorList, _config: ConfigParser):
+def inverse(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Return orig_colors inversed"""
     return [i.inverse() for i in orig_colors]
 
 
-def gradient(orig_colors: ColorList, config: ConfigParser):
+def gradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Return gradient within the same luminocity range as the orignal"""
     fuzz = config.getint("filters:gradient", "fuzz", fallback=0)
 
@@ -52,7 +56,7 @@ def gradient(orig_colors: ColorList, config: ConfigParser):
     return [*colors]
 
 
-def zipgradient(orig_colors: ColorList, config: ConfigParser):
+def zipgradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Return the result of n gradients zipped"""
     num_colors = len(orig_colors)
     gradient_count = config.getint("filters:zipgradient", "colors", fallback=2)
@@ -78,7 +82,7 @@ def zipgradient(orig_colors: ColorList, config: ConfigParser):
     return colors[:num_colors]
 
 
-def shuffle(orig_colors: ColorList, _config: ConfigParser):
+def shuffle(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Shuffle the rgb for each color
 
     But keep the same saturation and brightness as the original
@@ -97,7 +101,7 @@ def shuffle(orig_colors: ColorList, _config: ConfigParser):
     return colors
 
 
-def shift(orig_colors: ColorList, _config: ConfigParser):
+def shift(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Shift colors by a random amount"""
     colors = list(orig_colors)
     num_colors = len(colors)
@@ -110,12 +114,12 @@ def shift(orig_colors: ColorList, _config: ConfigParser):
     return colors
 
 
-def pastelize(orig_colors: ColorList, _config: ConfigParser):
+def pastelize(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Pastelize all the original colors"""
     return [orig_color.pastelize() for orig_color in orig_colors]
 
 
-def random(orig_colors: ColorList, config: ConfigParser):
+def random(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Yeah, coz how could we live without a random filter?"""
     try:
         include_str = config["filters:random"]["include"]
@@ -212,7 +216,7 @@ def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     return [*Color.generate_from(source_colors, len(orig_colors), randomize=False)]
 
 
-def none(orig_colors: ColorList, _config: ConfigParser):
+def none(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """A NO-OP filter
 
     This is an filter that simply returns the original colors.
@@ -220,7 +224,7 @@ def none(orig_colors: ColorList, _config: ConfigParser):
     return list(orig_colors)
 
 
-def vga(orig_colors: ColorList, config: ConfigParser):
+def vga(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """A blast from the past"""
     colors: ColorList = []
     bits = config.getint("filters:vga", "bits", fallback=8)
@@ -236,7 +240,7 @@ def vga(orig_colors: ColorList, config: ConfigParser):
     return colors
 
 
-def grayscale(orig_colors: ColorList, _config: ConfigParser):
+def grayscale(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Convert colors to grayscale"""
     colors: ColorList = []
 
@@ -254,7 +258,7 @@ def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     new_colors = []
 
     try:
-        amount: int = config["filters:reduce"].getint("amount", fallback=amount)
+        amount = config["filters:reduce"].getint("amount", fallback=amount)
     except KeyError:
         pass
 
@@ -279,10 +283,10 @@ def subgradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     num_colors = len(orig_colors)
     index = 0
     size = num_colors // 20
-    new_colors = []
+    new_colors: ColorList = []
 
     try:
-        size: int = config["filters:subgradient"].getint("size", fallback=size)
+        size = config["filters:subgradient"].getint("size", fallback=size)
     except KeyError:
         pass
 
