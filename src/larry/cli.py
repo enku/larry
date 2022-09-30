@@ -99,7 +99,7 @@ def run_every(interval: float, loop) -> None:
     HANDLER = loop.call_later(interval, run_every, interval, loop)
 
 
-def list_plugins(output=sys.stdout):
+def list_plugins(output=sys.stdout) -> None:
     """List all the beautiful plugins"""
     config = load_config()
     enabled_plugins = config["larry"].get("plugins", "").split()
@@ -110,7 +110,7 @@ def list_plugins(output=sys.stdout):
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
-def list_filters(output=sys.stdout):
+def list_filters(output=sys.stdout) -> None:
     config = load_config()
     enabled_filter = config["larry"].get("filter", "gradient").split()
 
@@ -121,7 +121,7 @@ def list_filters(output=sys.stdout):
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
-def main(args=None):
+def main(args=None) -> None:
     """Main program entry point"""
     logging.basicConfig()
 
