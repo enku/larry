@@ -115,7 +115,8 @@ def list_filters(output=sys.stdout) -> None:
     enabled_filter = config["larry"].get("filter", "gradient").split()
 
     for name, func in filters_list():
-        doc = func.__doc__.split("\n", 1)[0].strip()
+        func_doc = func.__doc__ or ""
+        doc = func_doc.split("\n", 1)[0].strip()
         enabled = "X" if name in enabled_filter else " "
 
         print(f"[{enabled}] {name:20} {doc}", file=output)
