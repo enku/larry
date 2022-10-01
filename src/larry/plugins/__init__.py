@@ -1,6 +1,6 @@
 """Larry plugins"""
 from importlib.metadata import entry_points
-from typing import Callable
+from typing import Callable, List, Tuple
 
 from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
@@ -32,11 +32,11 @@ def get_config(plugin_name: str) -> ConfigType:
     return plugin_config
 
 
-def plugins_list():
+def plugins_list() -> List[Tuple[str, PluginType]]:
     return [(i.name, i.load()) for i in entry_points()["larry.plugins"]]
 
 
-def load(name: str):
+def load(name: str) -> PluginType:
     if name not in PLUGINS:
         plugins = [i for i in entry_points()["larry.plugins"] if i.name == name]
 
