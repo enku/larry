@@ -151,6 +151,21 @@ requires_python = ">=3.7"
 summary = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 
 [[package]]
+name = "pycairo"
+version = "1.21.0"
+requires_python = ">=3.7"
+summary = "Python interface for cairo"
+
+[[package]]
+name = "pygobject"
+version = "3.42.2"
+requires_python = ">=3.6, <4"
+summary = "Python bindings for GObject Introspection"
+dependencies = [
+    "pycairo<2.0,>=1.16",
+]
+
+[[package]]
 name = "pylint"
 version = "2.14.5"
 requires_python = ">=3.7.2"
@@ -205,7 +220,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:caaa9aadde26ee3b5fc40346039dbc0f9cb699b0ef7dfabfc922f25ead724751"
+content_hash = "sha256:cdea01e4987dbecb446903a19b24484b7e27581bb36959706894c56b79ec4ace"
 
 [metadata.files]
 "astroid 2.11.7" = [
@@ -423,7 +438,6 @@ content_hash = "sha256:caaa9aadde26ee3b5fc40346039dbc0f9cb699b0ef7dfabfc922f25ea
     {url = "https://files.pythonhosted.org/packages/26/bf/3b0c19d97745aea31cbd808b33c6e2686fa3baa0c9a8046ecd403e41a921/Pillow-9.2.0-cp39-cp39-win32.whl", hash = "sha256:337a74fd2f291c607d220c793a8135273c4c2ab001b03e601c36766005f36885"},
     {url = "https://files.pythonhosted.org/packages/29/61/9303560bc992d5e1985a260544b008410a53dab8b8f34d2791aeff04bc5b/Pillow-9.2.0-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:96b5e6874431df16aee0c1ba237574cb6dff1dcb173798faa6a9d8b399a05d0e"},
     {url = "https://files.pythonhosted.org/packages/29/8e/63969ca113cf56b6ff285ce1d983ebce8a205b57ad2e206e4656c77f47b1/Pillow-9.2.0-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1802f34298f5ba11d55e5bb09c31997dc0c6aed919658dfdf0198a2fe75d5490"},
-    {url = "https://files.pythonhosted.org/packages/38/bf/591fb5d727e291fe0e83b9c26eaf52b540ece7805c91c193fc653031aa66/Pillow-9.2.0-cp311-cp311-macosx_10_10_universal2.whl", hash = "sha256:408673ed75594933714482501fe97e055a42996087eeca7e5d06e33218d05aa8"},
     {url = "https://files.pythonhosted.org/packages/39/72/7097a5b4b70661df03b8af02152fc5562a6f7ad1eb94b0ceb3c1999ed623/Pillow-9.2.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:d5b87da55a08acb586bad5c3aa3b86505f559b84f39035b233d5bf844b0834b1"},
     {url = "https://files.pythonhosted.org/packages/3a/2c/dd6fe78e01ed1b6d117be95f7e9ed77c77899c14847b1ebe46148b53d354/Pillow-9.2.0-cp38-cp38-win32.whl", hash = "sha256:2ad0d4df0f5ef2247e27fc790d5c9b5a0af8ade9ba340db4a73bb1a4a3e5fb4f"},
     {url = "https://files.pythonhosted.org/packages/42/a5/b861588a463b29cfd789ab7e88cb95d33c2a3b6bbbe524f268b4ec8e0ba3/Pillow-9.2.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:0030fdbd926fb85844b8b92e2f9449ba89607231d3dd597a21ae72dc7fe26927"},
@@ -437,9 +451,9 @@ content_hash = "sha256:caaa9aadde26ee3b5fc40346039dbc0f9cb699b0ef7dfabfc922f25ea
     {url = "https://files.pythonhosted.org/packages/65/94/d4d2c7b148f2a9f7069325123d9ac9ae64aba2e2a908997f53082bf86908/Pillow-9.2.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:831e648102c82f152e14c1a0938689dbb22480c548c8d4b8b248b3e50967b88c"},
     {url = "https://files.pythonhosted.org/packages/66/a8/d2c36017e6abd37de63ab3c5224d21141c651076068e6c3a169a8b021deb/Pillow-9.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7b0554af24df2bf96618dac71ddada02420f946be943b181108cac55a7a2dcd4"},
     {url = "https://files.pythonhosted.org/packages/69/f5/9e802159d78b2eaf26bf1f8b94648605993f5ca7247ac8870f065063fc40/Pillow-9.2.0-cp37-cp37m-win_amd64.whl", hash = "sha256:69bd1a15d7ba3694631e00df8de65a8cb031911ca11f44929c97fe05eb9b6c1d"},
+    {url = "https://files.pythonhosted.org/packages/84/6c/2c6e4a6d0f94b1154dcc4e8ec54e9c7c1df70569925508484df02e7f9490/Pillow-9.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:336b9036127eab855beec9662ac3ea13a4544a523ae273cbf108b228ecac8437"},
     {url = "https://files.pythonhosted.org/packages/85/7f/8192ff7e5f79f05a637a8c4e697e24083fdc3c92f8f542b23180e49b6623/Pillow-9.2.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:37ff6b522a26d0538b753f0b4e8e164fdada12db6c6f00f62145d732d8a3152e"},
     {url = "https://files.pythonhosted.org/packages/86/d2/ca178ad71dcd1dcddbe2a3f7983639d2f8a20e723d9a978ab978ed08c874/Pillow-9.2.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a138441e95562b3c078746a22f8fca8ff1c22c014f856278bdbdd89ca36cff1b"},
-    {url = "https://files.pythonhosted.org/packages/88/48/f433e808970f3d261d2fbcb888efc232feb66059d92cc53298ade7af0a4c/Pillow-9.2.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:727dd1389bc5cb9827cbd1f9d40d2c2a1a0c9b32dd2261db522d22a604a6eec9"},
     {url = "https://files.pythonhosted.org/packages/88/49/c26fc3b5b0e82bdc9d8751d6b939da29327b0d98f7c3b95a575cbfed2743/Pillow-9.2.0-cp37-cp37m-macosx_10_10_x86_64.whl", hash = "sha256:2c58b24e3a63efd22554c676d81b0e57f80e0a7d3a5874a7e14ce90ec40d3069"},
     {url = "https://files.pythonhosted.org/packages/88/7a/ddfe28b485b623361457d4783007c1f9ba83a87f93e7fec32f64793efb6c/Pillow-9.2.0-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:0ed2c4ef2451de908c90436d6e8092e13a43992f1860275b4d8082667fbb2ffc"},
     {url = "https://files.pythonhosted.org/packages/8c/92/2975b464d9926dc667020ed1abfa6276e68c3571dcb77e43347e15ee9eed/Pillow-9.2.0.tar.gz", hash = "sha256:75e636fd3e0fb872693f23ccb8a5ff2cd578801251f3a4f6854c6a5d437d3c04"},
@@ -459,6 +473,7 @@ content_hash = "sha256:caaa9aadde26ee3b5fc40346039dbc0f9cb699b0ef7dfabfc922f25ea
     {url = "https://files.pythonhosted.org/packages/c6/d8/ea34b07fdef5adde22ce9710213e7b8ad458969cc05f67f27f2607c3dbdc/Pillow-9.2.0-cp311-cp311-win32.whl", hash = "sha256:b6d5e92df2b77665e07ddb2e4dbd6d644b78e4c0d2e9272a852627cdba0d75cf"},
     {url = "https://files.pythonhosted.org/packages/ce/1c/c639b5662d3b831c4b95e08bc610a50a5b9e719f71338bedc0117e8dc5d3/Pillow-9.2.0-cp37-cp37m-win32.whl", hash = "sha256:fa768eff5f9f958270b081bb33581b4b569faabf8774726b283edb06617101dc"},
     {url = "https://files.pythonhosted.org/packages/d2/b9/4434959b8a2bdeccc5181b71d1377aeed352628fdf5c8a92f25868a0f2a0/Pillow-9.2.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:136659638f61a251e8ed3b331fc6ccd124590eeff539de57c5f80ef3a9594e58"},
+    {url = "https://files.pythonhosted.org/packages/d3/83/77f4cbeb3f06a8bd43b39aa68df3ba2d415254c0cbe7bf7f26c894ebfd30/Pillow-9.2.0-cp311-cp311-macosx_10_10_x86_64.whl", hash = "sha256:adabc0bce035467fb537ef3e5e74f2847c8af217ee0be0455d4fec8adc0462fc"},
     {url = "https://files.pythonhosted.org/packages/d6/88/7d83874025345abe8574c81c6eb1e52b935e94e6cf4201c1402d600eb7da/Pillow-9.2.0-pp38-pypy38_pp73-macosx_10_10_x86_64.whl", hash = "sha256:f07f1f00e22b231dd3d9b9208692042e29792d6bd4f6639415d2f23158a80013"},
     {url = "https://files.pythonhosted.org/packages/d8/60/b13c00d403f34110e96c1b5c0afa73ce461efe3fe960c3a7e3e7fe190d82/Pillow-9.2.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:a9c9bc489f8ab30906d7a85afac4b4944a572a7432e00698a7239f44a44e6efb"},
     {url = "https://files.pythonhosted.org/packages/d8/80/ff6b6ae88982f73d050907dc2c307f387f6a04ce2ca7230ef3a568fbccac/Pillow-9.2.0-cp38-cp38-manylinux_2_28_x86_64.whl", hash = "sha256:bc431b065722a5ad1dfb4df354fb9333b7a582a5ee39a90e6ffff688d72f27a1"},
@@ -478,6 +493,20 @@ content_hash = "sha256:caaa9aadde26ee3b5fc40346039dbc0f9cb699b0ef7dfabfc922f25ea
 "platformdirs 2.5.2" = [
     {url = "https://files.pythonhosted.org/packages/ed/22/967181c94c3a4063fe64e15331b4cb366bdd7dfbf46fcb8ad89650026fec/platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {url = "https://files.pythonhosted.org/packages/ff/7b/3613df51e6afbf2306fc2465671c03390229b55e3ef3ab9dd3f846a53be6/platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
+]
+"pycairo 1.21.0" = [
+    {url = "https://files.pythonhosted.org/packages/01/2c/b26441fa33a8beb905bb893eb5368b6b2c713a0edd5284356c6f4cffd863/pycairo-1.21.0-cp38-cp38-win32.whl", hash = "sha256:dace6b356c476de27f8e1522428ac21a799c225703f746e2957d441f885dcb6c"},
+    {url = "https://files.pythonhosted.org/packages/39/37/6e30254f6583a8ecf6f8a103af48ef5f8c97f56bbe94cf69af6f5f80729c/pycairo-1.21.0-cp310-cp310-win_amd64.whl", hash = "sha256:f63c153a9ea3d21aff85e2caeee4b0c5d566b2368b4ed64826020d12953d76a4"},
+    {url = "https://files.pythonhosted.org/packages/48/2d/1c040c138201d4c20e426ed7edbc4baead044e6b1706858d1fe3fdd3fc56/pycairo-1.21.0-cp37-cp37m-win_amd64.whl", hash = "sha256:31e1c4850db03201d33929cbe1905ce1b33202683ebda7bb0d4dba489115066b"},
+    {url = "https://files.pythonhosted.org/packages/5d/26/0d193f24c683edf71864a28d87e19f0015c2c639bf9dd0cc2b96c4a8b18e/pycairo-1.21.0-cp37-cp37m-win32.whl", hash = "sha256:70936b19f967fa3cb3cd200c2608911227fa5d09dae21c166f64bc15e714ee41"},
+    {url = "https://files.pythonhosted.org/packages/92/a4/506564f574fa74c90b98690e8ecc8dbae1629f31fcfe0be69de45d9e1605/pycairo-1.21.0.tar.gz", hash = "sha256:251907f18a552df938aa3386657ff4b5a4937dde70e11aa042bc297957f4b74b"},
+    {url = "https://files.pythonhosted.org/packages/9d/a4/783deb9a62eb4417f2660dba97de7e3c8e22f6a9840aea294679b172ba10/pycairo-1.21.0-cp310-cp310-win32.whl", hash = "sha256:44a2ecf34968de07b3b9dfdcdbccbd25aa3cab267200f234f84e81481a73bbf6"},
+    {url = "https://files.pythonhosted.org/packages/bc/0a/62f8f61cceeec8b717b96d8773da5b2897ed6017206e1360f1694fac5e62/pycairo-1.21.0-cp38-cp38-win_amd64.whl", hash = "sha256:4357f20a6b1de8f1e8072a74ff68ab4c9a0ae698cd9f5c0f2b2cdd9b28b635f6"},
+    {url = "https://files.pythonhosted.org/packages/c5/15/73cdbade21b101e679a344c519e402948dadbc159e03bef6738317e8c2c4/pycairo-1.21.0-cp39-cp39-win_amd64.whl", hash = "sha256:26b72b813c6f9d495f71057eab89c13e70a21c92360e9265abc049e0a931fa39"},
+    {url = "https://files.pythonhosted.org/packages/f1/4c/e9149c9135ad0644b906f7890fd70502bd01f95b12e4dddfa39784826c0d/pycairo-1.21.0-cp39-cp39-win32.whl", hash = "sha256:6d37375aab9f2bb6136f076c19815d72108383baae89fbc0d6cb8e5092217d02"},
+]
+"pygobject 3.42.2" = [
+    {url = "https://files.pythonhosted.org/packages/fe/40/9afaeb8d3b453fb8596fcb6c7bc2b64e434868c91eda19955742778eff74/PyGObject-3.42.2.tar.gz", hash = "sha256:21524cef33100c8fd59dc135948b703d79d303e368ce71fa60521cc971cd8aa7"},
 ]
 "pylint 2.14.5" = [
     {url = "https://files.pythonhosted.org/packages/82/e5/ae649803c4f3a4e47720337352af046089f8e9ff8a25958199df74268984/pylint-2.14.5.tar.gz", hash = "sha256:487ce2192eee48211269a0e976421f334cf94de1806ca9d0a99449adcdf0285e"},

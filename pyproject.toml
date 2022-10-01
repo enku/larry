@@ -18,7 +18,10 @@ homepage = "https://github.com/enku/larry"
 repository = "https://github.com/enku/lary"
 
 [project.optional-dependencies]
-gnome = ["dbus-python"]
+gnome = [
+    "dbus-python",
+    "PyGObject>=3.42.2",
+]
 
 [project.scripts]
 larry = "larry.cli:main"
