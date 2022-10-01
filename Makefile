@@ -32,8 +32,8 @@ shell: $(venv)
 
 .PHONY: lint
 lint: $(venv)
-	pdm pylint src
-	pdm mypy src
+	pdm run pylint src
+	pdm run mypy src
 
 
 clean:
