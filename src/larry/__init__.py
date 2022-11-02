@@ -11,6 +11,7 @@ from importlib.metadata import distribution
 from io import BytesIO
 from typing import Callable, Iterable, Type
 
+import appdirs
 from PIL import Image as PillowImage
 
 from larry.color import Color, ColorGenerator, ColorList
@@ -18,7 +19,7 @@ from larry.color import Color, ColorGenerator, ColorList
 __version__ = distribution("larry").version
 
 BASE_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.expanduser("~/.config/larry.cfg")
+CONFIG_PATH = os.path.join(appdirs.user_config_dir(), "larry.cfg")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 ORIG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
 LOGGER = logging.getLogger("larry")
