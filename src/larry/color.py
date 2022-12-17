@@ -61,13 +61,13 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         ###rbg(r, g, b)
         if color_str.startswith("rgb("):
-            parts = color_str[4:-2].split(",")
-            return tuple(int(i.strip()) for i in parts)
+            red, green, blue = color_str[4:-2].split(",")
+            return int(red.strip()), int(blue.strip()), int(green.strip())
 
         ####r/g/b
         if len(color_str.split("/")) == 3:
-            parts = color_str.split("/")
-            return tuple(int(i) for i in parts)
+            red, green, blue = color_str.split("/")
+            return int(red), int(green), int(blue)
 
         ####{ r, g, b}
         if color_str[0] == "{" and color_str[-1] == "}":
