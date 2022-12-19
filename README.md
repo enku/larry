@@ -25,7 +25,9 @@ colorizing lots of things. Included plugins are:
 
 * command: for running an arbitrary command (build your own)
 
-It should be possible to write your own plugins (documentation forthcoming).
+It should be possible to create your own plugins.  As a reference for creating
+a third-party larry plugin, see the
+[larry-rgb](https://github.com/enku/larry-rgb) plugin.
 
 Installable via pip:
 
