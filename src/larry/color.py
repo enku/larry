@@ -119,9 +119,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             if triplet[0] == "#":
                 triplet = triplet[1:]
             return (
-                int(triplet[0]*2, 16),
-                int(triplet[1]*2, 16),
-                int(triplet[2]*2, 16),
+                int(triplet[0] * 2, 16),
+                int(triplet[1] * 2, 16),
+                int(triplet[2] * 2, 16),
             )
         if len(color_str) in [6, 7]:
             triplet = color_str

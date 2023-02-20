@@ -128,5 +128,6 @@ async def async_main(args=None) -> None:
     loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, args.config_path)
     loop.call_soon(run_every, args.interval, args.config_path)
 
+
 def main(args=None) -> None:
     asyncio.run(async_main(args))
