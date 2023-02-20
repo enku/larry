@@ -83,7 +83,7 @@ def run(config_path: str) -> None:
     loop = asyncio.get_event_loop()
 
     for plugin_name in plugins:
-        loop.call_soon(do_plugin, plugin_name, colors, config_path)
+        loop.call_soon(do_plugin, plugin_name, [*colors], config_path)
 
 
 def run_every(interval: float, config_path: str) -> None:
