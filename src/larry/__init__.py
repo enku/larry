@@ -63,8 +63,10 @@ class Image(Protocol):
     def get_colors(self) -> Iterable[Color]:
         """Return the Colors of this Image"""
 
-    def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
-        """Mutate the Image by replacing orig_colors with new_colors"""
+    def replace(
+        self, orig_colors: Iterable[Color], new_colors: Iterable[Color]
+    ) -> Image:
+        """Return a new image by orig_colors with new_colors"""
 
 
 def make_image_from_bytes(data: bytes) -> Image:
@@ -99,15 +101,20 @@ class SVGImage:
         """Return the Colors of this Image"""
         return {Color(i) for i in self.color_strings()}
 
-    def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
-        """Mutate the image by replacing orig_colors with new_colors"""
+    def replace(
+        self, orig_colors: Iterable[Color], new_colors: Iterable[Color]
+    ) -> SVGImage:
+        """Return a new image by orig_colors with new_colors"""
         color_map = dict((orig, new) for orig, new in zip(orig_colors, new_colors))
+        svg = self.svg
 
         for color_string in self.color_strings():
             color = Color(color_string)
 
             if color in orig_colors:
-                self.svg = self.svg.replace(color_string, str(color_map[color]))
+                svg = svg.replace(color_string, str(color_map[color]))
+
+        return type(self)(svg.encode())
 
 
 @register_image_type
@@ -134,12 +141,16 @@ class RasterImage:
 
         return {Color(*i) for i in pixels}
 
-    def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
-        """Mutate the Image by replacing orig_colors with new_colors"""
+    def replace(
+        self, orig_colors: Iterable[Color], new_colors: Iterable[Color]
+    ) -> RasterImage:
+        """Return a new image by orig_colors with new_colors"""
         width, height = self.image.size
 
         # map original rgb tuples to new
         color_map = dict((orig, new) for orig, new in zip(orig_colors, new_colors))
+
+        new_image = type(self)(bytes(self))
 
         for x in range(width):  # pylint: disable=invalid-name
             for y in range(height):  # pylint: disable=invalid-name
@@ -150,7 +161,9 @@ class RasterImage:
                 except KeyError:
                     continue
 
-                self.image.putpixel((x, y), (*new, alpha))
+                new_image.image.putpixel((x, y), (*new, alpha))
+
+        return new_image
 
     def __bytes__(self) -> bytes:
         bytes_io = BytesIO()

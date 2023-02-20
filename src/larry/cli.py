@@ -72,10 +72,10 @@ def run(config_path: str) -> None:
     LOGGER.debug("new colors: %s", colors)
 
     if colors != orig_colors:
-        image.replace(orig_colors, colors)
+        new_image = image.replace(orig_colors, colors)
 
     outfile = os.path.expanduser(config["larry"]["output"])
-    write_file(outfile, bytes(image))
+    write_file(outfile, bytes(new_image))
 
     # now run any plugins
     if "larry" not in config.sections():
