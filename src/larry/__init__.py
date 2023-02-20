@@ -149,7 +149,7 @@ class RasterImage(Image):
                 *rgb, alpha = self.image.getpixel((x, y))
 
                 try:
-                    new = color_map[(*rgb,)]
+                    new = color_map[Color(*rgb)]
                 except KeyError:
                     continue
 
