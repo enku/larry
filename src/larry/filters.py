@@ -1,10 +1,11 @@
 """Color selection filters"""
+import io
 import random as rand
 import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
-from larry import LOGGER, Color, ColorList, Image, randsign
+from larry import LOGGER, Color, ColorList, Image, load_config, randsign
 from larry.io import read_file
 
 Filter = t.Callable[[ColorList, ConfigParser], ColorList]
@@ -12,6 +13,21 @@ Filter = t.Callable[[ColorList, ConfigParser], ColorList]
 
 class FilterNotFound(LookupError):
     """Unable to find the requested filter"""
+
+
+def list_filters(config_path: str) -> str:
+    output = io.StringIO()
+    config = load_config(config_path)
+    enabled_filter = config["larry"].get("filter", "gradient").split()
+
+    for name, func in filters_list():
+        func_doc = func.__doc__ or ""
+        doc = func_doc.split("\n", 1)[0].strip()
+        enabled = "X" if name in enabled_filter else " "
+
+        print(f"[{enabled}] {name:20} {doc}", file=output)
+
+    return output.getvalue()
 
 
 def load_filter(name: str) -> Filter:

@@ -7,7 +7,7 @@ import signal
 import sys
 
 from larry import DEFAULT_CONFIG_PATH, LOGGER, Color, Image, __version__, load_config
-from larry.filters import FilterNotFound, filters_list, load_filter
+from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins
 
@@ -104,18 +104,6 @@ def run_every(interval: float, config_path: str) -> None:
     HANDLER = loop.call_later(interval, run_every, interval, config_path)
 
 
-def list_filters(config_path: str, output=sys.stdout) -> None:
-    config = load_config(config_path)
-    enabled_filter = config["larry"].get("filter", "gradient").split()
-
-    for name, func in filters_list():
-        func_doc = func.__doc__ or ""
-        doc = func_doc.split("\n", 1)[0].strip()
-        enabled = "X" if name in enabled_filter else " "
-
-        print(f"[{enabled}] {name:20} {doc}", file=output)
-
-
 async def async_main(args=None) -> None:
     """Main program entry point"""
     logging.basicConfig()
@@ -133,7 +121,7 @@ async def async_main(args=None) -> None:
         return
 
     if args.list_filters:
-        list_filters(args.config_path)
+        print(list_filters(args.config_path), end="")
         return
 
     loop = asyncio.get_running_loop()
