@@ -1,6 +1,6 @@
 """Larry plugins"""
 from importlib.metadata import entry_points
-from typing import Callable, List, Tuple
+from typing import Any, Callable, List, Tuple
 
 from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
