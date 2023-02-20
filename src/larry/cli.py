@@ -6,7 +6,7 @@ import os
 import signal
 import sys
 
-from larry import LOGGER, Color, Image, __version__, load_config
+from larry import DEFAULT_CONFIG_PATH, LOGGER, Color, Image, __version__, load_config
 from larry.filters import FilterNotFound, filters_list, load_filter
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, plugins_list
@@ -21,6 +21,9 @@ def parse_args(args: tuple) -> argparse.Namespace:
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
     )
+    parser.add_argument(
+        "--config", "-c", type=str, dest="config_path", default=DEFAULT_CONFIG_PATH
+    )
     parser.add_argument("--debug", action="store_true", default=False)
     parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
     parser.add_argument(
@@ -33,8 +36,8 @@ def parse_args(args: tuple) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def run() -> None:
-    config = load_config()
+def run(config_path: str) -> None:
+    config = load_config(config_path)
 
     if config["larry"].getboolean("pause", False):
         LOGGER.info("Larry is paused")
@@ -80,10 +83,10 @@ def run() -> None:
     loop = asyncio.get_event_loop()
 
     for plugin_name in plugins:
-        loop.call_soon(do_plugin, plugin_name, colors)
+        loop.call_soon(do_plugin, plugin_name, colors, config_path)
 
 
-def run_every(interval: float, loop) -> None:
+def run_every(interval: float, config_path: str, loop) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
     global HANDLER
 
@@ -91,27 +94,28 @@ def run_every(interval: float, loop) -> None:
         LOGGER.info("received signal to change wallpaper")
         HANDLER.cancel()
 
-    run()
+    run(config_path)
 
     if interval == 0:
         return
 
-    HANDLER = loop.call_later(interval, run_every, interval, loop)
+    HANDLER = loop.call_later(interval, run_every, interval, config_path, loop)
 
 
-def list_plugins(output=sys.stdout) -> None:
+def list_plugins(config_path: str, output=sys.stdout) -> None:
     """List all the beautiful plugins"""
-    config = load_config()
+    config = load_config(config_path)
     enabled_plugins = config["larry"].get("plugins", "").split()
 
     for name, func in plugins_list():
-        doc = func.__doc__.split("\n", 1)[0].strip()
+        doc = func.__doc__ or ""
+        doc = doc.split("\n", 1)[0].strip()
         enabled = "X" if name in enabled_plugins else " "
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
-def list_filters(output=sys.stdout) -> None:
-    config = load_config()
+def list_filters(config_path: str, output=sys.stdout) -> None:
+    config = load_config(config_path)
     enabled_filter = config["larry"].get("filter", "gradient").split()
 
     for name, func in filters_list():
@@ -127,7 +131,7 @@ def main(args=None) -> None:
     logging.basicConfig()
 
     args = parse_args(args or sys.argv[1:])
-    config = load_config()
+    config = load_config(args.config_path)
 
     if args.debug or config["larry"].getboolean("debug", fallback=False):
         LOGGER.setLevel("DEBUG")
@@ -135,16 +139,18 @@ def main(args=None) -> None:
     LOGGER.debug("args=%s", args)
 
     if args.list_plugins:
-        list_plugins()
+        list_plugins(args.config_path)
         return
 
     if args.list_filters:
-        list_filters()
+        list_filters(args.config_path)
         return
 
     loop = asyncio.get_event_loop()
-    loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, loop)
-    loop.call_soon(run_every, args.interval, loop)
+    loop.add_signal_handler(
+        signal.SIGUSR1, run_every, args.interval, args.config_path, loop
+    )
+    loop.call_soon(run_every, args.interval, args.config_path, loop)
 
     try:
         loop.run_forever()

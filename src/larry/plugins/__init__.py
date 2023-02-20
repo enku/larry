@@ -12,16 +12,16 @@ class PluginNotFound(LookupError):
     """Unable to find the requested plugin"""
 
 
-def do_plugin(plugin_name: str, colors: ColorList) -> None:
+def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
     plugin = load(plugin_name)
-    config = get_config(plugin_name)
+    config = get_config(plugin_name, config_path)
 
     LOGGER.debug("Running plugin for %s", plugin_name)
     plugin(colors, config)
 
 
-def get_config(plugin_name: str) -> ConfigType:
-    config = load_config()
+def get_config(plugin_name: str, config_path: str) -> ConfigType:
+    config = load_config(config_path)
     plugin_config_name = f"plugins:{plugin_name}"
 
     if plugin_config_name in config:

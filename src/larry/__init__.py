@@ -19,7 +19,7 @@ from larry.color import Color, ColorGenerator, ColorList
 __version__ = distribution("larry").version
 
 BASE_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(appdirs.user_config_dir(), "larry.cfg")
+DEFAULT_CONFIG_PATH = os.path.join(appdirs.user_config_dir(), "larry.cfg")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 ORIG_FILENAME = os.path.join(DATA_DIR, "gentoo-cow-gdm-remake.svg")
 LOGGER = logging.getLogger("larry")
@@ -165,7 +165,7 @@ def randsign(num: int) -> int:
     return random.choice([-1, 1]) * random.randint(0, num)
 
 
-def load_config(path: str = CONFIG_PATH) -> configparser.ConfigParser:
+def load_config(path: str) -> configparser.ConfigParser:
     """Return ConfigParser instance given the path"""
     config = configparser.ConfigParser()
     config["DEFAULT"]["input"] = ORIG_FILENAME
