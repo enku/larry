@@ -1,7 +1,6 @@
 """Replace colors on the Larry the Cow wallpaper"""
 from __future__ import annotations
 
-import configparser
 import logging
 import os
 import random
