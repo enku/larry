@@ -86,7 +86,7 @@ def run(config_path: str) -> None:
         loop.call_soon(do_plugin, plugin_name, colors, config_path)
 
 
-def run_every(interval: float, config_path: str, loop) -> None:
+def run_every(interval: float, config_path: str) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
     global HANDLER
 
@@ -99,7 +99,9 @@ def run_every(interval: float, config_path: str, loop) -> None:
     if interval == 0:
         return
 
-    HANDLER = loop.call_later(interval, run_every, interval, config_path, loop)
+    loop = asyncio.get_running_loop()
+
+    HANDLER = loop.call_later(interval, run_every, interval, config_path)
 
 
 def list_plugins(config_path: str, output=sys.stdout) -> None:
@@ -126,7 +128,7 @@ def list_filters(config_path: str, output=sys.stdout) -> None:
         print(f"[{enabled}] {name:20} {doc}", file=output)
 
 
-def main(args=None) -> None:
+async def async_main(args=None) -> None:
     """Main program entry point"""
     logging.basicConfig()
 
@@ -146,16 +148,9 @@ def main(args=None) -> None:
         list_filters(args.config_path)
         return
 
-    loop = asyncio.get_event_loop()
-    loop.add_signal_handler(
-        signal.SIGUSR1, run_every, args.interval, args.config_path, loop
-    )
-    loop.call_soon(run_every, args.interval, args.config_path, loop)
+    loop = asyncio.get_running_loop()
+    loop.add_signal_handler(signal.SIGUSR1, run_every, args.interval, args.config_path)
+    loop.call_soon(run_every, args.interval, args.config_path)
 
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        LOGGER.info("User interrupted")
-        loop.stop()
-    finally:
-        loop.close()
+def main(args=None) -> None:
+    asyncio.run(async_main(args))
