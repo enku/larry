@@ -6,7 +6,7 @@ import os
 import signal
 import sys
 
-from larry import LOGGER, Color, Image, __version__
+from larry import LOGGER, Color, __version__, make_image_from_bytes
 from larry.config import DEFAULT_CONFIG_PATH
 from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
@@ -46,7 +46,7 @@ def run(config_path: str) -> None:
         return
 
     raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
-    image = Image.from_bytes(raw_image_data)
+    image = make_image_from_bytes(raw_image_data)
 
     orig_colors = list(image.get_colors())
     orig_colors.sort(key=Color.luminocity)

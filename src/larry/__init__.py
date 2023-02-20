@@ -5,10 +5,9 @@ import logging
 import os
 import random
 import re
-from abc import ABCMeta, abstractmethod
 from importlib.metadata import distribution
 from io import BytesIO
-from typing import Any, Callable, Iterable, Type
+from typing import Any, Callable, Iterable, Protocol, Type
 from warnings import warn
 
 from PIL import Image as PillowImage
@@ -30,6 +29,7 @@ COLOR_RE = re.compile(
 """,
     flags=re.X | re.I,
 )
+IMAGE_TYPES: list[Type[Image]] = []
 
 
 def __getattr__(name: str) -> Any:
@@ -45,48 +45,44 @@ def __getattr__(name: str) -> Any:
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-class Image(metaclass=ABCMeta):
+def register_image_type(cls: Type[Image]) -> Type[Image]:
+    """Decorator to register the given image type"""
+    IMAGE_TYPES.append(cls)
+    return cls
+
+
+class Image(Protocol):
     """A type of image instantiated from a byte stream"""
 
-    implementations: list[Type[Image]] = []
+    def __init__(self, data: bytes) -> None:
+        """Initializer"""
 
-    @classmethod
-    def __init_subclass__(cls):
-        Image.implementations.insert(0, cls)
-
-    @abstractmethod
-    def __init__(self, data: bytes):
-        pass
-
-    @abstractmethod
     def __bytes__(self) -> bytes:
         """Convert to a byte stream"""
 
-    @abstractmethod
     def get_colors(self) -> Iterable[Color]:
         """Return the Colors of this Image"""
 
-    @abstractmethod
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
         """Mutate the Image by replacing orig_colors with new_colors"""
 
-    @classmethod
-    def from_bytes(cls, data: bytes) -> Image:
-        """Return an instance of Image using data"""
-        for implementation in cls.implementations:
-            try:
-                return implementation(data)
-            except Exception:  # pylint: disable=broad-except
-                continue
 
-        raise ValueError("Could not instantiate image type from data provided")
+def make_image_from_bytes(data: bytes) -> Image:
+    """Return an instance of Image using data"""
+    for image_type in IMAGE_TYPES:
+        try:
+            return image_type(data)
+        except Exception:  # pylint: disable=broad-except
+            continue
+
+    raise ValueError("Could not instantiate image type from data provided")
 
 
-class SVGImage(Image):
+@register_image_type
+class SVGImage:
     """An SVG image"""
 
     def __init__(self, data: bytes):
-        super().__init__(data)
         self.svg = data.decode()
 
     def __bytes__(self):
@@ -100,6 +96,7 @@ class SVGImage(Image):
         return COLOR_RE.findall(self.svg)
 
     def get_colors(self) -> set[Color]:
+        """Return the Colors of this Image"""
         return {Color(i) for i in self.color_strings()}
 
     def replace(self, orig_colors: Iterable[Color], new_colors: Iterable[Color]):
@@ -113,12 +110,11 @@ class SVGImage(Image):
                 self.svg = self.svg.replace(color_string, str(color_map[color]))
 
 
-class RasterImage(Image):
+@register_image_type
+class RasterImage:
     """Image for Raster files"""
 
     def __init__(self, data: bytes):
-        super().__init__(data)
-
         bytes_io = BytesIO(data)
         self.image = PillowImage.open(bytes_io)
 
@@ -129,6 +125,7 @@ class RasterImage(Image):
         self.image = self.image.convert("RGBA")
 
     def get_colors(self) -> set[Color]:
+        """Return the Colors of this Image"""
         width, height = self.image.size
 
         pixels = {
