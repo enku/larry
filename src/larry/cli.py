@@ -9,7 +9,7 @@ import sys
 from larry import DEFAULT_CONFIG_PATH, LOGGER, Color, Image, __version__, load_config
 from larry.filters import FilterNotFound, filters_list, load_filter
 from larry.io import read_file, write_file
-from larry.plugins import do_plugin, plugins_list
+from larry.plugins import do_plugin, list_plugins
 
 HANDLER = None
 INTERVAL = 8 * 60
@@ -104,18 +104,6 @@ def run_every(interval: float, config_path: str) -> None:
     HANDLER = loop.call_later(interval, run_every, interval, config_path)
 
 
-def list_plugins(config_path: str, output=sys.stdout) -> None:
-    """List all the beautiful plugins"""
-    config = load_config(config_path)
-    enabled_plugins = config["larry"].get("plugins", "").split()
-
-    for name, func in plugins_list():
-        doc = func.__doc__ or ""
-        doc = doc.split("\n", 1)[0].strip()
-        enabled = "X" if name in enabled_plugins else " "
-        print(f"[{enabled}] {name:20} {doc}", file=output)
-
-
 def list_filters(config_path: str, output=sys.stdout) -> None:
     config = load_config(config_path)
     enabled_filter = config["larry"].get("filter", "gradient").split()
@@ -141,7 +129,7 @@ async def async_main(args=None) -> None:
     LOGGER.debug("args=%s", args)
 
     if args.list_plugins:
-        list_plugins(args.config_path)
+        print(list_plugins(args.config_path), end="")
         return
 
     if args.list_filters:
