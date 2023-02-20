@@ -3,9 +3,9 @@ import io
 from importlib.metadata import entry_points
 from typing import Any, Callable, List, Tuple
 
-from larry import LOGGER, Color, ColorList, ConfigType, load_config
+from larry import LOGGER, Color, ColorList, config
 
-PluginType = Callable[[ColorList, ConfigType], Any]
+PluginType = Callable[[ColorList, config.ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
 
 
@@ -15,22 +15,10 @@ class PluginNotFound(LookupError):
 
 def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
     plugin = load(plugin_name)
-    config = get_config(plugin_name, config_path)
+    plugin_config = config.get_plugin_config(plugin_name, config_path)
 
     LOGGER.debug("Running plugin for %s", plugin_name)
-    plugin(colors, config)
-
-
-def get_config(plugin_name: str, config_path: str) -> ConfigType:
-    config = load_config(config_path)
-    plugin_config_name = f"plugins:{plugin_name}"
-
-    if plugin_config_name in config:
-        plugin_config = config[plugin_config_name]
-    else:
-        plugin_config = config[plugin_config_name] = config["DEFAULT"]
-
-    return plugin_config
+    plugin(colors, plugin_config)
 
 
 def plugins_list() -> List[Tuple[str, PluginType]]:
@@ -40,8 +28,8 @@ def plugins_list() -> List[Tuple[str, PluginType]]:
 def list_plugins(config_path: str) -> str:
     """List all the beautiful plugins"""
     output = io.StringIO()
-    config = load_config(config_path)
-    enabled_plugins = config["larry"].get("plugins", "").split()
+    larry_config = config.load(config_path)
+    enabled_plugins = larry_config["larry"].get("plugins", "").split()
 
     for name, func in plugins_list():
         doc = func.__doc__ or ""

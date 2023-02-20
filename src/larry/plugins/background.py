@@ -1,5 +1,6 @@
 """Plugin to set the background colors in GNOME"""
-from larry import ColorList, ConfigType
+from larry import ColorList
+from larry.config import ConfigType
 
 SCHEMA = "org.gnome.desktop.background"
 

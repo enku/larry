@@ -6,7 +6,9 @@ import os
 import signal
 import sys
 
-from larry import DEFAULT_CONFIG_PATH, LOGGER, Color, Image, __version__, load_config
+from larry import LOGGER, Color, Image, __version__
+from larry.config import DEFAULT_CONFIG_PATH
+from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins

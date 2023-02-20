@@ -5,7 +5,8 @@ import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
-from larry import LOGGER, Color, ColorList, Image, load_config, randsign
+from larry import LOGGER, Color, ColorList, Image, randsign
+from larry.config import load as load_config
 from larry.io import read_file
 
 Filter = t.Callable[[ColorList, ConfigParser], ColorList]

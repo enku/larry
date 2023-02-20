@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from typing import Any, List, Optional, Tuple
 from weakref import WeakSet
 
-from larry import LOGGER, Color, ColorList, ConfigType
+from larry import LOGGER, Color, ColorList
+from larry.config import ConfigType
 
 
 @dataclass
