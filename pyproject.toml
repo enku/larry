@@ -69,6 +69,7 @@ dev = [
     "mypy>=0.971",
     "pip>=22.2.2",
     "pylint>=2.14.5",
+    "types-Pillow>=9.4.0.13",
 ]
 
 [tool.pylint.FORMAT]
