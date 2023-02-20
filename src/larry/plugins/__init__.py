@@ -4,7 +4,7 @@ from typing import Callable, List, Tuple
 
 from larry import LOGGER, Color, ColorList, ConfigType, load_config
 
-PluginType = Callable[[ColorList, ConfigType], None]
+PluginType = Callable[[ColorList, ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
 
 
