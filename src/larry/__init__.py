@@ -38,7 +38,8 @@ def __getattr__(name: str) -> Any:
             "larry.ConfigType is deprecated. Use larry.config.ConfigType",
             DeprecationWarning,
         )
-        import larry.config
+        import larry.config  # pylint: disable=import-outside-toplevel
+
         return larry.config.ConfigType
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
