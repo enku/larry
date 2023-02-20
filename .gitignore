@@ -1,5 +1,6 @@
 .mypy_cache/
 .ropeproject/
+/.coverage
 /.envrc
 /.pdm.toml
 /.venv/
