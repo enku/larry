@@ -3,9 +3,9 @@ import configparser
 import importlib.resources
 import os.path
 
-import appdirs
+import platformdirs
 
-DEFAULT_CONFIG_PATH = os.path.join(appdirs.user_config_dir(), "larry.cfg")
+DEFAULT_CONFIG_PATH = os.path.join(platformdirs.user_config_dir(), "larry.cfg")
 DEFAULT_INPUT_PATH = str(
     importlib.resources.files("larry").joinpath("data/gentoo-cow-gdm-remake.svg")
 )
