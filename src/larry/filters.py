@@ -317,3 +317,11 @@ def subgradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
         index += size
 
     return new_colors
+
+
+def colorify(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Apply a color filter over the colors"""
+    color_str = config["filters:colorify"].get("color", fallback="#ff0000")
+    color = Color(color_str)
+
+    return [orig_color.colorify(color) for orig_color in orig_colors]

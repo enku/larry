@@ -37,6 +37,7 @@ vim = "larry.plugins.vim:plugin"
 
 [project.entry-points."larry.filters"]
 brighten = "larry.filters:brighten"
+colorify = "larry.filters:colorify"
 contrast = "larry.filters:contrast"
 gradient = "larry.filters:gradient"
 grayscale = "larry.filters:grayscale"
