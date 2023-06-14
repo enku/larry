@@ -5,7 +5,7 @@ import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
-from larry import LOGGER, Color, ColorList, Image, randsign
+from larry import LOGGER, Color, ColorList, make_image_from_bytes, randsign
 from larry.config import load as load_config
 from larry.io import read_file
 
@@ -224,7 +224,7 @@ def swap(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     else:
         raw_image_data = read_file(source)
-        image = Image.from_bytes(raw_image_data)
+        image = make_image_from_bytes(raw_image_data)
 
         source_colors = [*image.get_colors()]
 
