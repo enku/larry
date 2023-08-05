@@ -5,6 +5,8 @@ import platformdirs
 from larry import Color, ColorList, ConfigType, io
 
 NAMES = ["today", "weeknumber", "header", "workday", "weekend"]
+NORMAL = 2
+BOLD = 1
 
 
 def plugin(colors: ColorList, _config: ConfigType) -> None:
@@ -13,7 +15,8 @@ def plugin(colors: ColorList, _config: ConfigType) -> None:
     config = ""
 
     for color, name in zip(colors, NAMES):
-        config = f"{config}{name} 38;2;{color.red};{color.green};{color.blue}\n"
+        weight = BOLD if name == "today" else NORMAL
+        config = f"{config}{name} 38;{weight};{color.red};{color.green};{color.blue}\n"
 
     io.write_file(
         f"{platformdirs.user_config_dir()}/terminal-colors.d/cal.scheme",
