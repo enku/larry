@@ -28,6 +28,7 @@ gnome = [
 larry = "larry.cli:main"
 
 [project.entry-points."larry.plugins"]
+cal = "larry.plugins.cal:plugin"
 command = "larry.plugins.command:plugin"
 gnome_background = "larry.plugins.background:plugin"
 gnome_shell = "larry.plugins.gnome_shell:plugin"
