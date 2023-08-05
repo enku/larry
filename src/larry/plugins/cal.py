@@ -2,7 +2,8 @@
 
 import platformdirs
 
-from larry import Color, ColorList, ConfigType, io
+from larry import Color, ColorList, io
+from larry.config import ConfigType
 
 NAMES = ["today", "weeknumber", "header", "workday", "weekend"]
 NORMAL = 2
