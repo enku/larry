@@ -15,6 +15,8 @@ colorizing lots of things. Included plugins are:
 
 * background: for colorizing the GNOME Desktop background
 
+* cal: for colorizing the (Linux) `cal` program
+
 * gnome_shell: for colorizing a GNOME Shell theme
 
 * gnome_terminal: for colorizing a GNOME Terminal profile
