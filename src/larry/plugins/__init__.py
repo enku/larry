@@ -1,11 +1,11 @@
 """Larry plugins"""
 import io
 from importlib.metadata import entry_points
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List, Tuple, TypeAlias
 
 from larry import LOGGER, Color, ColorList, config
 
-PluginType = Callable[[ColorList, config.ConfigType], Any]
+PluginType: TypeAlias = Callable[[ColorList, config.ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
 
 

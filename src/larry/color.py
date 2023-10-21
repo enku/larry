@@ -467,8 +467,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         return cls(int(red * 255), int(green * 255), int(blue * 255))
 
 
-ColorList = list[Color]
-ColorGenerator = Iterator[Color]
+ColorList: TypeAlias = list[Color]
+ColorGenerator: TypeAlias = Iterator[Color]
 
 
 def sanitize(number: float) -> int:
