@@ -4,8 +4,9 @@ from __future__ import annotations
 import random
 import re
 from collections import namedtuple
+from dataclasses import dataclass
 from math import floor
-from typing import Iterator, Optional, TypeAlias, Union
+from typing import Iterator, Optional, TypeAlias, TypeGuard, TypeVar, Union
 
 ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 
@@ -471,6 +472,58 @@ ColorList: TypeAlias = list[Color]
 ColorGenerator: TypeAlias = Iterator[Color]
 
 
+def between_0_and_1(value: float) -> TypeGuard[float]:
+    """Return true if value is between 0 and 1 (inclusive)"""
+    return 0 <= value <= 1
+
+
+ColorFloatType = TypeVar("ColorFloatType", bound="ColorFloat")
+
+
+@dataclass(frozen=True)
+class ColorFloat:
+    """Like Color but a quadruplet of floats [0..1]"""
+
+    red: float = 0.0
+    green: float = 0.0
+    blue: float = 0.0
+    alpha: float = 1.0
+
+    def __post_init__(self) -> None:
+        if not between_0_and_1(self.red):
+            raise ValueError("red must be between 0 and 1")
+        if not between_0_and_1(self.green):
+            raise ValueError("green must be between 0 and 1")
+        if not between_0_and_1(self.blue):
+            raise ValueError("blue must be between 0 and 1")
+        if not between_0_and_1(self.alpha):
+            raise ValueError("alpha must be between 0 and 1")
+
+    @classmethod
+    def from_color(
+        cls: type[ColorFloatType], color: Color, opacity: float = 1.0
+    ) -> ColorFloatType:
+        """Return ColorFloat given Color.
+
+        If opacity is passed, the ColorFloat will have the given color. Otherwise it
+        defaults to 1.0
+        """
+        return cls(color.red / 255, color.green / 255, color.blue / 255, opacity)
+
+    def to_color(self) -> Color:
+        """Convert ColorFloat to a Color
+
+        Opacity information will be lost
+        """
+        return Color(int(self.red * 255), int(self.green * 255), int(self.blue * 255))
+
+    def __bool__(self) -> bool:
+        if self.red + self.green + self.blue:
+            return True
+
+        return False
+
+
 def sanitize(number: float) -> int:
     """Make sure 0 <= number <= 255"""
     number = min(255, number)
@@ -530,3 +583,18 @@ def rgba(color_str: str, color: Color, string: str) -> str:
     new_str = f"rgba({new_color.red}, {new_color.green}, {new_color.blue}, \\1)"
 
     return re.sub(re_str, new_str, string, flags=re.I)
+
+
+def combine(fg: ColorFloat, bg: ColorFloat) -> ColorFloat:
+    """Combine two ColorFloats"""
+    # https://stackoverflow.com/questions/726549/algorithm-for-additive-color-mixing-for-rgb-values
+    alpha = 1 - (1 - fg.alpha) * (1 - bg.alpha)
+
+    if alpha < 1.0e-6:
+        return ColorFloat(alpha=0)
+
+    red = fg.red * fg.alpha / alpha + bg.red * bg.alpha * (1 - fg.alpha) / alpha
+    green = fg.green * fg.alpha / alpha + bg.green * bg.alpha * (1 - fg.alpha) / alpha
+    blue = fg.blue * fg.alpha / alpha + bg.blue * bg.alpha * (1 - fg.alpha) / alpha
+
+    return ColorFloat(red, green, blue, alpha)
