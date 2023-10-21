@@ -13,8 +13,9 @@ def read_file(filename: str) -> bytes:
 
     if pipe_exec:
         command = filename[1:]
-        popen = sp.Popen(command, shell=True, stdout=sp.PIPE)
-        return popen.stdout.read()
+        with sp.Popen(command, shell=True, stdout=sp.PIPE) as popen:
+            assert popen.stdout
+            return popen.stdout.read()
 
     filename = os.path.expanduser(filename)
     with open(filename, "rb") as myfile:
@@ -34,11 +35,11 @@ def write_file(filename: str, data: bytes) -> int:
 
     if pipe_exec:
         command = filename[1:]
-        popen = sp.Popen(command, shell=True, stdin=sp.PIPE)
-        popen.stdin.write(data)
-        popen.stdin.close()
+        with sp.Popen(command, shell=True, stdin=sp.PIPE) as popen:
+            assert popen.stdin
+            popen.stdin.write(data)
 
-        return popen.wait()
+            return popen.wait()
 
     filename = os.path.expanduser(filename)
     head = os.path.split(filename)[0]

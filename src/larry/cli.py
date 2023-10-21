@@ -39,6 +39,7 @@ def parse_args(args: tuple) -> argparse.Namespace:
 
 
 def run(config_path: str) -> None:
+    """Perform a single iteration of Larry"""
     config = load_config(config_path)
 
     if config["larry"].getboolean("pause", False):
