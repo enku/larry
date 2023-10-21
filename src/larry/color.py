@@ -5,9 +5,9 @@ import random
 import re
 from collections import namedtuple
 from math import floor
-from typing import Iterator, Optional, Union
+from typing import Iterator, Optional, TypeAlias, Union
 
-ColorSpecType = Union[str, "Color", tuple[int, int, int]]
+ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
 
@@ -146,7 +146,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def __str__(self) -> str:
         return f"#{self.red:02x}{self.green:02x}{self.blue:02x}"
 
-    def __add__(self, value: Union[Color, float]) -> Color:
+    def __add__(self, value: Color | float) -> Color:
         if isinstance(value, (int, float)):
             red = self.red + value
             blue = self.blue + value
@@ -162,7 +162,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             sanitize(self.green + value.green),
         )
 
-    def __mul__(self, value: Union[Color, float]) -> Color:
+    def __mul__(self, value: Color | float) -> Color:
         """This should be used instead of __add__ as it makes more sense"""
 
         if isinstance(value, (int, float)):
@@ -179,7 +179,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
     __rmul__ = __mul__
 
-    def __div__(self, value: Union[Color, float]) -> Color:
+    def __div__(self, value: Color | float) -> Color:
         """Just like __mul__"""
 
         if isinstance(value, (int, float)):
@@ -189,7 +189,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         return self * (1 / clum)
 
-    def __sub__(self, value: Union[Color, float]) -> Color:
+    def __sub__(self, value: Color | float) -> Color:
         return self.__add__(-1 * value)
 
     def colorify(self, color: Color, fix_bw: bool = False) -> Color:
