@@ -38,6 +38,7 @@ def write_file(filename: str, data: bytes) -> int:
         with sp.Popen(command, shell=True, stdin=sp.PIPE) as popen:
             assert popen.stdin
             popen.stdin.write(data)
+            popen.stdin.close()
 
             return popen.wait()
 
