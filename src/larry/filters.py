@@ -4,8 +4,10 @@ import random as rand
 import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
+from itertools import cycle
 
 from larry import LOGGER, Color, ColorList, make_image_from_bytes, randsign
+from larry.color import ColorFloat, combine
 from larry.config import load as load_config
 from larry.io import read_file
 
@@ -14,6 +16,10 @@ Filter = t.Callable[[ColorList, ConfigParser], ColorList]
 
 class FilterNotFound(LookupError):
     """Unable to find the requested filter"""
+
+
+class FilterError(RuntimeError):
+    """Filter cannot run successfully"""
 
 
 def list_filters(config_path: str) -> str:
@@ -330,3 +336,35 @@ def colorify(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     fix_bw = config["filters:colorify"].getboolean("fix_bw", fallback=False)
 
     return [orig_color.colorify(color, fix_bw) for orig_color in orig_colors]
+
+
+def dissolve(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Dissolve image into colors from another image"""
+    cf = ColorFloat.from_color
+    replacer_colors = list(
+        make_image_from_bytes(
+            read_file(config["filters:dissolve"].get("image"))
+        ).get_colors()
+    )
+
+    if config["filters:dissolve"].getboolean("shuffle", fallback=False):
+        rand.shuffle(replacer_colors)
+    replacer_colors_cycle = cycle(replacer_colors)
+
+    opacity = config["filters:dissolve"].getfloat("opacity", fallback=1.0)
+    if not 0 <= opacity <= 1:
+        raise FilterError(f"'opacity' must be in range [0..1]. Actual {opacity}")
+
+    amount = config["filters:dissolve"].getint("amount", fallback=50)
+    if not 0 <= amount <= 100:
+        raise FilterError(f"'amount' must be in range [0..100]. Actual {amount}")
+
+    weights = [100 - amount, amount]
+
+    return [
+        combine(
+            cf(rand.choices([orig_color, replacer_color], weights, k=1)[0], opacity),
+            cf(orig_color),
+        ).to_color()
+        for orig_color, replacer_color in zip(orig_colors, replacer_colors_cycle)
+    ]
