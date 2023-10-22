@@ -7,7 +7,7 @@ from importlib.metadata import entry_points
 from itertools import cycle
 
 from larry import LOGGER, Color, ColorList, make_image_from_bytes, randsign
-from larry.color import ColorFloat, combine
+from larry.color import combine_colors as combine
 from larry.config import load as load_config
 from larry.io import read_file
 
@@ -340,20 +340,8 @@ def colorify(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
 def dissolve(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Dissolve image into colors from another image"""
-    cf = ColorFloat.from_color
-    replacer_colors = list(
-        make_image_from_bytes(
-            read_file(config["filters:dissolve"].get("image"))
-        ).get_colors()
-    )
-
-    if config["filters:dissolve"].getboolean("shuffle", fallback=False):
-        rand.shuffle(replacer_colors)
-    replacer_colors_cycle = cycle(replacer_colors)
-
-    opacity = config["filters:dissolve"].getfloat("opacity", fallback=1.0)
-    if not 0 <= opacity <= 1:
-        raise FilterError(f"'opacity' must be in range [0..1]. Actual {opacity}")
+    aux_colors = new_image_colors(len(orig_colors), config, "dissolve")
+    opacity = get_opacity(config, "dissolve")
 
     amount = config["filters:dissolve"].getint("amount", fallback=50)
     if not 0 <= amount <= 100:
@@ -363,8 +351,46 @@ def dissolve(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     return [
         combine(
-            cf(rand.choices([orig_color, replacer_color], weights, k=1)[0], opacity),
-            cf(orig_color),
-        ).to_color()
-        for orig_color, replacer_color in zip(orig_colors, replacer_colors_cycle)
+            rand.choices([orig_color, aux_color], weights, k=1)[0], orig_color, opacity
+        )
+        for orig_color, aux_color in zip(orig_colors, aux_colors)
     ]
+
+
+def darken(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Darkens colors with the darkest of two colors"""
+    aux_colors = new_image_colors(len(orig_colors), config, "darken")
+    opacity = get_opacity(config, "darken")
+
+    return [
+        combine(min(orig_color, aux_color, key=Color.luminocity), orig_color, opacity)
+        for orig_color, aux_color in zip(orig_colors, aux_colors)
+    ]
+
+
+def get_opacity(config: ConfigParser, section: str, name: str = "opacity") -> float:
+    """Return the opacity setting from the config & section
+
+    If the opacity value is not valid, raise FilterError.
+    """
+    opacity = config[f"filters:{section}"].getfloat(name, fallback=1.0)
+
+    if not 0 <= opacity <= 1:
+        raise FilterError(f"'opacity' must be in range [0..1]. Actual {opacity}")
+
+    return opacity
+
+
+def new_image_colors(
+    count: int, config: ConfigParser, section: str, name: str = "image"
+) -> ColorList:
+    image_colors = list(
+        make_image_from_bytes(
+            read_file(config[f"filters:{section}"].get(name))
+        ).get_colors()
+    )
+    if config[f"filters:{section}"].getboolean("shuffle", fallback=False):
+        rand.shuffle(image_colors)
+    replacer_colors_cycle = cycle(image_colors)
+
+    return [next(replacer_colors_cycle) for _ in range(count)]

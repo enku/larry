@@ -598,3 +598,10 @@ def combine(fg: ColorFloat, bg: ColorFloat) -> ColorFloat:
     blue = fg.blue * fg.alpha / alpha + bg.blue * bg.alpha * (1 - fg.alpha) / alpha
 
     return ColorFloat(red, green, blue, alpha)
+
+
+def combine_colors(fg: Color, bg: Color, opacity: float) -> Color:
+    """Like combin() but work with Color objects. Only the fg color has opacity"""
+    return combine(
+        ColorFloat.from_color(fg, opacity), ColorFloat.from_color(bg)
+    ).to_color()
