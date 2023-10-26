@@ -368,6 +368,17 @@ def darken(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     ]
 
 
+def lighten(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Lighten colors with the lightest of two colors"""
+    aux_colors = new_image_colors(len(orig_colors), config, "lighten")
+    opacity = get_opacity(config, "lighten")
+
+    return [
+        combine(max(orig_color, aux_color, key=Color.luminocity), orig_color, opacity)
+        for orig_color, aux_color in zip(orig_colors, aux_colors)
+    ]
+
+
 def get_opacity(config: ConfigParser, section: str, name: str = "opacity") -> float:
     """Return the opacity setting from the config & section
 
