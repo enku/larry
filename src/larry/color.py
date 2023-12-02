@@ -109,8 +109,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         ####randhue
         if color_str[:8] == "randhue(":
-            parms = color_str[8:-1].split(",", 1)
-            saturation, brightness = float(parms[0]), float(parms[1])
+            params = color_str[8:-1].split(",", 1)
+            saturation, brightness = float(params[0]), float(params[1])
 
             return cls.randhue(saturation, brightness)
 
@@ -251,7 +251,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         return f"{self.red / 255:.2f}, {self.green / 255:.2f}, {self.blue / 255:.2f}"
 
     def to_ansi256(self) -> int:
-        """Return color's approximate equivalent in the ANSI 256-color pallette"""
+        """Return color's approximate equivalent in the ANSI 256-color palette"""
         if self.red == self.green and self.green == self.blue:
             if self.red < 8:
                 return 16
@@ -533,7 +533,7 @@ def sanitize(number: float) -> int:
 
 
 def replace_string(string: str, color_str: str, color: Color) -> str:
-    """Replace each occurence of color_str in string with this color
+    """Replace each occurrence of color_str in string with this color
 
     Where `color_str` is one of the following formats:
 

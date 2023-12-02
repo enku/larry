@@ -125,7 +125,7 @@ class RasterImage:
         bytes_io = BytesIO(data)
         self.image = PillowImage.open(bytes_io)
 
-        # We want to deal with everything as an RGBA but but go back to the orignal
+        # We want to deal with everything as an RGBA but but go back to the original
         # format/mode when converting to bytes
         self.image_format = self.image.format
         self.image_mode = self.image.mode

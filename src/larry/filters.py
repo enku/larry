@@ -66,7 +66,7 @@ def inverse(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
 
 
 def gradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
-    """Return gradient within the same luminocity range as the orignal"""
+    """Return gradient within the same luminocity range as the original"""
     fuzz = config.getint("filters:gradient", "fuzz", fallback=0)
 
     lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
