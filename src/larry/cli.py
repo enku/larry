@@ -5,6 +5,7 @@ import logging
 import os
 import signal
 import sys
+from typing import Sequence
 
 from larry import LOGGER, Color, __version__, make_image_from_bytes
 from larry.config import DEFAULT_CONFIG_PATH
@@ -17,7 +18,7 @@ HANDLER = None
 INTERVAL = 8 * 60
 
 
-def parse_args(args: tuple) -> argparse.Namespace:
+def parse_args(args: Sequence[str]) -> argparse.Namespace:
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
