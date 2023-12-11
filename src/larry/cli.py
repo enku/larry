@@ -127,10 +127,15 @@ def main(args=None) -> None:
         return
 
     loop = asyncio.get_event_loop()
-    loop.add_signal_handler(
-        signal.SIGUSR1, run_every, args.interval, args.config_path, loop
-    )
-    loop.call_soon(run_every, args.interval, args.config_path, loop)
+
+    if args.interval:
+        loop.add_signal_handler(
+            signal.SIGUSR1, run_every, args.interval, args.config_path, loop
+        )
+        loop.call_soon(run_every, args.interval, args.config_path, loop)
+    else:
+        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path)
+        run(args.config_path)
 
     try:
         loop.run_forever()
