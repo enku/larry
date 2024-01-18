@@ -155,10 +155,7 @@ def random(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     if not filter_names:
         return orig_colors
 
-    try:
-        chains = int(config["filters:random"]["chains"])
-    except (KeyError, ValueError):
-        chains = 1
+    chains = config["filters:random"].getint("chains", fallback=1)
 
     new_colors = orig_colors
     iters = rand.randint(1, chains)
