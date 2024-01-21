@@ -7,6 +7,8 @@ import signal
 import sys
 from typing import Sequence
 
+import daemon
+
 from larry import LOGGER, Color, __version__, make_image_from_bytes
 from larry.config import DEFAULT_CONFIG_PATH
 from larry.config import load as load_config
@@ -34,6 +36,13 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--list-filters", action="store_true", default=False, help="List known filters"
+    )
+    parser.add_argument(
+        "--daemonize",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Run as a background daemon",
     )
 
     return parser.parse_args(args)
@@ -108,9 +117,18 @@ def run_every(interval: float, config_path: str, loop) -> None:
 
 def main(args=None) -> None:
     """Main program entry point"""
-    logging.basicConfig()
-
     args = parse_args(args or sys.argv[1:])
+
+    if args.daemonize:
+        with daemon.DaemonContext():
+            real_main(args)
+    else:
+        real_main(args)
+
+
+def real_main(args) -> None:
+    """Actual program entry point"""
+    logging.basicConfig()
     config = load_config(args.config_path)
 
     if args.debug or config["larry"].getboolean("debug", fallback=False):
