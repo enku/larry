@@ -31,12 +31,16 @@ colors = red
 
 class StrFromTableTests(TestCase):
     def test(self):
-        table = {"name": "vase", "value": 26, "colors": ["red", "green", "blue"]}
+        table = {
+            "main": {"name": "vase", "value": 26, "colors": ["red", "green", "blue"]}
+        }
 
         result = config.str_from_table("inventory", table)
 
         expected = """\
 [inventory]
+
+[inventory.main]
 name = vase
 value = 26
 colors = red
