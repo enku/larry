@@ -82,3 +82,6 @@ max-line-length = 88
 
 [tool.isort]
 profile = "black"
+
+[tool.coverage.run]
+source = ["larry"]
