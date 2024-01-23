@@ -50,7 +50,7 @@ def load_toml_config(path: str) -> configparser.ConfigParser:
     return config_from_toml(toml)
 
 
-def config_from_toml(toml: dict[str, Any]) -> configparser.ConfigParser:
+def config_from_toml(toml: dict[str, dict[str, Any]]) -> configparser.ConfigParser:
     """Return the dict as a ConfigParser object"""
     toml = toml.copy()
     config_io = io.StringIO()
