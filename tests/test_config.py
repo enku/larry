@@ -1,9 +1,44 @@
 # pylint: disable=missing-docstring
 import io
+import os.path
 
 from larry import config
 
 from . import TestCase
+
+
+class LoadTomlConfig(TestCase):
+    def test(self):
+        toml = """\
+[inventory]
+
+[inventory.main]
+name = "vase"
+value = 26
+colors = ["red", "green", "blue"]
+"""
+        path = os.path.join(self.tmpdir, "test.toml")
+        with open(path, "w") as fp:
+            fp.write(toml)
+
+        result = config.load_toml_config(path)
+
+        result_str = io.StringIO()
+        result.write(result_str)
+
+        expected = """\
+
+[inventory]
+
+[inventory.main]
+name = vase
+value = 26
+colors = red
+	green
+	blue
+
+"""
+        self.assertTrue(result_str.getvalue().endswith(expected))
 
 
 class ConfigFromTomlTests(TestCase):
