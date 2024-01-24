@@ -58,6 +58,8 @@ def config_from_toml(toml: dict[str, dict[str, Any]]) -> configparser.ConfigPars
     sep = ""
 
     for title, table in toml.items():
+        if not isinstance(table, dict):
+            continue
         config_io.write(sep)
         config_io.write(str_from_table(title, table))
         sep = "\n"

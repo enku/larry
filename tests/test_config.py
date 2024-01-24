@@ -7,6 +7,48 @@ from larry import config
 from . import TestCase
 
 
+class LoadTests(TestCase):
+    def test_when_file_does_not_exist(self):
+        path = os.path.join(self.tmpdir, "bogus")
+        config_obj = config.load(path)
+
+        self.assertIn("input", config_obj["DEFAULT"])
+
+    def test_loads_toml(self):
+        toml = """\
+title = "test"
+
+[inventory.main]
+name = "vase"
+value = 26
+colors = ["red", "green", "blue"]
+"""
+        path = os.path.join(self.tmpdir, "test.toml")
+        with open(path, "w") as fp:
+            fp.write(toml)
+
+        config_obj = config.load(path)
+
+        self.assertEqual(config_obj["inventory.main"]["value"], "26")
+
+
+class GetPluginConfigTests(TestCase):
+    def test(self):
+        path = os.path.join(self.tmpdir, "larry.cfg")
+        config_str = """\
+[plugins:test]
+foo = bar
+"""
+        with open(path, "w") as fp:
+            fp.write(config_str)
+
+        plugin_config = config.get_plugin_config("test", path)
+        self.assertEqual(plugin_config["foo"], "bar")
+
+        plugin_config = config.get_plugin_config("bogus", path)  # shouldn't fail
+        self.assertNotIn("foo", plugin_config)
+
+
 class LoadTomlConfig(TestCase):
     def test(self):
         toml = """\
