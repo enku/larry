@@ -8,7 +8,7 @@ tests := $(shell find tests -type f -print)
 
 
 .coverage: $(sources) $(tests)
-	pdm run coverage run -m unittest discover --failfast
+	pdm run coverage run -m unittest discover
 
 
 .PHONY: test
