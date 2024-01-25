@@ -22,6 +22,44 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
     return config
 
 
+class ColorifyTests(TestCase):
+    def test(self):
+        orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
+        config = make_config("colorify", pastelize="0")
+        new_colors = filters.colorify(orig_colors, config)
+
+        # red is the default color
+        self.assertEqual(new_colors, make_colors("#dd0000 #ff7f7f #ff0000 #ffc0c0"))
+
+    def test_custom_color_and_pastels(self):
+        orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
+        config = make_config("colorify", pastelize="yes", color="#0000ff")
+
+        new_colors = filters.colorify(orig_colors, config)
+
+        self.assertEqual(new_colors, make_colors("#0000dd #7f7fff #0000ff #c0c0ff"))
+
+
+@mock.patch("larry.filters.rand", random.Random(1))
+class DissolveTests(TestCase):
+    def test(self):
+        orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
+        config = make_config(
+            "dissolve", image=DEFAULT_INPUT_PATH, amount=70, opacity=0.7
+        )
+        new_colors = filters.dissolve(orig_colors, config)
+
+        self.assertEqual(new_colors, make_colors("#00dd00 #606752 #b2b2ff #ffc0ca"))
+
+    def test_invalid_amount(self):
+        orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
+        config = make_config(
+            "dissolve", image=DEFAULT_INPUT_PATH, amount=700, opacity=0.7
+        )
+        with self.assertRaises(filters.FilterError):
+            filters.dissolve(orig_colors, config)
+
+
 class DarkenTests(TestCase):
     def test(self):
         orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
