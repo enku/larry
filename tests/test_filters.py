@@ -23,6 +23,90 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
     return config
 
 
+class ShuffleTests(TestCase):
+    @mock.patch("larry.filters.rand", random.Random(1))
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.shuffle(orig_colors, None)
+
+        expected = make_colors(
+            "#108f7e #c7754f #83755c #803078 #72ea97 #4b9f92 #3822e8 #df34e9"
+        )
+        self.assertEqual(colors, expected)
+
+
+@mock.patch("larry.random", random.Random(1))
+class ShiftTests(TestCase):
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.shift(orig_colors, None)
+
+        expected = make_colors(
+            "#754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9 #7e118f"
+        )
+        self.assertEqual(colors, expected)
+
+
+class PastelizeTests(TestCase):
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.pastelize(orig_colors, None)
+
+        expected = make_colors(
+            "#ed7fff #a77fff #ff7fd0 #fff37f #a67fff #ffec7f #8eff7f #7ff7ff"
+        )
+        self.assertEqual(colors, expected)
+
+
+class BrightenTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        config = make_config("brighten")
+
+        colors = filters.brighten(self.orig_colors, config)
+
+        # Kind of strange that brighten darkens by default
+        expected = "#650e72 #5e3f9f #694a5e #666126 #795bbb #7f763c #2eba1b #2ab2ba"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_percent_option(self):
+        config = make_config("brighten", percent=40)
+
+        colors = filters.brighten(self.orig_colors, config)
+
+        expected = "#b018c8 #a46fff #b782a4 #b3a943 #d3a0ff #dfce69 #50ff30 #4affff"
+        self.assertEqual(colors, make_colors(expected))
+
+
+class SubtractTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    @mock.patch("larry.filters.rand", random.Random(1))
+    def test(self):
+        colors = filters.subtract(self.orig_colors, None)
+
+        expected = "#7e8f11 #75c74f #83755d #803079 #97ea72 #9f4b93 #3922e8 #35e9df"
+        self.assertEqual(colors, make_colors(expected))
+
+    @mock.patch("larry.filters.rand", random.Random(12))
+    def test2(self):
+        colors = filters.subtract(self.orig_colors, None)
+
+        expected = "#b3fff0 #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff"
+        self.assertEqual(colors, make_colors(expected))
+
+
 @mock.patch("larry.filters.rand", random.Random(1))
 class RandbrightTests(TestCase):
     orig_colors = make_colors(
