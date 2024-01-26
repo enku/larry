@@ -43,6 +43,11 @@ class ReduceTests(TestCase):
         expected = "#e21888 #f9a423"
         self.assertEqual(colors, make_colors(expected))
 
+        config = make_config("bugus")
+        colors = filters.reduce(self.orig_colors, config)
+
+        self.assertEqual(colors, make_colors(expected))
+
     def test_with_custom_amount(self):
         config = make_config("reduce", amount=5)
 
@@ -50,6 +55,13 @@ class ReduceTests(TestCase):
 
         expected = "#173347 #2a9d54 #d8697f #fc8675 #d0d0fa"
         self.assertEqual(colors, make_colors(expected))
+
+    def test_cannot_reduce_to_zero(self):
+        config = make_config("reduce", amount=0)
+
+        colors = filters.reduce(self.orig_colors, config)
+
+        self.assertEqual(colors, self.orig_colors)
 
 
 class SubGradientTests(TestCase):
