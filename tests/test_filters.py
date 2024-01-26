@@ -23,6 +23,35 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
     return config
 
 
+class ReduceTests(TestCase):
+    orig_colors = sorted(
+        make_colors(
+            "#effeff #859673 #d8697f #abefdb #173347 #72de89 #69fc45 #fc8675 #f57074"
+            " #7e1831 #50ed07 #77b098 #b8c839 #deb94d #8db935 #4ef582 #29fb4f #625c1d"
+            " #39dea8 #0916da #250182 #38bc5e #f9a423 #098d23 #dc5c14 #a85e09 #2b0308"
+            " #aaffdc #4291b4 #ba47ea #748c08 #142356 #3cb96d #d0d0fa #6bba34 #274974"
+            " #2a9d54 #e21888 #9c2295 #38adc6"
+        ),
+        key=Color.luminocity,
+    )
+
+    def test(self):
+        config = make_config("reduce")
+
+        colors = filters.reduce(self.orig_colors, config)
+
+        expected = "#e21888 #f9a423"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_custom_amount(self):
+        config = make_config("reduce", amount=5)
+
+        colors = filters.reduce(self.orig_colors, config)
+
+        expected = "#173347 #2a9d54 #d8697f #fc8675 #d0d0fa"
+        self.assertEqual(colors, make_colors(expected))
+
+
 class SubGradientTests(TestCase):
     orig_colors = sorted(
         make_colors("#ffa97f #231815 #7fd9ff #00ffbf #dd8138 #00b6ff #727f88 #7fccff"),

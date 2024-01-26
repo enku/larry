@@ -1,5 +1,6 @@
 """Color selection filters"""
 import io
+import math
 import random as rand
 import typing as t
 from configparser import ConfigParser
@@ -276,7 +277,6 @@ def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Reduce the number of distinct colors"""
     num_colors = len(orig_colors)
     amount = num_colors // 20
-    new_colors = []
 
     try:
         amount = config["filters:reduce"].getint("amount", fallback=amount)
@@ -286,17 +286,10 @@ def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     if amount == 0:
         return orig_colors
 
-    chunk_size = 2 * amount + 1
+    num_chunks = num_colors // amount
+    middle = math.ceil(num_chunks / 2)
 
-    for i in range(num_colors):
-        div = i // chunk_size
-        middle = chunk_size * div + amount
-
-        new_colors.append(
-            orig_colors[middle] if middle < num_colors else orig_colors[-1]
-        )
-
-    return new_colors
+    return [orig_colors[i] for i in range(middle, num_colors, num_chunks)]
 
 
 def subgradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
