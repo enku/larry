@@ -6,6 +6,7 @@ from typing import Any
 from unittest import mock
 
 from larry import filters
+from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
 
 from . import TestCase, make_colors
@@ -20,6 +21,44 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
         config[section][key] = str(value)
 
     return config
+
+
+class SubGradientTests(TestCase):
+    orig_colors = sorted(
+        make_colors("#ffa97f #231815 #7fd9ff #00ffbf #dd8138 #00b6ff #727f88 #7fccff"),
+        key=Color.luminocity,
+    )
+
+    def test(self):
+        config = make_config("subgradient")
+        colors = filters.subgradient(self.orig_colors, config)
+
+        expected = "#231815 #727f88 #00b6ff #dd8138 #00ffbf #7fccff #ffa97f #7fd9ff"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_size_argument(self):
+        config = make_config("subgradient", size=3)
+
+        colors = filters.subgradient(self.orig_colors, config)
+
+        expected = (
+            "#231815 #11678a #00b6ff #dd8138 #aea69b #7fccff #ffa97f #bfc1bf #7fd9ff"
+        )
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_invalid_size(self):
+        config = make_config("subgradient", size=1)
+
+        colors = filters.subgradient(self.orig_colors, config)
+
+        self.assertEqual(colors, self.orig_colors)
+
+    def test_with_no_config(self):
+        config = make_config("bogus")
+
+        colors = filters.subgradient(self.orig_colors, config)
+
+        self.assertEqual(colors, self.orig_colors)
 
 
 class ColorifyTests(TestCase):
