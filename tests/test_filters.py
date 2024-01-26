@@ -23,6 +23,105 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
     return config
 
 
+@mock.patch("larry.filters.rand", random.Random(1))
+class RandbrightTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        colors = filters.randbright(self.orig_colors, None)
+
+        expected = "#861298 #24183d #9f718e #433f19 #ffd1ff #ffec79 #57ff34 #3bfaff"
+        self.assertEqual(colors, make_colors(expected))
+
+
+class ContrastTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        colors = filters.contrast(self.orig_colors, None)
+
+        expected = "#000000 #24183d #4e3746 #6a6528 #8c69d8 #b1a454 #45ff29 #44ffff"
+        self.assertEqual(colors, make_colors(expected))
+
+
+@mock.patch("larry.color.random", random.Random(1))
+class SwapTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        config = make_config("swap")
+
+        colors = filters.swap(self.orig_colors, config)
+
+        expected = "#666666 #000000 #254351 #1c343f #7c8e96 #a7b3b9 #d3d9dc #ffffff"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_source_image(self):
+        config = make_config("swap", source=DEFAULT_INPUT_PATH)
+
+        colors = filters.swap(self.orig_colors, config)
+
+        expected = "#666666 #1c343f #000000 #254351 #7c8e96 #a7b3b9 #d3d9dc #ffffff"
+        self.assertEqual(colors, make_colors(expected))
+
+
+class NoneTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        config = make_config("whatever")
+
+        self.assertEqual(filters.none(self.orig_colors, config), self.orig_colors)
+
+
+class VGATests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        config = make_config("vga")
+        colors = filters.vga(self.orig_colors, config)
+
+        expected = "#600080 #6040c0 #804060 #806020 #8060e0 #808040 #20e020 #20c0e0"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_bits_option(self):
+        config = make_config("vga", bits=4)
+        colors = filters.vga(self.orig_colors, config)
+
+        expected = "#400080 #4040c0 #804040 #804000 #8040c0 #808040 #00c000 #00c0c0"
+        self.assertEqual(colors, make_colors(expected))
+
+
+class GrayscaleTests(TestCase):
+    orig_colors = make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self):
+        config = make_config("grayscale")
+        colors = filters.grayscale(self.orig_colors, config)
+
+        expected = "#8f8f8f #c7c7c7 #838383 #808080 #eaeaea #9f9f9f #e8e8e8 #e9e9e9"
+        self.assertEqual(colors, make_colors(expected))
+
+    def test_with_saturation_setting(self):
+        config = make_config("grayscale", saturation=30)
+        colors = filters.grayscale(self.orig_colors, config)
+
+        expected = "#89648f #9e8bc7 #835b74 #807c59 #b9a3ea #9f986f #aae8a2 #a3e5e9"
+        self.assertEqual(colors, make_colors(expected))
+
+
 class ReduceTests(TestCase):
     orig_colors = sorted(
         make_colors(
