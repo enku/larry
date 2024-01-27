@@ -9,7 +9,7 @@ ColorFloat = color.ColorFloat
 CSS = """\
 a {
   color: #4a4a4a;
-  background: rgb(51, 51, 51);
+  background: rgb(51,51,51);
 }
 
 b {
@@ -38,7 +38,7 @@ class ReplaceString2(TestCase):
         expected = """\
 a {
   color: #ffffff;
-  background: rgb(51, 51, 51);
+  background: rgb(51,51,51);
 }
 
 b {
@@ -52,7 +52,7 @@ c {
 }
 
 d {
-  color: #333333;
+  color: #333;
 }
 """
         self.assertEqual(result, expected)
@@ -90,7 +90,7 @@ d {
         expected = """\
 a {
   color: #4a4a4a;
-  background: rgb(51, 51, 51);
+  background: rgb(51,51,51);
 }
 
 b {
@@ -104,7 +104,7 @@ c {
 }
 
 d {
-  color: #333333;
+  color: #333;
 }
 """
         self.assertEqual(result, expected)

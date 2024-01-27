@@ -542,25 +542,29 @@ def sanitize(number: float) -> int:
 def replace_string2(string: str, colormap: dict[Color, Color]) -> str:
     def subber(match):
         match_str = match.group(0)
+        repl = match_str
 
         if match_str.startswith("rgb("):
             r, g, b = match_str[4:-1].split(",")
             color = Color(int(r.strip()), int(g.strip()), int(b.strip()))
-            repl = colormap.get(color, color)
 
-            return f"rgb({repl.red}, {repl.green}, {repl.blue})"
+            if new := colormap.get(color):
+                repl = f"rgb({new.red}, {new.green}, {new.blue})"
 
-        if match_str.startswith("rgba("):
+        elif match_str.startswith("rgba("):
             r, g, b, alpha = match_str[5:-1].split(",")
             color = Color(int(r.strip()), int(g.strip()), int(b.strip()))
-            repl = colormap.get(color, color)
 
-            return f"rgba({repl.red}, {repl.green}, {repl.blue}, {alpha.strip()})"
+            if new := colormap.get(color):
+                repl = f"rgba({new.red}, {new.green}, {new.blue}, {alpha.strip()})"
 
-        color = Color(match.group(0))
-        repl = colormap.get(color, color)
+        else:
+            color = Color(match.group(0))
 
-        return str(repl)
+            if new := colormap.get(color):
+                repl = str(new)
+
+        return repl
 
     return re.sub(COLORS_RE, subber, string)
 
