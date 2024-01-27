@@ -362,7 +362,7 @@ class ReduceTests(TestCase):
         expected = "#e21888 #f9a423"
         self.assertEqual(colors, make_colors(expected))
 
-        config = make_config("bugus")
+        config = make_config("bogus")
         colors = filters.reduce(self.orig_colors, config)
 
         self.assertEqual(colors, make_colors(expected))

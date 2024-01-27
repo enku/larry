@@ -601,7 +601,7 @@ def combine(fg: ColorFloat, bg: ColorFloat) -> ColorFloat:
 
 
 def combine_colors(fg: Color, bg: Color, opacity: float) -> Color:
-    """Like combin() but work with Color objects. Only the fg color has opacity"""
+    """Like combine() but work with Color objects. Only the fg color has opacity"""
     return combine(
         ColorFloat.from_color(fg, opacity), ColorFloat.from_color(bg)
     ).to_color()
