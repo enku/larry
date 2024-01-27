@@ -40,20 +40,20 @@ def list_filters(config_path: str) -> str:
 
 def load_filter(name: str) -> Filter:
     """Load the filter with the given name"""
-    filters = [i for i in entry_points()["larry.filters"] if i.name == name]
+    filters = entry_points().select(group="larry.filters", name=name)
 
     if not filters:
         raise FilterNotFound(name)
 
     try:
-        return filters[0].load()
+        return tuple(filters)[0].load()
     except ModuleNotFoundError as error:
         raise FilterNotFound(name) from error
 
 
 def filters_list() -> list[tuple[str, Filter]]:
     """Return a list of tuple of (filter_name, filter_func) for all filters"""
-    return [(i.name, i.load()) for i in entry_points()["larry.filters"]]
+    return [(i.name, i.load()) for i in entry_points().select(group="larry.filters")]
 
 
 def luminocity(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
