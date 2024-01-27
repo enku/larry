@@ -2,6 +2,7 @@
 import random
 from configparser import ConfigParser
 from copy import deepcopy
+from inspect import signature
 from typing import Any
 from unittest import mock
 
@@ -21,6 +22,141 @@ def make_config(name: str, **settings: Any) -> ConfigParser:
         config[section][key] = str(value)
 
     return config
+
+
+class ListFiltersTests(TestCase):
+    def test(self):
+        config_path = f"{self.tmpdir}/larry.cfg"
+        with open(config_path, "w", encoding="UTF-8") as fp:
+            fp.write(
+                """\
+[larry]
+filter = random | grayscale
+"""
+            )
+        result = filters.list_filters(config_path)
+
+        self.assertIn("[X] grayscale", result)
+        self.assertIn("[X] random", result)
+        self.assertIn("[ ] none", result)
+
+
+class LoadFilterTests(TestCase):
+    def test(self):
+        func = filters.load_filter("random")
+
+        self.assertIs(func, filters.random)
+
+    def test_when_filter_does_not_exist(self):
+        with self.assertRaises(filters.FilterNotFound):
+            filters.load_filter("bogus")
+
+
+class FiltersListTests(TestCase):
+    def test(self):
+        filters_list = filters.filters_list()
+
+        for name, func in filters_list:
+            self.assertIsInstance(name, str)
+            self.assert_is_filter_func(func)
+
+    def assert_is_filter_func(self, func):
+        sig = signature(func)
+        params = sig.parameters
+        self.assertEqual(len(params), 2)
+
+
+class LuminocityTests(TestCase):
+    @mock.patch("larry.color.random", random.Random(1))
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.luminocity(orig_colors, None)
+
+        expected = make_colors(
+            "#51269a #20887c #82683a #22b00a #91a101 #c97867 #49e315 #adcc3f"
+        )
+        self.assertEqual(colors, expected)
+
+
+class InverseTests(TestCase):
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.inverse(orig_colors, None)
+
+        expected = make_colors(
+            "#81ee70 #8ab038 #7ca28a #7f86cf #688d15 #606cb4 #c617dd #ca2016"
+        )
+        self.assertEqual(colors, expected)
+
+
+class GradientTests(TestCase):
+    @mock.patch("larry.color.random", random.Random(1))
+    def test(self):
+        config = make_config("gradient")
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.gradient(orig_colors, config)
+
+        expected = make_colors(
+            "#51269a #4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce"
+        )
+        self.assertEqual(colors, expected)
+
+    @mock.patch("larry.color.random", random.Random(1))
+    @mock.patch("larry.random", random.Random(12345))
+    def test_with_fuzz(self):
+        config = make_config("gradient", fuzz=60)
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.gradient(orig_colors, config)
+
+        expected = make_colors(
+            "#8b41ff #7c4eef #6e5bdf #5f69cf #5176bf #4284af #34919f #269f90"
+        )
+        self.assertEqual(colors, expected)
+
+
+class ZipgradientTests(TestCase):
+    @mock.patch("larry.color.random", random.Random(1))
+    def test(self):
+        config = make_config("zipgradient")
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.zipgradient(orig_colors, config)
+
+        expected = make_colors(
+            "#44559d #3785a0 #2bb5a4 #62b18c #9aad74 #d2a95d #9dc543 #68e229"
+        )
+        self.assertEqual(colors, expected)
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_with_colors_option(self):
+        config = make_config("zipgradient", colors=1)
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.zipgradient(orig_colors, config)
+
+        expected = make_colors(
+            "#4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce #4cdabd"
+        )
+        self.assertEqual(colors, expected)
+
+    def test_when_not_enough_steps(self):
+        config = make_config("zipgradient", colors=9)
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        colors = filters.zipgradient(orig_colors, config)
+
+        self.assertEqual(colors, orig_colors)
 
 
 class ShuffleTests(TestCase):

@@ -143,7 +143,7 @@ def pastelize(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     return [orig_color.pastelize() for orig_color in orig_colors]
 
 
-def random(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def random(orig_colors: ColorList, config: ConfigParser) -> ColorList:  # pragma: no cover
     """Yeah, coz how could we live without a random filter?"""
     try:
         include_str = config["filters:random"]["include"]
