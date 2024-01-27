@@ -69,8 +69,13 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         ###rbg(r, g, b)
         if color_str.startswith("rgb("):
-            red, green, blue = color_str[4:-2].split(",")
-            return int(red.strip()), int(blue.strip()), int(green.strip())
+            red, green, blue = color_str[4:-1].split(",")
+            return int(red.strip()), int(green.strip()), int(blue.strip())
+
+        ###rbga(r, g, b, a)  # alpha is dropped
+        if color_str.startswith("rgba("):
+            red, green, blue, *_ = color_str[5:-1].split(",")
+            return int(red.strip()), int(green.strip()), int(blue.strip())
 
         ####r/g/b
         if len(color_str.split("/")) == 3:

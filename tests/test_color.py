@@ -28,6 +28,18 @@ d {
 """
 
 
+class ColorTests(TestCase):
+    def test_from_rgb_string(self):
+        s = "rgb(100, 20, 30)"
+
+        self.assertEqual(Color(s), Color(100, 20, 30))
+
+    def test_from_rgba_string(self):
+        s = "rgba(100, 20, 30, 0.4)"
+
+        self.assertEqual(Color(s), Color(100, 20, 30))
+
+
 class ReplaceString2(TestCase):
     def test1(self):
         colormap = {
