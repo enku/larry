@@ -12,6 +12,13 @@ ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
 
+COLORS_RE = re.compile(
+    r"(#[0-9a-fA-F]{6})"
+    r"|(#[0-9a-fA-F]{3})"
+    r"|(rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\))"
+    r"|(rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,.+\))"
+)
+
 # (default) values for Color.pastelize
 PASTEL_SATURATION = 50
 PASTEL_BRIGHTNESS = 100
@@ -530,6 +537,32 @@ def sanitize(number: float) -> int:
     number = max(0, number)
 
     return int(number)
+
+
+def replace_string2(string: str, colormap: dict[Color, Color]) -> str:
+    def subber(match):
+        match_str = match.group(0)
+
+        if match_str.startswith("rgb("):
+            r, g, b = match_str[4:-1].split(",")
+            color = Color(int(r.strip()), int(g.strip()), int(b.strip()))
+            repl = colormap.get(color, color)
+
+            return f"rgb({repl.red}, {repl.green}, {repl.blue})"
+
+        if match_str.startswith("rgba("):
+            r, g, b, alpha = match_str[5:-1].split(",")
+            color = Color(int(r.strip()), int(g.strip()), int(b.strip()))
+            repl = colormap.get(color, color)
+
+            return f"rgba({repl.red}, {repl.green}, {repl.blue}, {alpha.strip()})"
+
+        color = Color(match.group(0))
+        repl = colormap.get(color, color)
+
+        return str(repl)
+
+    return re.sub(COLORS_RE, subber, string)
 
 
 def replace_string(string: str, color_str: str, color: Color) -> str:

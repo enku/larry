@@ -6,16 +6,108 @@ from . import TestCase
 Color = color.Color
 ColorFloat = color.ColorFloat
 
+CSS = """\
+a {
+  color: #4a4a4a;
+  background: rgb(51, 51, 51);
+}
 
-class RGBATests(TestCase):
-    def test(self):
-        color_str = "255, 0, 0, 0.76"
-        c = Color("#0000ff")
-        string = "rgba(0, 0, 255, 0.76); rgba(255, 0, 0, 0.76) test"
+b {
+  color: #3a7e94;
+  background: rgba(0, 45, 108, 0.6);
+}
 
-        result = color.rgba(color_str, c, string)
+c {
+  color: rgb(58, 126, 148);
+  background: #002d6c;
+}
 
-        self.assertEqual(result, "rgba(0, 0, 255, 0.76); rgba(0, 0, 255, 0.76) test")
+d {
+  color: #333;
+}
+"""
+
+
+class ReplaceString2(TestCase):
+    def test1(self):
+        colormap = {
+            Color("#4a4a4a"): Color("#ffffff"),
+            Color("#3a7e94"): Color("#000000"),
+        }
+        result = color.replace_string2(CSS, colormap)
+        expected = """\
+a {
+  color: #ffffff;
+  background: rgb(51, 51, 51);
+}
+
+b {
+  color: #000000;
+  background: rgba(0, 45, 108, 0.6);
+}
+
+c {
+  color: rgb(0, 0, 0);
+  background: #002d6c;
+}
+
+d {
+  color: #333333;
+}
+"""
+        self.assertEqual(result, expected)
+
+    def test2(self):
+        colormap = {
+            Color("#333"): Color("#ffffff"),
+        }
+        result = color.replace_string2(CSS, colormap)
+        expected = """\
+a {
+  color: #4a4a4a;
+  background: rgb(255, 255, 255);
+}
+
+b {
+  color: #3a7e94;
+  background: rgba(0, 45, 108, 0.6);
+}
+
+c {
+  color: rgb(58, 126, 148);
+  background: #002d6c;
+}
+
+d {
+  color: #ffffff;
+}
+"""
+        self.assertEqual(result, expected)
+
+    def test3(self):
+        colormap = {Color("#002d6c"): Color("#1245ef")}
+        result = color.replace_string2(CSS, colormap)
+        expected = """\
+a {
+  color: #4a4a4a;
+  background: rgb(51, 51, 51);
+}
+
+b {
+  color: #3a7e94;
+  background: rgba(18, 69, 239, 0.6);
+}
+
+c {
+  color: rgb(58, 126, 148);
+  background: #1245ef;
+}
+
+d {
+  color: #333333;
+}
+"""
+        self.assertEqual(result, expected)
 
 
 class CombineTests(TestCase):
