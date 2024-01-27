@@ -579,7 +579,7 @@ def rgba(color_str: str, color: Color, string: str) -> str:
     orig_color = Color(red, green, blue)
     new_color = orig_color.colorify(color)
     re_str = f"rgba\\({parts[0]}, *{parts[1]}, *{parts[2]}, *"
-    re_str = re_str + r"(" + re.escape(parts[-1]) + r")\)"
+    re_str = re_str + r"(" + re.escape(parts[-1].strip()) + r")\)"
     new_str = f"rgba({new_color.red}, {new_color.green}, {new_color.blue}, \\1)"
 
     return re.sub(re_str, new_str, string, flags=re.I)
