@@ -61,8 +61,14 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         raise BadColorSpecError(repr(colorspec))
 
-    def is_gray(self) -> bool:
-        return self.red == self.green and self.green == self.blue
+    def is_gray(self, threshold=0) -> bool:
+        """Return True if color is grayscale (or gray-ish with threshold"""
+        diff = max(
+            abs(self.red - self.green),
+            abs(self.green - self.blue),
+            abs(self.blue - self.red),
+        )
+        return diff <= threshold
 
     @classmethod
     def _handle_str_colorspec(cls, color_str: str) -> tuple[int, int, int]:

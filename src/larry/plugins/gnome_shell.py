@@ -9,6 +9,7 @@ from larry.color import COLORS_RE, replace_string
 from larry.config import ConfigType
 from larry.io import read_file, write_file
 
+DEFAULT_GRAY_THRESHOLD = 35
 THEME_GSETTINGS_NAME = "name"
 THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 
@@ -43,8 +44,9 @@ CursorSize=24
     return theme_dir
 
 
-def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> str:
+def create_new_theme(template: str, colors: ColorList, config: ConfigType) -> str:
     """Create new gnome-shell theme base on the given template"""
+    gray_threshold = config.getint("grey_threshold", fallback=DEFAULT_GRAY_THRESHOLD)
     theme_dir = copy_theme(template)
     template_dir = pathlib.Path(template).expanduser()
     orig_css = read_file(str(template_dir / "gnome-shell.css")).decode()
@@ -53,7 +55,7 @@ def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> s
     colormap = {
         color: color.colorify(theme_color)
         for color, theme_color in zip(orig_colors, theme_colors)
-        if not color.is_gray()
+        if not color.is_gray(threshold=gray_threshold)
     }
     new_css = replace_string(orig_css, colormap)
 
