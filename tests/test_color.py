@@ -40,6 +40,26 @@ class ColorTests(TestCase):
         self.assertEqual(Color(s), Color(100, 20, 30))
 
 
+class ClipTests(TestCase):
+    def test1(self):
+        self.assertEqual(color.clip(20), 20)
+
+    def test2(self):
+        self.assertEqual(color.clip(-20), 0)
+
+    def test3(self):
+        self.assertEqual(color.clip(20, maximum=19), 19)
+
+    def test4(self):
+        self.assertEqual(color.clip(-20, minimum=-4), -4)
+
+    def test5(self):
+        self.assertEqual(color.clip(300), 255)
+
+    def test6(self):
+        self.assertEqual(color.clip(-3), 0)
+
+
 class ReplaceString2(TestCase):
     def test1(self):
         colormap = {

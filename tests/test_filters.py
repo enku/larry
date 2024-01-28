@@ -341,6 +341,13 @@ class GrayscaleTests(TestCase):
         expected = "#89648f #9e8bc7 #835b74 #807c59 #b9a3ea #9f986f #aae8a2 #a3e5e9"
         self.assertEqual(colors, make_colors(expected))
 
+    def test_with_saturation_setting_above_100(self):
+        config = make_config("grayscale", saturation=130)
+        colors = filters.grayscale(self.orig_colors, config)
+
+        expected = "#75008f #1600c7 #830044 #807100 #1700ea #9f8100 #00e800 #00d8e9"
+        self.assertEqual(colors, make_colors(expected))
+
 
 class ReduceTests(TestCase):
     orig_colors = sorted(

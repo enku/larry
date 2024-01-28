@@ -477,7 +477,11 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             elif i == 5:
                 red, green, blue = value, aa, bb
 
-        return cls(int(red * 255), int(green * 255), int(blue * 255))
+        red = int(clip(red * 255))
+        green = int(clip(green * 255))
+        blue = int(clip(blue * 255))
+
+        return cls(red, green, blue)
 
 
 ColorList: TypeAlias = list[Color]
@@ -487,6 +491,14 @@ ColorGenerator: TypeAlias = Iterator[Color]
 def between_0_and_1(value: float) -> TypeGuard[float]:
     """Return true if value is between 0 and 1 (inclusive)"""
     return 0 <= value <= 1
+
+
+def clip(value, *, minimum=0, maximum=255):
+    """Return value that is no larger than maximum and no smaller than minimum"""
+    value = min(value, maximum)
+    value = max(value, minimum)
+
+    return value
 
 
 ColorFloatType = TypeVar("ColorFloatType", bound="ColorFloat")
