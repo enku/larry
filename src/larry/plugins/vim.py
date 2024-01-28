@@ -1,4 +1,5 @@
 """Larry plugin for vim"""
+
 import asyncio
 import json
 from collections.abc import Iterator

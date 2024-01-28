@@ -1,4 +1,5 @@
 """Larry plugins"""
+
 import io
 from importlib.metadata import entry_points
 from typing import Any, Callable, List, Tuple, TypeAlias

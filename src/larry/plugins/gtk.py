@@ -1,4 +1,5 @@
 """Larry plugin for gtk"""
+
 from larry import Color, ColorList
 from larry.color import COLORS_RE, replace_string
 from larry.config import ConfigType

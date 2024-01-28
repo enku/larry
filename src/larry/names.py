@@ -1,4 +1,5 @@
 """Color names from different naming schemes"""
+
 from collections import namedtuple
 
 from larry import Color

@@ -1,4 +1,5 @@
 """Plugin to set the background colors in GNOME"""
+
 from larry import ColorList
 from larry.config import ConfigType
 

@@ -1,4 +1,5 @@
 """Utils dealing with the larry configuration (file)"""
+
 import configparser
 import importlib.resources
 import io

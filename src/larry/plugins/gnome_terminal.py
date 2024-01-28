@@ -1,4 +1,5 @@
 """Larry plugin for the Gnome Terminal"""
+
 from larry import Color, ColorList
 from larry.config import ConfigType
 

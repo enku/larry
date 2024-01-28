@@ -1,4 +1,5 @@
 """GNOME Shell plugin"""
+
 import pathlib
 import shutil
 import tempfile

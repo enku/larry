@@ -1,4 +1,5 @@
 """Color selection filters"""
+
 import io
 import math
 import random as rand

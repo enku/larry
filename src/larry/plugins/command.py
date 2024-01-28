@@ -1,4 +1,5 @@
 """Larry plugin to run a shell command"""
+
 import subprocess
 
 from larry import LOGGER, ColorList
