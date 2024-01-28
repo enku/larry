@@ -1,6 +1,6 @@
 """Larry plugin for gtk"""
 from larry import Color, ColorList
-from larry.color import COLORS_RE, replace_string2
+from larry.color import COLORS_RE, replace_string
 from larry.config import ConfigType
 from larry.io import read_file, write_file
 
@@ -17,6 +17,6 @@ def plugin(colors: ColorList, config: ConfigType):
         color: theme_color.colorify(color)
         for color, theme_color in zip(orig_colors, theme_colors)
     }
-    new_css = replace_string2(orig_css, colormap)
+    new_css = replace_string(orig_css, colormap)
 
     write_file(outfile, new_css.encode())

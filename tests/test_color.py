@@ -76,13 +76,13 @@ class ClipTests(TestCase):
         self.assertEqual(color.clip(-3), 0)
 
 
-class ReplaceString2(TestCase):
+class ReplaceString(TestCase):
     def test1(self):
         colormap = {
             Color("#4a4a4a"): Color("#ffffff"),
             Color("#3a7e94"): Color("#000000"),
         }
-        result = color.replace_string2(CSS, colormap)
+        result = color.replace_string(CSS, colormap)
         expected = """\
 a {
   color: #ffffff;
@@ -109,7 +109,7 @@ d {
         colormap = {
             Color("#333"): Color("#ffffff"),
         }
-        result = color.replace_string2(CSS, colormap)
+        result = color.replace_string(CSS, colormap)
         expected = """\
 a {
   color: #4a4a4a;
@@ -134,7 +134,7 @@ d {
 
     def test3(self):
         colormap = {Color("#002d6c"): Color("#1245ef")}
-        result = color.replace_string2(CSS, colormap)
+        result = color.replace_string(CSS, colormap)
         expected = """\
 a {
   color: #4a4a4a;

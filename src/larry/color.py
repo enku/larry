@@ -556,7 +556,9 @@ def sanitize(number: float) -> int:
     return int(number)
 
 
-def replace_string2(string: str, colormap: dict[Color, Color]) -> str:
+def replace_string(string: str, colormap: dict[Color, Color]) -> str:
+    """Replace color strings in the input string given the Color from -> to map"""
+
     def subber(match):
         match_str = match.group(0)
         color = Color(match_str)
