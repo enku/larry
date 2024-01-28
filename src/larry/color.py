@@ -541,12 +541,6 @@ class ColorFloat:
         """
         return Color(int(self.red * 255), int(self.green * 255), int(self.blue * 255))
 
-    def __bool__(self) -> bool:
-        if self.red + self.green + self.blue:
-            return True
-
-        return False
-
 
 def replace_string(string: str, colormap: dict[Color, Color]) -> str:
     """Replace color strings in the input string given the Color from -> to map"""
