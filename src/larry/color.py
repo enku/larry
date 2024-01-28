@@ -13,10 +13,10 @@ ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 _COMPS = (">", "<", "=")
 
 COLORS_RE = re.compile(
-    r"#[0-9a-fA-F]{6}"
+    r"(#[0-9a-fA-F]{6}"
     r"|#[0-9a-fA-F]{3}"
     r"|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)"
-    r"|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(\S+)\s*\)"
+    r"|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\S+\s*\))"
 )
 
 # (default) values for Color.pastelize
@@ -567,7 +567,7 @@ def replace_string2(string: str, colormap: dict[Color, Color]) -> str:
                 repl = f"rgb({new.red}, {new.green}, {new.blue})"
         elif match_str.startswith("rgba("):
             if new := colormap.get(color):
-                alpha = match.group(1)
+                alpha = match_str[5:-1].split(",")[-1].strip()
                 repl = f"rgba({new.red}, {new.green}, {new.blue}, {alpha})"
         else:
             if new := colormap.get(color):

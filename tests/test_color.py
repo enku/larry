@@ -28,6 +28,22 @@ d {
 """
 
 
+class ColorReTests(TestCase):
+    def test_can_find_colors(self):
+        colors = color.COLORS_RE.findall(CSS)
+
+        expected = [
+            "#4a4a4a",
+            "rgb(51,51,51)",
+            "#3a7e94",
+            "rgba(0, 45, 108, 0.6)",
+            "rgb(58, 126, 148)",
+            "#002d6c",
+            "#333",
+        ]
+        self.assertEqual(colors, expected)
+
+
 class ColorTests(TestCase):
     def test_from_rgb_string(self):
         s = "rgb(100, 20, 30)"
