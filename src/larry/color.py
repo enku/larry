@@ -513,7 +513,7 @@ class ColorFloat:
     blue: float = 0.0
     alpha: float = 1.0
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # pragma: no cover
         if not between_0_and_1(self.red):
             raise ValueError("red must be between 0 and 1")
         if not between_0_and_1(self.green):

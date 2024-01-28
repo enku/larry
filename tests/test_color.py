@@ -28,6 +28,14 @@ d {
 """
 
 
+class Betweeen0And1Tests(TestCase):
+    def test_true(self):
+        self.assertTrue(color.between_0_and_1(0.4))
+
+    def test_false(self):
+        self.assertFalse(color.between_0_and_1(-0.4))
+
+
 class ColorReTests(TestCase):
     def test_can_find_colors(self):
         colors = color.COLORS_RE.findall(CSS)
@@ -156,6 +164,43 @@ d {
 }
 """
         self.assertEqual(result, expected)
+
+
+class ColorFloatTests(TestCase):
+    def test_init_no_args(self):
+        cf = ColorFloat()
+
+        self.assertEqual(cf.red, 0)
+        self.assertEqual(cf.green, 0)
+        self.assertEqual(cf.blue, 0)
+        self.assertEqual(cf.alpha, 1)
+
+    def test_init_with_values(self):
+        cf = ColorFloat(red=0.4, green=0.5, blue=0.6, alpha=0.7)
+
+        self.assertEqual(cf.red, 0.4)
+        self.assertEqual(cf.green, 0.5)
+        self.assertEqual(cf.blue, 0.6)
+        self.assertEqual(cf.alpha, 0.7)
+
+    def test_init_with_invalid_value(self):
+        with self.assertRaises(ValueError):
+            ColorFloat(alpha=1.4)
+
+    def test_from_color(self):
+        testcolor = Color(103, 95, 148)
+        alpha = 0.7
+
+        cf = ColorFloat.from_color(testcolor, alpha)
+
+        self.assertEqual(cf.red, 103 / 255)
+        self.assertEqual(cf.green, 95 / 255)
+        self.assertEqual(cf.blue, 148 / 255)
+        self.assertEqual(cf.alpha, 0.7)
+
+    def test_to_color(self):
+        cf = ColorFloat(red=103 / 255, green=95 / 255, blue=148 / 255, alpha=0.7)
+        self.assertEqual(cf.to_color(), Color("#675f94"))
 
 
 class CombineTests(TestCase):
