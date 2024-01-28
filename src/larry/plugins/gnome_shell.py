@@ -53,7 +53,7 @@ def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> s
     colormap = {
         color: color.colorify(theme_color)
         for color, theme_color in zip(orig_colors, theme_colors)
-        if not (color.red == color.green and color.green == color.blue)
+        if not color.is_gray()
     }
     new_css = replace_string(orig_css, colormap)
 

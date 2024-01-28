@@ -53,6 +53,14 @@ class ColorReTests(TestCase):
 
 
 class ColorTests(TestCase):
+    def test_is_gray(self):
+        self.assertTrue(Color("#bfbfbf").is_gray())
+        self.assertTrue(Color("#ffffff").is_gray())
+        self.assertTrue(Color("#666666").is_gray())
+        self.assertTrue(Color("#000000").is_gray())
+        self.assertFalse(Color("red").is_gray())
+        self.assertFalse(Color("#bfbfbd").is_gray())
+
     def test_from_rgb_string(self):
         s = "rgb(100, 20, 30)"
 

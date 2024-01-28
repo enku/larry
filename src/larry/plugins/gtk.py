@@ -17,7 +17,7 @@ def plugin(colors: ColorList, config: ConfigType):
     colormap = {
         color: theme_color.colorify(color)
         for color, theme_color in zip(orig_colors, theme_colors)
-        if not (color.red == color.green and color.green == color.blue)
+        if not color.is_gray()
     }
     new_css = replace_string(orig_css, colormap)
 

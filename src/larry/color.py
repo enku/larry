@@ -61,6 +61,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         raise BadColorSpecError(repr(colorspec))
 
+    def is_gray(self) -> bool:
+        return self.red == self.green and self.green == self.blue
+
     @classmethod
     def _handle_str_colorspec(cls, color_str: str) -> tuple[int, int, int]:
         """Handle *colorspec* of type str"""
