@@ -10,16 +10,16 @@ DEFAULT_GRAY_THRESHOLD = 35
 
 def plugin(colors: ColorList, config: ConfigType):
     """gtk.css plugin"""
+    theme_color = next(Color.generate_from(colors, 1, randomize=False))
     template = config["template"]
     outfile = config["location"]
     gray_threshold = config.getint("grey_threshold", fallback=DEFAULT_GRAY_THRESHOLD)
     orig_css = read_file(template).decode()
-    orig_colors = list(set(Color(s) for s in COLORS_RE.findall(orig_css)))
-    theme_colors = list(Color.generate_from(colors, len(orig_colors)))
+    orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
 
     colormap = {
-        color: theme_color.colorify(color)
-        for color, theme_color in zip(orig_colors, theme_colors)
+        color: color.colorify(theme_color)
+        for color in orig_colors
         if not color.is_gray(threshold=gray_threshold)
     }
     new_css = replace_string(orig_css, colormap)

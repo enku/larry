@@ -46,15 +46,16 @@ CursorSize=24
 
 def create_new_theme(template: str, colors: ColorList, config: ConfigType) -> str:
     """Create new gnome-shell theme base on the given template"""
-    gray_threshold = config.getint("grey_threshold", fallback=DEFAULT_GRAY_THRESHOLD)
+    theme_color = next(Color.generate_from(colors, 1, randomize=False))
+    gray_threshold = config.getint("gray_threshold", fallback=DEFAULT_GRAY_THRESHOLD)
     theme_dir = copy_theme(template)
     template_dir = pathlib.Path(template).expanduser()
     orig_css = read_file(str(template_dir / "gnome-shell.css")).decode()
-    orig_colors = list(set(Color(s) for s in COLORS_RE.findall(orig_css)))
-    theme_colors = list(Color.generate_from(colors, len(orig_colors)))
+    orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
+
     colormap = {
         color: color.colorify(theme_color)
-        for color, theme_color in zip(orig_colors, theme_colors)
+        for color in orig_colors
         if not color.is_gray(threshold=gray_threshold)
     }
     new_css = replace_string(orig_css, colormap)
