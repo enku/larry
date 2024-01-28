@@ -395,27 +395,6 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         yield from cls.generate_from(colors[:split], split)
         yield from cls.generate_from(colors[split:], needed - split)
 
-    def factor_tuple(self, mytuple) -> Color:
-        """Same as factor_int, but multiply by a 3-tuple
-        Return normalized color
-        """
-
-        red = min(self.red * mytuple[0], 255)
-        green = min(self.green * mytuple[1], 255)
-        blue = min(self.blue * mytuple[2], 255)
-
-        # Guess we should check for negative values too
-        red = int(max(red, 0))
-        green = int(max(green, 0))
-        blue = int(max(blue, 0))
-
-        return Color(red, green, blue)
-
-    def factor(self, myint) -> Color:
-        """Same as factor_tuple, but just one number"""
-
-        return self.factor_tuple((myint, myint, myint))
-
     @classmethod
     def randhue(cls, saturation, brightness) -> Color:
         """Create color with random hue based on saturation and brightness"""
