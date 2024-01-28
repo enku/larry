@@ -377,11 +377,6 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             yield from colors
             return
 
-        # If we don't have any colors (left), return a random selection
-        if num_colors == 0:
-            yield from (cls() for _ in range(needed))
-            return
-
         # If the number needed is less than the number available, return a random sample
         if needed < num_colors:
             yield from random.sample(colors, needed)
@@ -452,8 +447,10 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             elif blue == maximum:
                 hue = 4 + (red - green) / delta
             hue = hue * 60.0
-            if hue < 0:
-                hue = hue + 360.0
+
+        if hue < 0:
+            hue = hue + 360.0
+
         return (hue, saturation * 100.0, value * 100.0)
 
     @classmethod
