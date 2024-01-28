@@ -48,7 +48,7 @@ def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> s
     theme_dir = copy_theme(template)
     template_dir = pathlib.Path(template).expanduser()
     orig_css = read_file(str(template_dir / "gnome-shell.css")).decode()
-    orig_colors = list(set(COLORS_RE.findall(orig_css)))
+    orig_colors = list(set(Color(s) for s in COLORS_RE.findall(orig_css)))
     theme_colors = list(Color.generate_from(colors, len(orig_colors)))
     colormap = {
         color: color.colorify(theme_color)

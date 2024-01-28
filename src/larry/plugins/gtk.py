@@ -11,7 +11,7 @@ def plugin(colors: ColorList, config: ConfigType):
     template = config["template"]
     outfile = config["location"]
     orig_css = read_file(template).decode()
-    orig_colors = list(set(COLORS_RE.findall(orig_css)))
+    orig_colors = list(set(Color(s) for s in COLORS_RE.findall(orig_css)))
     theme_colors = list(Color.generate_from(colors, len(orig_colors)))
 
     colormap = {
