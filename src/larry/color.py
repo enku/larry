@@ -165,14 +165,14 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             blue = self.blue + value
             green = self.green + value
 
-            red, green, blue = [sanitize(component) for component in (red, green, blue)]
+            red, green, blue = [clip(component) for component in (red, green, blue)]
 
             return Color(red, green, blue)
 
         return Color(
-            sanitize(self.red + value.red),
-            sanitize(self.blue + value.blue),
-            sanitize(self.green + value.green),
+            clip(self.red + value.red),
+            clip(self.blue + value.blue),
+            clip(self.green + value.green),
         )
 
     def __mul__(self, value: Color | float) -> Color:
@@ -183,7 +183,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green * value
             blue = self.blue * value
 
-            red, green, blue = [sanitize(i) for i in (red, green, blue)]
+            red, green, blue = [clip(i) for i in (red, green, blue)]
 
             return Color(red, green, blue)
 
@@ -546,14 +546,6 @@ class ColorFloat:
             return True
 
         return False
-
-
-def sanitize(number: float) -> int:
-    """Make sure 0 <= number <= 255"""
-    number = min(255, number)
-    number = max(0, number)
-
-    return int(number)
 
 
 def replace_string(string: str, colormap: dict[Color, Color]) -> str:
