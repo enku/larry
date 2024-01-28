@@ -65,7 +65,6 @@ class ColorTests(TestCase):
         self.assertTrue(Color("#bfbfbd").is_gray(threshold=2))
         self.assertFalse(Color("#bfbfbd").is_gray(threshold=1))
         self.assertFalse(Color("#bfbebd").is_gray(threshold=1))
-        self.assertTrue(Color("#d7e6fa").is_gray(threshold=1))
 
     def test_from_rgb_string(self):
         s = "rgb(100, 20, 30)"
