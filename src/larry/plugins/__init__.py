@@ -23,7 +23,7 @@ def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
 
 
 def plugins_list() -> List[Tuple[str, PluginType]]:
-    return [(i.name, i.load()) for i in entry_points()["larry.plugins"]]
+    return [(i.name, i.load()) for i in entry_points().select(group="larry.plugins")]
 
 
 def list_plugins(config_path: str) -> str:
@@ -43,7 +43,9 @@ def list_plugins(config_path: str) -> str:
 
 def load(name: str) -> PluginType:
     if name not in PLUGINS:
-        plugins = [i for i in entry_points()["larry.plugins"] if i.name == name]
+        plugins = [
+            i for i in entry_points().select(group="larry.plugins") if i.name == name
+        ]
 
         if not plugins:
             raise PluginNotFound(name)

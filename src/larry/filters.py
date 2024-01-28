@@ -151,7 +151,7 @@ def random(
     try:
         include_str = config["filters:random"]["include"]
     except KeyError:
-        filter_names = [*{i.name for i in entry_points()["larry.filters"]}]
+        filter_names = [*{i.name for i in entry_points().select(group="larry.filters")}]
         filter_names.remove("random")
     else:
         filter_names = [*{i.strip() for i in include_str.split()}]
