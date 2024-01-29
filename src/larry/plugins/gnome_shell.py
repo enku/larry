@@ -5,7 +5,7 @@ import shutil
 import tempfile
 
 from larry import Color, ColorList
-from larry.color import COLORS_RE, replace_string
+from larry.color import COLORS_RE, replace_string, ungray
 from larry.config import ConfigType
 from larry.io import read_file, write_file
 
@@ -44,19 +44,16 @@ CursorSize=24
     return theme_dir
 
 
-def create_new_theme(template: str, colors: ColorList, config: ConfigType) -> str:
+def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> str:
     """Create new gnome-shell theme base on the given template"""
     theme_color = next(Color.generate_from(colors, 1, randomize=False))
-    gray_threshold = config.getint("gray_threshold", fallback=DEFAULT_GRAY_THRESHOLD)
     theme_dir = copy_theme(template)
     template_dir = pathlib.Path(template).expanduser()
     orig_css = read_file(str(template_dir / "gnome-shell.css")).decode()
     orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
 
     colormap = {
-        color: color.colorify(theme_color)
-        for color in orig_colors
-        if not color.is_gray(threshold=gray_threshold)
+        color: ungray([color])[0].colorify(theme_color) for color in orig_colors
     }
     new_css = replace_string(orig_css, colormap)
 
