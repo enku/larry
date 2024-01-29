@@ -196,16 +196,6 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
     __rmul__ = __mul__
 
-    def __div__(self, value: Color | float) -> Color:
-        """Just like __mul__"""
-
-        if isinstance(value, (int, float)):
-            return self * (1.0 / value)
-
-        clum = value.luminocity()
-
-        return self * (1 / clum)
-
     def __sub__(self, value: Color | float) -> Color:
         return self.__add__(-1 * value)
 
