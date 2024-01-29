@@ -4,7 +4,7 @@ import io
 from importlib.metadata import entry_points
 from typing import Any, Callable, List, Tuple, TypeAlias
 
-from larry import LOGGER, Color, ColorList, config
+from larry import LOGGER, ColorList, config
 
 PluginType: TypeAlias = Callable[[ColorList, config.ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
@@ -15,6 +15,7 @@ class PluginNotFound(LookupError):
 
 
 def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
+    """Run the given plugin"""
     plugin = load(plugin_name)
     plugin_config = config.get_plugin_config(plugin_name, config_path)
 
@@ -23,6 +24,7 @@ def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
 
 
 def plugins_list() -> List[Tuple[str, PluginType]]:
+    """Return a list of 2-tuple (pluginname, pluginfunc)"""
     return [(i.name, i.load()) for i in entry_points().select(group="larry.plugins")]
 
 
@@ -42,6 +44,7 @@ def list_plugins(config_path: str) -> str:
 
 
 def load(name: str) -> PluginType:
+    """Load and return the given plugin"""
     if name not in PLUGINS:
         plugins = [
             i for i in entry_points().select(group="larry.plugins") if i.name == name
