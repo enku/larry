@@ -110,7 +110,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         if color_str[:7] == "random(":
             lum = color_str[7:-1]
-            comp = ""
+            comp = "="
             value = ""
             if lum[0] in _COMPS:
                 comp = lum[0]
@@ -123,7 +123,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
                 value = lum
 
             try:
-                somecolor = cls.randcolor(int(value))
+                somecolor = cls.randcolor(int(value), comp)
             except ValueError as error:
                 raise BadColorSpecError(color_str) from error
 
@@ -156,14 +156,6 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
                 int(triplet[4:6], 16),
             )
 
-        ####rgb
-        if re.match(r"#[0-9,[A-F]{3}$", color_str, re.I):
-            return (
-                int(color_str[1], 16) * 17,
-                int(color_str[2], 16) * 17,
-                int(color_str[3], 16) * 17,
-            )
-
         raise BadColorSpecError(repr(color_str))
 
     def __str__(self) -> str:
@@ -175,7 +167,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             blue = self.blue + value
             green = self.green + value
 
-            red, green, blue = [clip(component) for component in (red, green, blue)]
+            red, green, blue = [
+                int(clip(component)) for component in (red, green, blue)
+            ]
 
             return Color(red, green, blue)
 
@@ -193,7 +187,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green * value
             blue = self.blue * value
 
-            red, green, blue = [clip(i) for i in (red, green, blue)]
+            red, green, blue = [int(clip(i)) for i in (red, green, blue)]
 
             return Color(red, green, blue)
 

@@ -69,6 +69,29 @@ class ColorTests(TestCase):
         self.assertFalse(Color("#bfbfbd").is_gray(threshold=1))
         self.assertFalse(Color("#bfbebd").is_gray(threshold=1))
 
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_with_no_args_is_random(self):
+        c = Color()
+
+        self.assertEqual(c, Color("#442082"))
+
+    def test_init_values_out_of_range(self):
+        with self.assertRaises(color.BadColorSpecError):
+            Color(255, 255, 300)
+
+    def test_init_from_wrong_number_of_args(self):
+        with self.assertRaises(color.BadColorSpecError):
+            Color(255, 255)
+
+    def test_init_from_color(self):
+        c = Color("#3249ab")
+
+        self.assertEqual(Color(c), c)
+
+    def test_init_bad_colorspec(self):
+        with self.assertRaises(color.BadColorSpecError):
+            Color(None)
+
     def test_from_rgb_string(self):
         s = "rgb(100, 20, 30)"
 
@@ -78,6 +101,202 @@ class ColorTests(TestCase):
         s = "rgba(100, 20, 30, 0.4)"
 
         self.assertEqual(Color(s), Color(100, 20, 30))
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_from_random(self):
+        c = Color("random")
+
+        self.assertEqual(c, Color("#442082"))
+
+    def test_init_string_slashes(self):
+        c = Color("100/20/30")
+
+        self.assertEqual(c, Color(100, 20, 30))
+
+    def test_init_string_braces(self):
+        c = Color("{1.0, 0.2, 0.3}")
+
+        self.assertEqual(c, Color(255, 51, 76))
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_random_with_lum(self):
+        c = Color("random(34)")
+
+        self.assertEqual(c, Color("#2b1452"))
+        self.assertEqual(round(c.luminocity()), 34)
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_random_with_lum_gt(self):
+        c = Color("random(>34)")
+
+        self.assertEqual(c, Color("#52279c"))
+        self.assertGreater(round(c.luminocity()), 34)
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_random_with_lum_gte(self):
+        c = Color("random(>=34)")
+
+        self.assertEqual(c, Color("#51269a"))
+        self.assertGreaterEqual(round(c.luminocity()), 34)
+
+    def test_init_random_with_lum_error(self):
+        with self.assertRaises(color.BadColorSpecError):
+            Color("random(==34)")
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_init_from_randhue(self):
+        c = Color("randhue(50, 20)")
+
+        self.assertEqual(c, Color("#2f3319"))
+        _, s, v = c.to_hsv()
+        self.assertEqual(int(s), 50)
+        self.assertEqual(int(v), 20)
+
+    def test_from_rrggbb_string(self):
+        c = Color(50, 73, 171)
+
+        self.assertEqual(Color("#3249ab"), c)
+        self.assertEqual(Color("3249ab"), c)
+
+        self.assertEqual(Color("#cab"), Color("#ccaabb"))
+        self.assertEqual(Color("cab"), Color("#ccaabb"))
+
+    def test_bad_init_string_raises_error(self):
+        with self.assertRaises(color.BadColorSpecError):
+            Color("bogus")
+
+    def test_add_float(self):
+        c1 = Color("#3249ab")
+        c2 = c1 + 20.0
+
+        self.assertEqual(c2, Color("#465dbf"))
+
+    def test_add_color(self):
+        c1 = Color("#3249ab")
+        c2 = Color("#040404")
+        c3 = c1 + c2
+
+        self.assertEqual(c3, Color("#36af4d"))
+
+    def test_mul_float(self):
+        c1 = Color("#3249ab")
+        c2 = c1 * 0.3
+
+        self.assertEqual(c2, Color("#0f1533"))
+
+        c2 = c1 * 1.3
+
+        self.assertEqual(c2, Color("#415ede"))
+
+    def test_mul_color(self):
+        # I don't particularly see the point in this. Maybe remove
+        c1 = Color("#3249ab")
+        c2 = Color("#040404")
+        c3 = c1 * c2
+
+        self.assertEqual(c3, Color("#c8ffff"))
+
+    def test_sub(self):
+        c1 = Color("#ffa500")
+        c2 = Color("#3249ab")
+        c3 = c1 - c2
+
+        self.assertEqual(c3, Color("#ff00a5"))
+
+    def test_colorify(self):
+        c1 = Color("#3249ab")
+        c2 = Color("#ffa500")
+        c3 = c1.colorify(c2)
+
+        self.assertEqual(c3, Color("#aa8031"))
+
+    def test_colorify_fix_bw(self):
+        c1 = Color("#ffffff")
+        c2 = Color("#ffa500")
+        c3 = c1.colorify(c2, fix_bw=True)
+
+        self.assertEqual(c3, Color("#fefefe"))
+
+        c1 = Color("#000000")
+        c3 = c1.colorify(c2, fix_bw=True)
+
+        self.assertEqual(c3, Color("#010101"))
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_randcolor(self):
+        self.assertEqual(Color.randcolor(), Color("#442082"))
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_randcolor_with_lum(self):
+        c = Color.randcolor(lum=34)
+        self.assertEqual(c, Color("#2b1452"))
+        self.assertEqual(round(c.luminocity()), 34)
+
+        c = Color.randcolor(lum=34, comp="<")
+        self.assertEqual(c, Color("#092724"))
+        self.assertLess(c.luminocity(), 34)
+
+        c = Color.randcolor(lum=34, comp="<=")
+        self.assertEqual(c, Color("#2f1a0c"))
+        self.assertLessEqual(c.luminocity(), 34)
+
+        c = Color.randcolor(lum=34, comp=">")
+        self.assertEqual(c, Color("#12ffff"))
+        self.assertGreater(c.luminocity(), 34)
+
+        c = Color.randcolor(lum=34, comp=">=")
+        self.assertEqual(c, Color("#01ffc6"))
+        self.assertGreaterEqual(c.luminocity(), 34)
+
+        with self.assertRaises(color.BadColorSpecError):
+            Color.randcolor(lum=34, comp="lt")
+
+    def test_inverse(self):
+        c = Color("#3249ab")
+        inverse = c.inverse()
+
+        self.assertEqual(inverse, Color("#cdb654"))
+
+    def test_winverse(self):
+        c = Color("#3249ab")
+        winverse = c.winverse()
+
+        self.assertEqual(winverse, Color("#19b600"))
+
+    def test_to_gtk(self):
+        c = Color("#3249ab")
+
+        self.assertEqual(c.to_gtk(), "0.20, 0.29, 0.67")
+
+    def test_to_ansi256(self):
+        c = Color("#3249ab")
+
+        self.assertEqual(c.to_ansi256(), 61)
+
+    def test_to_ansi256_gray(self):
+        self.assertEqual(Color("#acacac").to_ansi256(), 248)
+        self.assertEqual(Color("#000000").to_ansi256(), 16)
+        self.assertEqual(Color("#ffffff").to_ansi256(), 231)
+
+    def test_pastelize(self):
+        c = Color("#3249ab")
+        p = Color("#7f97ff")
+
+        self.assertEqual(c.pastelize(), p)
+
+        h, s, v = p.to_hsv()
+        self.assertEqual(round(h), round(c.to_hsv()[0]))
+        self.assertEqual(round(s), color.PASTEL_SATURATION)
+        self.assertEqual(round(v), color.PASTEL_BRIGHTNESS)
+
+    def test_pastelize_custom(self):
+        c = Color("#3249ab")
+        s = 134
+        v = 90
+        p = c.pastelize(saturation=s, brightness=v)
+
+        self.assertEqual(p, Color("#0000e5"))
+        self.assertEqual(p, Color.from_hsv((c.to_hsv()[0], s, v)))
 
     def test_luminize(self):
         self.assertEqual(Color("#0e118f").luminize(70), Color("#2128ff"))
