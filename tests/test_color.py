@@ -76,7 +76,7 @@ class ColorTests(TestCase):
         self.assertEqual(c, Color("#442082"))
 
     def test_init_values_out_of_range(self):
-        with self.assertRaises(color.BadColorSpecError):
+        with self.assertRaises(ValueError):
             Color(255, 255, 300)
 
     def test_init_from_wrong_number_of_args(self):
