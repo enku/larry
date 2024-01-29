@@ -483,15 +483,10 @@ class ColorFloat:
     blue: float = 0.0
     alpha: float = 1.0
 
-    def __post_init__(self) -> None:  # pragma: no cover
-        if not between_0_and_1(self.red):
-            raise ValueError("red must be between 0 and 1")
-        if not between_0_and_1(self.green):
-            raise ValueError("green must be between 0 and 1")
-        if not between_0_and_1(self.blue):
-            raise ValueError("blue must be between 0 and 1")
-        if not between_0_and_1(self.alpha):
-            raise ValueError("alpha must be between 0 and 1")
+    def __post_init__(self) -> None:
+        for channel in ["red", "green", "blue", "alpha"]:
+            if not between_0_and_1(getattr(self, channel)):
+                raise ValueError(f"{channel} must be between 0 and 1")
 
     @classmethod
     def from_color(

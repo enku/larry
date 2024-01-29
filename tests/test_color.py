@@ -541,9 +541,15 @@ class ColorFloatTests(TestCase):
         self.assertEqual(cf.blue, 0.6)
         self.assertEqual(cf.alpha, 0.7)
 
-    def test_init_with_invalid_value(self):
-        with self.assertRaises(ValueError):
-            ColorFloat(alpha=1.4)
+    def test_init_with_invalid_values(self):
+        good_values = {"red": 0.6, "green": 0.1, "blue": 0.9, "alpha": 1.0}
+
+        for channel in ["red", "green", "blue", "alpha"]:
+            bad_values = {**good_values, channel: 4.0}
+            with self.assertRaises(ValueError) as ctx:
+                ColorFloat(**bad_values)
+            exc = ctx.exception
+            self.assertEqual(exc.args, (f"{channel} must be between 0 and 1",))
 
     def test_from_color(self):
         testcolor = Color(103, 95, 148)
