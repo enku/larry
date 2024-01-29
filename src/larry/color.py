@@ -7,7 +7,7 @@ import re
 from collections import namedtuple
 from dataclasses import dataclass
 from math import floor
-from typing import Iterator, Optional, TypeAlias, TypeGuard, TypeVar, Union
+from typing import Iterable, Iterator, Optional, TypeAlias, TypeGuard, TypeVar, Union
 
 ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 
@@ -456,6 +456,29 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
 ColorList: TypeAlias = list[Color]
 ColorGenerator: TypeAlias = Iterator[Color]
+
+
+def ungray(
+    colors: ColorList, *, channel: str | Iterable[str] = "green", amount: float = 0.7
+) -> ColorList:
+    """Convert the input colors' grays are to non-grays"""
+    black_or_white = (Color("#000000"), Color("#ffffff"))
+    fields = (channel,) if isinstance(channel, str) else channel
+
+    def should_change(color: Color) -> bool:
+        return color.is_gray() and color not in black_or_white
+
+    def modify(channel: int) -> int:
+        return clip(round(amount * channel))
+
+    return [
+        (
+            color._replace(**{field: modify(getattr(color, field)) for field in fields})
+            if should_change(color)
+            else color
+        )
+        for color in colors
+    ]
 
 
 def between_0_and_1(value: float) -> TypeGuard[float]:

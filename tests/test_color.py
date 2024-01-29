@@ -605,3 +605,50 @@ class CombineColorsTests(TestCase):
         opacity = 0.4
         c = color.combine_colors(fg, bg, opacity)
         self.assertEqual(c, Color("#990066"))
+
+
+class UngrayTests(TestCase):
+    def test_ungrays(self):
+        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+
+        colors = color.ungray(orig_colors)
+
+        expected = make_colors("#ac78ac #660099 #553b55 #bf86bf #990066 #443044")
+
+        self.assertEqual(colors, expected)
+
+    def test_can_specify_channel(self):
+        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+
+        colors = color.ungray(orig_colors, channel="red")
+
+        expected = make_colors("#78acac #660099 #3b5555 #86bfbf #990066 #304444")
+
+        self.assertEqual(colors, expected)
+
+    def test_can_specify_amount(self):
+        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+
+        colors = color.ungray(orig_colors, amount=1.3)
+
+        expected = make_colors("#ace0ac #660099 #556e55 #bff8bf #990066 #445844")
+
+        self.assertEqual(colors, expected)
+
+    def test_multiple_channels(self):
+        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+
+        colors = color.ungray(orig_colors, channel=["red", "green"], amount=0)
+
+        expected = make_colors("#0000ac #660099 #000055 #0000bf #990066 #000044")
+
+        self.assertEqual(colors, expected)
+
+    def test_skips_black_and_white(self):
+        orig_colors = make_colors("#acacac #000000 #555555 #bfbfbf #990066 #ffffff")
+
+        colors = color.ungray(orig_colors)
+
+        expected = make_colors("#ac78ac #000000 #553b55 #bf86bf #990066 #ffffff")
+
+        self.assertEqual(colors, expected)
