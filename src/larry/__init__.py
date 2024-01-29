@@ -3,33 +3,21 @@
 from __future__ import annotations
 
 import logging
-import os
 import random
-import re
 from importlib.metadata import distribution
 from io import BytesIO
-from typing import Any, Callable, Iterable, Protocol, Type
+from typing import Any, Iterable, Protocol, Type
 from warnings import warn
 
 from PIL import Image as PillowImage
 
-from larry.color import Color, ColorGenerator, ColorList
+from larry.color import COLORS_RE, Color, ColorList, replace_string
 
 __version__ = distribution("larry").version
 
 LOGGER = logging.getLogger("larry")
 
 
-COLOR_RE = re.compile(
-    r"""
-    (
-        \#[0-9a-f]{6}|          # rrggbb
-        \#[0-9a-f]{3}|          # rgb
-        rgb\(\d+, *\d+, *\d+\)  # rgb(d, d, d)
-    )
-""",
-    flags=re.X | re.I,
-)
 IMAGE_TYPES: list[Type[Image]] = []
 
 
@@ -96,7 +84,7 @@ class SVGImage:
 
     def color_strings(self) -> list[str]:
         """Return a list of all the colors strings in the SVGImage"""
-        return COLOR_RE.findall(self.svg)
+        return COLORS_RE.findall(self.svg)
 
     def get_colors(self) -> set[Color]:
         """Return the Colors of this Image"""
@@ -106,14 +94,8 @@ class SVGImage:
         self, orig_colors: Iterable[Color], new_colors: Iterable[Color]
     ) -> SVGImage:
         """Return a new image by orig_colors with new_colors"""
-        color_map = dict((orig, new) for orig, new in zip(orig_colors, new_colors))
-        svg = self.svg
-
-        for color_string in self.color_strings():
-            color = Color(color_string)
-
-            if color in orig_colors:
-                svg = svg.replace(color_string, str(color_map[color]))
+        color_map = dict(zip(orig_colors, new_colors))
+        svg = replace_string(self.svg, color_map)
 
         return type(self)(svg.encode())
 

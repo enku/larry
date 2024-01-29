@@ -118,7 +118,7 @@ def run_every(interval: float, config_path: str, loop) -> None:
 
 def main(args=None) -> None:
     """Main program entry point"""
-    args = parse_args(args or sys.argv[1:])
+    args = parse_args(args if args is not None else sys.argv[1:])
 
     if args.daemonize:
         with daemon.DaemonContext():
