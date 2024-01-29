@@ -406,6 +406,11 @@ class ColorTests(TestCase):
 
         self.assertEqual(Color.from_hsv(hsv), Color("#9a59db"))
 
+    def test_hsv_h_negative(self):
+        hsv = (-90, 59, 86)
+
+        self.assertEqual(Color.from_hsv(hsv), Color("#9a59db"))
+
     def test_from_hsv_with_360(self):
         hsv = (360, 59, 86)
 

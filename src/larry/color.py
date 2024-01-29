@@ -422,7 +422,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         hue, saturation, value = hsv[0] / 360.0, hsv[1] / 100.0, hsv[2] / 100.0
         if hue < 0.0:
-            hue = 0.5
+            hue = hue + 1
         if saturation == 0.0:  # grayscale
             red = green = blue = value
         else:
