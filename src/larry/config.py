@@ -21,6 +21,8 @@ def load(path: str) -> configparser.ConfigParser:
     """Return ConfigParser instance given the path"""
     config = configparser.ConfigParser()
     config["DEFAULT"]["input"] = DEFAULT_INPUT_PATH
+    config["DEFAULT"]["output"] = "!cat"
+    config.add_section("larry")
 
     try:
         config.read(path)

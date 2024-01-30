@@ -17,11 +17,24 @@ from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins
 
-HANDLER = None
 INTERVAL = 8 * 60
 
 
-def parse_args(args: Sequence[str]) -> argparse.Namespace:
+class Handler:
+    """Process timer handle"""
+
+    _handler = None
+
+    @classmethod
+    def get(cls) -> asyncio.TimerHandle | None:
+        return cls._handler
+
+    @classmethod
+    def set(cls, handler: asyncio.TimerHandle | None) -> None:
+        cls._handler = handler
+
+
+def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -46,7 +59,7 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         help="Run as a background daemon",
     )
 
-    return parser.parse_args(args)
+    return parser.parse_args(argv)
 
 
 def run(config_path: str) -> None:
@@ -90,9 +103,6 @@ def run(config_path: str) -> None:
     write_file(outfile, bytes(image))
 
     # now run any plugins
-    if "larry" not in config.sections():
-        return
-
     plugins = config["larry"].get("plugins", "").split()
     loop = asyncio.get_event_loop()
 
@@ -102,18 +112,17 @@ def run(config_path: str) -> None:
 
 def run_every(interval: float, config_path: str, loop) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
-    global HANDLER
-
-    if HANDLER:
+    if handler := Handler.get():
         LOGGER.info("received signal to change wallpaper")
-        HANDLER.cancel()
+        handler.cancel()
 
     run(config_path)
 
     if interval == 0:
         return
 
-    HANDLER = loop.call_later(interval, run_every, interval, config_path, loop)
+    handler = loop.call_later(interval, run_every, interval, config_path, loop)
+    Handler.set(handler)
 
 
 def main(args=None) -> None:
