@@ -47,3 +47,10 @@ class ConfigTestCase(TestCase):
 
 def make_colors(colors: str) -> list[Color]:
     return [Color(s) for s in colors.split()]
+
+
+def mock_write_file(bytes_io):
+    def write_file(_filename: str, data: bytes):
+        bytes_io.write(data)
+
+    return write_file

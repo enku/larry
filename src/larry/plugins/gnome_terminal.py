@@ -10,11 +10,11 @@ PATH = "/org/gnome/terminal/legacy/profiles:/:{profile}/"
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """larry plugin to set the gnome-terminal background color"""
-    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
+    Gio = gio()  # pylint: disable=invalid-name
 
     profiles = config.get("profiles", "").split()
     colorstr = config["color"]
-    color = Color("#" + colorstr)
+    color = Color(colorstr)
 
     for profile in profiles:
         path = get_path(profile)
@@ -27,3 +27,12 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
 def get_path(profile: str) -> str:
     """Return the terminal gsettings path for *profile*"""
     return PATH.format(profile=profile)
+
+
+def gio():  # pragma: no cover
+    """Return the Gio gobject introspection object"""
+    # Move import here so --list-plugins will at least work w/o gi
+    # pylint: disable=import-outside-toplevel,import-error
+    from gi.repository import Gio
+
+    return Gio

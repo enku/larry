@@ -4,7 +4,7 @@ import asyncio
 import json
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, cast
 from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList
@@ -13,6 +13,8 @@ from larry.config import ConfigType
 
 @dataclass
 class HighlightGroup:
+    """vim highlightgroup"""
+
     name: str
     key: str
     color: Color
@@ -30,6 +32,7 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
 
 
 def start(config: ConfigType) -> None:
+    """Start the vim channel server"""
     address = config.get("listen_address", "localhost")
     port = int(config["port"])
 
@@ -42,6 +45,7 @@ def start(config: ConfigType) -> None:
 
 
 def get_new_colors(config: str, from_colors: ColorList) -> List[Tuple[str, str]]:
+    """Given the config and colors, return the vim colorscheme"""
     bg_color = from_colors[0]
     vim_configs = [*process_config(config)]
     targets = Color.generate_from(list(from_colors), len(vim_configs))
@@ -60,6 +64,7 @@ def get_new_colors(config: str, from_colors: ColorList) -> List[Tuple[str, str]]
 
 
 def process_config(config: str) -> Iterator[HighlightGroup]:
+    """Process the color config and return the HighlightGroups"""
     lines = config.split("\n")
 
     for line in lines:
@@ -70,6 +75,7 @@ def process_config(config: str) -> Iterator[HighlightGroup]:
 
 
 def process_line(line: str) -> Optional[HighlightGroup]:
+    """Given the line return the HighlightGroup or None"""
     line = line.strip()
 
     if not line:
@@ -100,7 +106,7 @@ class VimProtocol(asyncio.Protocol):
     plugin uses to signal the sending of colors to the clients.
     """
 
-    clients: WeakSet[asyncio.WriteTransport] = WeakSet()
+    clients: WeakSet[asyncio.BaseTransport] = WeakSet()
     colors: List[Tuple[str, str]] = []
     is_running = False
 
@@ -113,25 +119,22 @@ class VimProtocol(asyncio.Protocol):
         return json.dumps(data).encode()
 
     @classmethod
-    def send(cls, data: Any, transport: asyncio.WriteTransport) -> None:
+    def send(cls, data: Any, transport: asyncio.BaseTransport) -> None:
         """encode *data* as JSON and send it over *transport*"""
+        transport = cast(asyncio.WriteTransport, transport)
         return transport.write(cls.encode(data) + b"\n")
 
-    def connection_made(self, transport: asyncio.WriteTransport) -> None:
-        self.transport = transport
-
+    def connection_made(self, transport: asyncio.BaseTransport) -> None:
+        """Called when a connection is made."""
         self.clients.add(transport)
         self.set_termguicolors(transport)
 
         if self.colors:
             self.send_colors(transport)
 
-    def connection_lost(self, _exc: Optional[Exception]) -> None:
-        if self.transport:
-            self.clients.remove(self.transport)
-
     @classmethod
-    def send_colors(cls, transport: asyncio.WriteTransport) -> None:
+    def send_colors(cls, transport: asyncio.BaseTransport) -> None:
+        """Send the current colorscheme to the given transport"""
         colors = cls.colors
 
         for label, colorspec in colors:
@@ -141,11 +144,13 @@ class VimProtocol(asyncio.Protocol):
         cls.send(["redraw", ""], transport)
 
     @classmethod
-    def set_termguicolors(cls, transport: asyncio.WriteTransport) -> None:
+    def set_termguicolors(cls, transport: asyncio.BaseTransport) -> None:
+        """Sent the "set termguicolors" command to the given transport"""
         cls.send(["ex", "set termguicolors"], transport)
 
     @classmethod
     def run(cls, colors: List[Tuple[str, str]], _config: ConfigType) -> None:
+        """Iterate over connected clients sending the current colorscheme"""
         cls.is_running = True
         cls.colors = colors
         loop = asyncio.get_event_loop()
