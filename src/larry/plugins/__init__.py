@@ -55,7 +55,7 @@ def load(name: str) -> PluginType:
 
         try:
             plugin = plugins[0].load()
-        except ModuleNotFoundError as error:
+        except ModuleNotFoundError as error:  # pragma: no cover
             raise PluginNotFound(name) from error
 
         PLUGINS[name] = plugin

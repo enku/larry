@@ -9,29 +9,10 @@ from unittest import mock
 from larry import cli, filters, make_image_from_bytes
 from larry.io import read_file
 
-from . import TestCase as BaseTestCase
-from . import make_colors
+from . import ConfigTestCase, make_colors
 
 
-class TestCase(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-
-        config = f"""\
-[larry]
-output = {self.tmpdir}/larry.svg
-"""
-        self.config_path = f"{self.tmpdir}/larry.cfg"
-        with open(self.config_path, "w", encoding="UTF-8") as fp:
-            fp.write(config)
-
-    def add_config(self, **kwargs):
-        with open(self.config_path, "a", encoding="UTF-8") as config_file:
-            for name, value in kwargs.items():
-                print(f"{name} = {value}", file=config_file)
-
-
-class HandlerTests(TestCase):
+class HandlerTests(ConfigTestCase):
     def tearDown(self):
         cli.Handler.set(None)
         super().tearDown()
@@ -43,7 +24,7 @@ class HandlerTests(TestCase):
         self.assertEqual(cli.Handler.get(), 6)
 
 
-class ParseArgsTests(TestCase):
+class ParseArgsTests(ConfigTestCase):
     def test(self):
         argv = ["-c", "/dev/null", "--list-filters", "--daemonize", "-n2"]
         args = cli.parse_args(argv)
@@ -60,7 +41,7 @@ class ParseArgsTests(TestCase):
 
 
 @mock.patch("larry.cli.asyncio.get_event_loop")
-class RunTests(TestCase):
+class RunTests(ConfigTestCase):
     def test_runs_filters_and_schedules_plugins(self, get_event_loop):
         self.add_config(plugins="command dummy", filter="inverse pastelize")
 
@@ -128,7 +109,7 @@ class RunTests(TestCase):
         write_file.assert_called()
 
 
-class RunEveryTests(TestCase):
+class RunEveryTests(ConfigTestCase):
     def test_runs_and_schedules_to_run_again(self):
         with mock.patch("larry.cli.Handler") as mock_handler:
             mock_handler.get.return_value = None
@@ -162,7 +143,7 @@ class RunEveryTests(TestCase):
 
 @mock.patch("larry.cli.real_main")
 @mock.patch("larry.cli.daemon.DaemonContext")
-class MainTests(TestCase):
+class MainTests(ConfigTestCase):
     def test_daemonize_false(self, daemon, real_main):
         args = []
         cli.main(args)
@@ -179,7 +160,7 @@ class MainTests(TestCase):
 
 
 @mock.patch("larry.cli.asyncio.new_event_loop")
-class RealMainTests(TestCase):
+class RealMainTests(ConfigTestCase):
     def test(self, new_event_loop):
         args = argparse.Namespace(
             config_path=self.config_path,
