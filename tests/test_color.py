@@ -31,7 +31,7 @@ d {
 """
 
 
-class Betweeen0And1Tests(TestCase):
+class Between0And1Tests(TestCase):
     def test_true(self):
         self.assertTrue(color.between_0_and_1(0.4))
 
@@ -359,7 +359,7 @@ class ColorTests(TestCase):
 
         colors = list(Color.generate_from(orig_colors, 7))
 
-        # gradient goes from input colors orderd by luminocity
+        # gradient goes from input colors ordered by luminocity
         expected = make_colors(
             "#7e118f #7e227f #7e336f #7e445f #7f564f #7f673f #807930"
         )
