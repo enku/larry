@@ -25,6 +25,7 @@ class FilterError(RuntimeError):
 
 
 def list_filters(config_path: str) -> str:
+    """Return text displaying available filters and enabled status"""
     output = io.StringIO()
     config = load_config(config_path)
     enabled_filter = config["larry"].get("filter", "gradient").split()
@@ -388,6 +389,10 @@ def get_opacity(config: ConfigParser, section: str, name: str = "opacity") -> fl
 def new_image_colors(
     count: int, config: ConfigParser, section: str, name: str = "image"
 ) -> ColorList:
+    """Return count colors from the image specified in config
+
+    If the image has fewer colors than requested, the colors are cycled.
+    """
     image_colors = list(
         make_image_from_bytes(
             read_file(config[f"filters:{section}"].get(name))

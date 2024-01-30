@@ -27,10 +27,12 @@ class Handler:
 
     @classmethod
     def get(cls) -> asyncio.TimerHandle | None:
+        """Return the timer handle if one is set"""
         return cls._handler
 
     @classmethod
     def set(cls, handler: asyncio.TimerHandle | None) -> None:
+        """Set the timer handle"""
         cls._handler = handler
 
 
