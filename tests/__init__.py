@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase as StdlibTestCase
 
+from larry import config
 from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
 
@@ -23,27 +24,25 @@ class ConfigTestCase(TestCase):
     def setUp(self):
         super().setUp()
 
-        # TODO: use actual ConfigParser for this
-        config = f"""\
-[larry]
-output = {self.tmpdir}/larry.svg
-"""
         self.config_path = f"{self.tmpdir}/larry.cfg"
-        with open(self.config_path, "w", encoding="UTF-8") as fp:
-            fp.write(config)
+        self._section = "larry"
+        self.config = config.load(self.config_path)
+        self.add_config(output=f"{self.tmpdir}/larry.svg")
 
     def add_config(self, **kwargs):
-        with self._append() as config_file:
-            for name, value in kwargs.items():
-                print(f"{name} = {value}", file=config_file)
+        for name, value in kwargs.items():
+            self.config[self._section][name] = str(value)
+
+        self._dump()
 
     def add_section(self, name: str):
-        with self._append() as config_file:
-            print("", file=config_file)
-            print(f"[{name}]", file=config_file)
+        self.config.add_section(name)
+        self._section = name
+        self._dump()
 
-    def _append(self):
-        return open(self.config_path, "a", encoding="UTF-8")
+    def _dump(self):
+        with open(self.config_path, "w", encoding="UTF-8") as fp:
+            self.config.write(fp)
 
 
 def make_colors(colors: str) -> list[Color]:
