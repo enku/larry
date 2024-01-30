@@ -154,7 +154,7 @@ def real_main(args) -> None:
         print(list_filters(args.config_path), end="")
         return
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
 
     if args.interval:
         loop.add_signal_handler(
