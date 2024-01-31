@@ -11,7 +11,9 @@ from . import RASTER_IMAGE, SVG_IMAGE, TestCase, make_colors
 
 class ConfigTypeTests(TestCase):
     def test(self):
-        config_type = larry.ConfigType
+        with self.assertWarns(DeprecationWarning):
+            config_type = larry.ConfigType
+
         self.assertIs(config_type, config.ConfigType)
 
 

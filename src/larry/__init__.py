@@ -26,6 +26,7 @@ def __getattr__(name: str) -> Any:
         warn(
             "larry.ConfigType is deprecated. Use larry.config.ConfigType",
             DeprecationWarning,
+            stacklevel=2,
         )
         import larry.config  # pylint: disable=import-outside-toplevel
 
