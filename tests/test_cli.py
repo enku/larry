@@ -26,12 +26,11 @@ class HandlerTests(ConfigTestCase):
 
 class ParseArgsTests(ConfigTestCase):
     def test(self):
-        argv = ["-c", "/dev/null", "--list-filters", "--daemonize", "-n2"]
+        argv = ["-c", "/dev/null", "--list-filters", "-n2"]
         args = cli.parse_args(argv)
 
         expected = argparse.Namespace(
             config_path="/dev/null",
-            daemonize=True,
             debug=False,
             interval=2,
             list_filters=True,
@@ -142,114 +141,69 @@ class RunEveryTests(ConfigTestCase):
         handler.cancel.assert_called_once_with()
 
 
-@mock.patch("larry.cli.real_main")
-@mock.patch("larry.cli.daemon.DaemonContext")
-class MainTests(ConfigTestCase):
-    def test_daemonize_false(self, daemon, real_main):
-        args = []
-        cli.main(args)
-
-        daemon.assert_not_called()
-        real_main.assert_called_once_with(cli.parse_args(args))
-
-    def test_daemonize_true(self, daemon, real_main):
-        args = ["-d"]
-        cli.main(args)
-
-        daemon.assert_called_once_with()
-        real_main.assert_called_once_with(cli.parse_args(args))
-
-
 @mock.patch("larry.cli.asyncio.new_event_loop")
-class RealMainTests(ConfigTestCase):
+class MainTests(ConfigTestCase):
     def test(self, new_event_loop):
-        args = argparse.Namespace(
-            config_path=self.config_path,
-            debug=False,
-            interval=60,
-            list_filters=False,
-            list_plugins=False,
-        )
+        argv = f"larry -c {self.config_path} --interval=60".split()
 
-        cli.real_main(args)
+        cli.main(argv)
 
         loop = new_event_loop.return_value
         loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, cli.run_every, args.interval, args.config_path, loop
+            signal.SIGUSR1, cli.run_every, 60, self.config_path, loop
         )
         loop.call_soon.assert_called_once_with(
-            cli.run_every, args.interval, args.config_path, loop
+            cli.run_every, 60, self.config_path, loop
         )
         loop.run_forever.assert_called_once_with()
         loop.close.assert_called_once_with()
 
     def test_with_interval_0(self, new_event_loop):
-        args = argparse.Namespace(
-            config_path=self.config_path,
-            debug=False,
-            interval=0,
-            list_filters=False,
-            list_plugins=False,
-        )
+        argv = f"larry -c {self.config_path} -n0".split()
 
-        cli.real_main(args)
+        cli.main(argv)
 
         loop = new_event_loop.return_value
         loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, cli.run, args.config_path, loop
+            signal.SIGUSR1, cli.run, self.config_path, loop
         )
 
     def test_keyboard_interrupt_stops_loop(self, new_event_loop):
-        args = argparse.Namespace(
-            config_path=self.config_path,
-            debug=False,
-            interval=60,
-            list_filters=False,
-            list_plugins=False,
-        )
+        argv = f"larry -c {self.config_path} --interval 60".split()
         loop = new_event_loop.return_value
         loop.run_forever.side_effect = KeyboardInterrupt()
 
-        cli.real_main(args)
+        cli.main(argv)
 
         loop.stop.assert_called_once_with()
 
     def test_list_plugins(self, new_event_loop):
         self.add_config(plugins="command")
-        args = argparse.Namespace(
-            config_path=self.config_path, debug=False, list_plugins=True
-        )
+        argv = f"larry -c {self.config_path} --list-plugins".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
-            cli.real_main(args)
+            cli.main(argv)
 
         self.assertIn("[X] command", stdout.getvalue())
         new_event_loop.assert_not_called()
 
     def test_list_filters(self, new_event_loop):
-        args = argparse.Namespace(
-            config_path=self.config_path,
-            debug=False,
-            list_plugins=False,
-            list_filters=True,
-        )
+        argv = f"larry -c {self.config_path} --list-filters".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
-            cli.real_main(args)
+            cli.main(argv)
 
         self.assertIn("[X] gradient", stdout.getvalue())
         new_event_loop.assert_not_called()
 
     @mock.patch("larry.cli.LOGGER")
     def test_with_debug(self, logger, _new_event_loop):
-        args = argparse.Namespace(
-            config_path=self.config_path, debug=True, list_plugins=True
-        )
+        argv = f"larry -c {self.config_path} --debug --list-plugins".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
-            cli.real_main(args)
+            cli.main(argv)
 
         logger.setLevel.assert_called_once_with("DEBUG")

@@ -5,7 +5,7 @@
 groups = ["default", "dev", "gnome"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:e8bfd267fc3e28ace0c0a7e58033dfcdf359523759d172dc42fc78c33ca06466"
+content_hash = "sha256:835167eb37d1bf0718d155470402eb8dc53d074fdb45f95a5e8ab73bc106747e"
 
 [[package]]
 name = "astroid"
@@ -150,16 +150,6 @@ files = [
 ]
 
 [[package]]
-name = "docutils"
-version = "0.20.1"
-requires_python = ">=3.7"
-summary = "Docutils -- Python Documentation Utilities"
-files = [
-    {file = "docutils-0.20.1-py3-none-any.whl", hash = "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6"},
-    {file = "docutils-0.20.1.tar.gz", hash = "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"},
-]
-
-[[package]]
 name = "isort"
 version = "5.13.2"
 requires_python = ">=3.8.0"
@@ -167,15 +157,6 @@ summary = "A Python utility / library to sort Python imports."
 files = [
     {file = "isort-5.13.2-py3-none-any.whl", hash = "sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6"},
     {file = "isort-5.13.2.tar.gz", hash = "sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109"},
-]
-
-[[package]]
-name = "lockfile"
-version = "0.12.2"
-summary = "Platform-independent file locking module"
-files = [
-    {file = "lockfile-0.12.2-py2.py3-none-any.whl", hash = "sha256:6c3cb24f344923d30b2785d5ad75182c8ea7ac1b6171b08657258ec7429d50fa"},
-    {file = "lockfile-0.12.2.tar.gz", hash = "sha256:6aed02de03cba24efabcd600b30540140634fc06cfa603822d508d5361e9f799"},
 ]
 
 [[package]]
@@ -412,31 +393,6 @@ dependencies = [
 files = [
     {file = "pyproject_hooks-1.0.0-py3-none-any.whl", hash = "sha256:283c11acd6b928d2f6a7c73fa0d01cb2bdc5f07c57a2eeb6e83d5e56b97976f8"},
     {file = "pyproject_hooks-1.0.0.tar.gz", hash = "sha256:f271b298b97f5955d53fb12b72c1fb1948c22c1a6b70b315c54cedaca0264ef5"},
-]
-
-[[package]]
-name = "python-daemon"
-version = "3.0.1"
-requires_python = ">=3"
-summary = "Library to implement a well-behaved Unix daemon process."
-dependencies = [
-    "docutils",
-    "lockfile>=0.10",
-    "setuptools>=62.4.0",
-]
-files = [
-    {file = "python-daemon-3.0.1.tar.gz", hash = "sha256:6c57452372f7eaff40934a1c03ad1826bf5e793558e87fef49131e6464b4dae5"},
-    {file = "python_daemon-3.0.1-py3-none-any.whl", hash = "sha256:42bb848a3260a027fa71ad47ecd959e471327cb34da5965962edd5926229f341"},
-]
-
-[[package]]
-name = "setuptools"
-version = "69.0.3"
-requires_python = ">=3.8"
-summary = "Easily download, build, install, upgrade, and uninstall Python packages"
-files = [
-    {file = "setuptools-69.0.3-py3-none-any.whl", hash = "sha256:385eb4edd9c9d5c17540511303e39a147ce2fc04bc55289c322b9e5904fe2c05"},
-    {file = "setuptools-69.0.3.tar.gz", hash = "sha256:be1af57fc409f93647f2e8e4573a142ed38724b8cdd389706a867bb4efcf1e78"},
 ]
 
 [[package]]
