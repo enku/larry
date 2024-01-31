@@ -8,6 +8,7 @@ from larry import Color, ColorList
 from larry.color import COLORS_RE, replace_string, ungray
 from larry.config import ConfigType
 from larry.io import read_file, write_file
+from larry.plugins import gir
 
 DEFAULT_GRAY_THRESHOLD = 35
 THEME_GSETTINGS_NAME = "name"
@@ -16,9 +17,8 @@ THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 
 def get_current_theme() -> str:
     """Return the name of the current gnome-shell theme"""
-    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
-
-    settings = Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    gi_repo = gir()
+    settings = gi_repo.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
     return settings.get_string(THEME_GSETTINGS_NAME)
 
 
@@ -64,9 +64,8 @@ def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> s
 
 def set_theme(name: str) -> None:
     """Sets the GNOME Shell theme to the given theme"""
-    from gi.repository import Gio  # pylint: disable=import-outside-toplevel
-
-    settings = Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    gi_repo = gir()
+    settings = gi_repo.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
     settings.set_string(THEME_GSETTINGS_NAME, name)
 
 
