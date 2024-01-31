@@ -64,7 +64,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def run(config_path: str) -> None:
+def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     """Perform a single iteration of Larry"""
     config = load_config(config_path)
 
@@ -106,7 +106,6 @@ def run(config_path: str) -> None:
 
     # now run any plugins
     plugins = config["larry"].get("plugins", "").split()
-    loop = asyncio.get_event_loop()
 
     for plugin_name in plugins:
         loop.call_soon(do_plugin, plugin_name, [*colors], config_path)
@@ -118,7 +117,7 @@ def run_every(interval: float, config_path: str, loop) -> None:
         LOGGER.info("received signal to change wallpaper")
         handler.cancel()
 
-    run(config_path)
+    run(config_path, loop)
 
     if interval == 0:
         return
@@ -164,8 +163,8 @@ def real_main(args) -> None:
         )
         loop.call_soon(run_every, args.interval, args.config_path, loop)
     else:
-        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path)
-        run(args.config_path)
+        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path, loop)
+        run(args.config_path, loop)
 
     try:
         loop.run_forever()

@@ -40,15 +40,14 @@ class ParseArgsTests(ConfigTestCase):
         self.assertEqual(args, expected)
 
 
-@mock.patch("larry.cli.asyncio.get_event_loop")
 class RunTests(ConfigTestCase):
-    def test_runs_filters_and_schedules_plugins(self, get_event_loop):
+    def test_runs_filters_and_schedules_plugins(self):
         self.add_config(plugins="command dummy", filter="inverse pastelize")
 
-        cli.run(self.config_path)
+        loop = mock.Mock()
+        cli.run(self.config_path, loop)
 
         self.assertTrue(os.path.exists(f"{self.tmpdir}/larry.svg"))
-        loop = get_event_loop.return_value
         colors = filters.pastelize(
             filters.inverse(
                 make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
@@ -62,20 +61,21 @@ class RunTests(ConfigTestCase):
             ]
         )
 
-    def test_pause_mode_does_nothing(self, get_event_loop):
+    def test_pause_mode_does_nothing(self):
         self.add_config(pause="1", plugins="command dummy", filter="inverse pastelize")
 
-        cli.run(self.config_path)
+        loop = mock.Mock()
+        cli.run(self.config_path, loop)
 
         self.assertFalse(os.path.exists(f"{self.tmpdir}/larry.svg"))
-        loop = get_event_loop.return_value
         loop.call_soon.assert_not_called()
 
     @mock.patch("larry.cli.LOGGER")
-    def test_logs_invalid_filters(self, logger, _get_event_loop):
+    def test_logs_invalid_filters(self, logger):
         self.add_config(filter="inverse bogus pastelize")
 
-        cli.run(self.config_path)
+        loop = mock.Mock()
+        cli.run(self.config_path, loop)
 
         logger.exception.assert_called_once_with(
             "Color filter bogus not found. Skipping."
@@ -91,20 +91,21 @@ class RunTests(ConfigTestCase):
         image_colors = image.get_colors()
         self.assertEqual(set(colors), set(image_colors))
 
-    def test_colors_from_config(self, _get_event_loop):
+    def test_colors_from_config(self):
         color_str = "red white blue pink yellow orange"
         self.add_config(colors=color_str, filter="none")
 
-        cli.run(self.config_path)
+        loop = mock.Mock()
+        cli.run(self.config_path, loop)
 
         image = make_image_from_bytes(read_file(f"{self.tmpdir}/larry.svg"))
         image_colors = image.get_colors()
         colors = make_colors(color_str)
         self.assertEqual(set(colors), set(image_colors))
 
-    def test_run_with_no_config(self, _get_event_loop):
+    def test_run_with_no_config(self):
         with mock.patch("larry.cli.write_file") as write_file:
-            cli.run(f"{self.tmpdir}/bogus.cfg")
+            cli.run(f"{self.tmpdir}/bogus.cfg", mock.Mock())
 
         write_file.assert_called()
 
@@ -182,8 +183,7 @@ class RealMainTests(ConfigTestCase):
         loop.run_forever.assert_called_once_with()
         loop.close.assert_called_once_with()
 
-    @mock.patch("larry.cli.asyncio.get_event_loop")
-    def test_with_interval_0(self, _new_event_loop, get_event_loop):
+    def test_with_interval_0(self, new_event_loop):
         args = argparse.Namespace(
             config_path=self.config_path,
             debug=False,
@@ -194,9 +194,9 @@ class RealMainTests(ConfigTestCase):
 
         cli.real_main(args)
 
-        loop = get_event_loop.return_value
+        loop = new_event_loop.return_value
         loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, cli.run, args.config_path
+            signal.SIGUSR1, cli.run, args.config_path, loop
         )
 
     def test_keyboard_interrupt_stops_loop(self, new_event_loop):
