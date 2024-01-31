@@ -61,3 +61,12 @@ def load(name: str) -> PluginType:
         PLUGINS[name] = plugin
 
     return PLUGINS[name]
+
+
+def gir():  # pragma: no cover
+    """Return the Gio gobject introspection repository"""
+    # Move import here so --list-plugins will at least work w/o gi
+    # pylint: disable=import-outside-toplevel,import-error
+    import gi.repository
+
+    return gi.repository

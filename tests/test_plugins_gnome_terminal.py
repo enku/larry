@@ -6,9 +6,9 @@ from larry.plugins import gnome_terminal
 from . import ConfigTestCase, TestCase, make_colors
 
 
-@mock.patch("larry.plugins.gnome_terminal.gio")
+@mock.patch("larry.plugins.gnome_terminal.gir")
 class PluginTests(ConfigTestCase):
-    def test(self, gio):
+    def test(self, gir):
         self.add_section("plugins:gnome_terminal")
         self.add_config(profiles="a b c", color="1d1e28")
         colors = make_colors(
@@ -17,7 +17,7 @@ class PluginTests(ConfigTestCase):
 
         gnome_terminal.plugin(colors, self.config["plugins:gnome_terminal"])
 
-        Gio = gio.return_value  # pylint: disable=invalid-name
+        gi_repo = gir.return_value
         new_with_path_calls = []
         for profile in "abc":
             path = gnome_terminal.get_path(profile)
@@ -25,7 +25,7 @@ class PluginTests(ConfigTestCase):
             new_with_path_calls.append(
                 new_with_path_calls[-1].set_string("background-color", mock.ANY)
             )
-        Gio.Settings.new_with_path.assert_has_calls(new_with_path_calls)
+        gi_repo.Gio.Settings.new_with_path.assert_has_calls(new_with_path_calls)
 
 
 class GetPathTests(TestCase):
