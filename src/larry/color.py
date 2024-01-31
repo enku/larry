@@ -7,8 +7,21 @@ import re
 from collections import namedtuple
 from dataclasses import dataclass
 from math import floor
-from typing import Iterable, Iterator, Optional, TypeAlias, TypeGuard, TypeVar, Union
+from typing import (
+    Callable,
+    Iterable,
+    Iterator,
+    Optional,
+    TypeAlias,
+    TypeGuard,
+    TypeVar,
+    Union,
+)
 
+ColorFloatType = TypeVar(  #  pylint: disable=invalid-name
+    "ColorFloatType", bound="ColorFloat"
+)
+ColorSpecStringParser: TypeAlias = Callable[[str], tuple[int, int, int]]
 ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
 
 _COMPS = (">", "<", "=")
@@ -19,6 +32,7 @@ COLORS_RE = re.compile(
     r"|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)"
     r"|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\S+\s*\))"
 )
+PARSERS: dict[re.Pattern, ColorSpecStringParser] = {}
 
 # (default) values for Color.pastelize
 PASTEL_SATURATION = 50
@@ -77,29 +91,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         color_str = color_str.strip('"')
 
-        ###rbg(r, g, b)
-        if color_str.startswith("rgb("):
-            red, green, blue = color_str[4:-1].split(",")
-            return int(red.strip()), int(green.strip()), int(blue.strip())
-
-        ###rbga(r, g, b, a)  # alpha is dropped
-        if color_str.startswith("rgba("):
-            red, green, blue, *_ = color_str[5:-1].split(",")
-            return int(red.strip()), int(green.strip()), int(blue.strip())
-
-        ####r/g/b
-        if len(color_str.split("/")) == 3:
-            red, green, blue = color_str.split("/")
-            return int(red), int(green), int(blue)
-
-        ####{ r, g, b}
-        if color_str[0] == "{" and color_str[-1] == "}":
-            red, green, blue = color_str[1:-1].split(",")
-            return (
-                int(float(red) * 255),
-                int(float(green) * 255),
-                int(float(blue) * 255),
-            )
+        for pattern, str_parser in PARSERS.items():
+            if pattern.match(color_str):
+                return str_parser(color_str)
 
         if val := NAMES.get(color_str.lower()):
             return val
@@ -135,26 +129,6 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             saturation, brightness = float(params[0]), float(params[1])
 
             return cls.randhue(saturation, brightness)
-
-        ####rrggbb
-        if len(color_str) in [3, 4]:
-            triplet = color_str
-            if triplet[0] == "#":
-                triplet = triplet[1:]
-            return (
-                int(triplet[0] * 2, 16),
-                int(triplet[1] * 2, 16),
-                int(triplet[2] * 2, 16),
-            )
-        if len(color_str) in [6, 7]:
-            triplet = color_str
-            if triplet[0] == "#":
-                triplet = triplet[1:]
-            return (
-                int(triplet[0:2], 16),
-                int(triplet[2:4], 16),
-                int(triplet[4:6], 16),
-            )
 
         raise BadColorSpecError(repr(color_str))
 
@@ -494,9 +468,6 @@ def clip(value, *, minimum=0, maximum=255):
     return value
 
 
-ColorFloatType = TypeVar("ColorFloatType", bound="ColorFloat")
-
-
 @dataclass(frozen=True)
 class ColorFloat:
     """Like Color but a quadruplet of floats [0..1]"""
@@ -574,3 +545,70 @@ def combine_colors(fg: Color, bg: Color, opacity: float) -> Color:
     return combine(
         ColorFloat.from_color(fg, opacity), ColorFloat.from_color(bg)
     ).to_color()
+
+
+def parser(regex: str):
+    """Register str -> tuple[int, int, int] parser with the given regex"""
+    pattern = re.compile(f"{regex}$")
+
+    def decorator(func: ColorSpecStringParser):
+        PARSERS[pattern] = func
+
+        return func
+
+    return decorator
+
+
+@parser(r"rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)")
+def parse_rgb_with_parens(color_str: str) -> tuple[int, int, int]:
+    """Parse rgb(n, n, n)"""
+    red, green, blue = color_str[4:-1].split(",")
+
+    return int(red.strip()), int(green.strip()), int(blue.strip())
+
+
+@parser(r"rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\S+\s*\)")
+def parse_rgba_with_parens(color_str: str) -> tuple[int, int, int]:
+    """rbga(r, g, b, a).  alpha is dropped"""
+    red, green, blue, *_ = color_str[5:-1].split(",")
+
+    return int(red.strip()), int(green.strip()), int(blue.strip())
+
+
+@parser(r"\d+/\d+/\d+")
+def parse_rgb_with_slashes(color_str: str) -> tuple[int, int, int]:
+    """r/g/b"""
+    red, green, blue = color_str.split("/")
+
+    return int(red), int(green), int(blue)
+
+
+@parser(r"#?[0-9a-fA-F]{6}|#?[0-9a-fA-F]{3}")
+def parse_hash_pound(color_str: str) -> tuple[int, int, int]:
+    """rrggbb"""
+    if color_str[0] == "#":
+        color_str = color_str[1:]
+
+    if len(color_str) == 3:
+        return (
+            int(color_str[0] * 2, 16),
+            int(color_str[1] * 2, 16),
+            int(color_str[2] * 2, 16),
+        )
+
+    return (
+        int(color_str[0:2], 16),
+        int(color_str[2:4], 16),
+        int(color_str[4:6], 16),
+    )
+
+
+@parser(r"\{\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*\}")
+def parse_floats_in_curly_braces(color_str: str) -> tuple[int, int, int]:
+    """{r, g, b}"""
+    red, green, blue = color_str[1:-1].split(",")
+    return (
+        int(float(red) * 255),
+        int(float(green) * 255),
+        int(float(blue) * 255),
+    )

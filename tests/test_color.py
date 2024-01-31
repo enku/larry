@@ -302,7 +302,7 @@ class ColorTests(TestCase):
         self.assertEqual(Color("#0e118f").luminize(70), Color("#2128ff"))
 
     def test_luminize_black(self):
-        self.assertEqual(Color("#00000").luminize(70), Color("#464646"))
+        self.assertEqual(Color("#000000").luminize(70), Color("#464646"))
 
     def test_gradient(self):
         start, stop = make_colors("#000000 #ffffff")
