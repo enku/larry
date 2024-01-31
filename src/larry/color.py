@@ -584,7 +584,7 @@ def parse_rgb_with_slashes(color_str: str) -> tuple[int, int, int]:
 
 
 @parser(r"#?[0-9a-fA-F]{6}|#?[0-9a-fA-F]{3}")
-def parse_hash_pound(color_str: str) -> tuple[int, int, int]:
+def parse_hash_rgb(color_str: str) -> tuple[int, int, int]:
     """rrggbb"""
     if color_str[0] == "#":
         color_str = color_str[1:]
