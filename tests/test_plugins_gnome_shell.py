@@ -5,22 +5,19 @@ from pathlib import Path
 from unittest import mock
 
 from larry.color import COLORS_RE, Color
-from larry.plugins import gnome_shell
+from larry.plugins import GIRepository, gnome_shell
 
 from . import CSS, TestCase, make_colors
 
 
-@mock.patch("larry.plugins.gnome_shell.gir")
+@mock.patch.object(GIRepository, "Gio", create=True)
 class GetCurrentThemeTests(TestCase):
-    def test(self, gir):
-        gi_repo = gir.return_value
-        settings = gi_repo.Gio.Settings.return_value
+    def test(self, gio):
+        settings = gio.Settings.return_value
         settings.get_string.return_value = "test"
 
         self.assertEqual(gnome_shell.get_current_theme(), "test")
-        gi_repo.Gio.Settings.assert_called_once_with(
-            schema=gnome_shell.THEME_GSETTINGS_SCHEMA
-        )
+        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
         settings.get_string.assert_called_once_with(gnome_shell.THEME_GSETTINGS_NAME)
 
 
@@ -51,16 +48,13 @@ class CreateNewThemeTests(TestCase):
         self.assertEqual(new_theme_colors, expected)
 
 
-@mock.patch("larry.plugins.gnome_shell.gir")
+@mock.patch.object(GIRepository, "Gio", create=True)
 class SetThemeTests(TestCase):
-    def test(self, gir):
+    def test(self, gio):
         gnome_shell.set_theme("test")
 
-        gi_repo = gir.return_value
-        gi_repo.Gio.Settings.assert_called_once_with(
-            schema=gnome_shell.THEME_GSETTINGS_SCHEMA
-        )
-        settings = gi_repo.Gio.Settings.return_value
+        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
+        settings = gio.Settings.return_value
         settings.set_string.assert_called_once_with("name", "test")
 
 

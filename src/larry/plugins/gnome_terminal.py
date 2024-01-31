@@ -11,8 +11,6 @@ PATH = "/org/gnome/terminal/legacy/profiles:/:{profile}/"
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """larry plugin to set the gnome-terminal background color"""
-    gi_repo = gir()
-
     profiles = config.get("profiles", "").split()
     colorstr = config["color"]
     color = Color(colorstr)
@@ -21,7 +19,7 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
         path = get_path(profile)
         new_color = color.colorify(colors[0])
         value = str(new_color)
-        settings = gi_repo.Gio.Settings.new_with_path(SCHEMA, path)
+        settings = gir.Gio.Settings.new_with_path(SCHEMA, path)
         settings.set_string("background-color", value)
 
 

@@ -17,8 +17,7 @@ THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 
 def get_current_theme() -> str:
     """Return the name of the current gnome-shell theme"""
-    gi_repo = gir()
-    settings = gi_repo.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    settings = gir.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
     return settings.get_string(THEME_GSETTINGS_NAME)
 
 
@@ -64,8 +63,7 @@ def create_new_theme(template: str, colors: ColorList, _config: ConfigType) -> s
 
 def set_theme(name: str) -> None:
     """Sets the GNOME Shell theme to the given theme"""
-    gi_repo = gir()
-    settings = gi_repo.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
+    settings = gir.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
     settings.set_string(THEME_GSETTINGS_NAME, name)
 
 

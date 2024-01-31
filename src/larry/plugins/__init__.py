@@ -1,5 +1,6 @@
 """Larry plugins"""
 
+import importlib
 import io
 from importlib.metadata import entry_points
 from typing import Any, Callable, List, Tuple, TypeAlias
@@ -63,10 +64,20 @@ def load(name: str) -> PluginType:
     return PLUGINS[name]
 
 
-def gir():  # pragma: no cover
-    """Return the Gio gobject introspection repository"""
-    # Move import here so --list-plugins will at least work w/o gi
-    # pylint: disable=import-outside-toplevel,import-error
-    import gi.repository
+class GIRepository:
+    """Proxy for the gobject introspection repository
 
-    return gi.repository
+    Used so that the plugins don't have to import gi.repository at the top-level
+    --list-plugins will at least work w/o gi.
+    """
+
+    Gio: Any
+
+    # pragma: no cover
+    def __getattr__(self, name: str):
+        repo = importlib.__import__("gi.repository", fromlist=[name])
+
+        return getattr(repo, name)
+
+
+gir = GIRepository()
