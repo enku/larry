@@ -7,7 +7,29 @@ from unittest import mock
 from larry.color import COLORS_RE, Color
 from larry.plugins import GIRepository, gnome_shell
 
-from . import CSS, TestCase, make_colors
+from . import CSS, ConfigTestCase, TestCase, make_colors
+
+
+class PluginTests(ConfigTestCase):
+    @mock.patch("larry.plugins.gnome_shell.get_current_theme")
+    @mock.patch("larry.plugins.gnome_shell.create_new_theme")
+    @mock.patch("larry.plugins.gnome_shell.set_theme")
+    @mock.patch("larry.plugins.gnome_shell.delete_theme")
+    def test(self, delete_theme, set_theme, create_new_theme, get_current_theme):
+        get_current_theme.return_value = "larry-test"
+        self.add_section("plugins:gnome_shell")
+        self.add_config(template="test-template")
+        colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        config = self.config["plugins:gnome_shell"]
+
+        gnome_shell.plugin(colors, config)
+
+        get_current_theme.assert_called_once_with()
+        create_new_theme.assert_called_once_with("test-template", colors, config)
+        set_theme.assert_called_once_with(create_new_theme.return_value)
+        delete_theme.assert_called_once_with("larry-test")
 
 
 @mock.patch.object(GIRepository, "Gio", create=True)
