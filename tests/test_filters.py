@@ -108,7 +108,7 @@ class GradientTests(TestCase):
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
-    @mock.patch("larry.random", random.Random(12345))
+    @mock.patch("larry.utils.random", random.Random(12345))
     def test_with_fuzz(self):
         config = make_config("gradient", fuzz=60)
         orig_colors = make_colors(
@@ -173,7 +173,7 @@ class ShuffleTests(TestCase):
         self.assertEqual(colors, expected)
 
 
-@mock.patch("larry.random", random.Random(1))
+@mock.patch("larry.utils.random", random.Random(1))
 class ShiftTests(TestCase):
     def test(self):
         orig_colors = make_colors(

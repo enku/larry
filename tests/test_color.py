@@ -10,14 +10,6 @@ Color = color.Color
 ColorFloat = color.ColorFloat
 
 
-class Between0And1Tests(TestCase):
-    def test_true(self):
-        self.assertTrue(color.between_0_and_1(0.4))
-
-    def test_false(self):
-        self.assertFalse(color.between_0_and_1(-0.4))
-
-
 class ColorReTests(TestCase):
     def test_can_find_colors(self):
         colors = color.COLORS_RE.findall(CSS)
@@ -399,26 +391,6 @@ class ColorTests(TestCase):
         hsv = (270, 0, 86)
 
         self.assertEqual(Color.from_hsv(hsv), Color("#dbdbdb"))
-
-
-class ClipTests(TestCase):
-    def test1(self):
-        self.assertEqual(color.clip(20), 20)
-
-    def test2(self):
-        self.assertEqual(color.clip(-20), 0)
-
-    def test3(self):
-        self.assertEqual(color.clip(20, maximum=19), 19)
-
-    def test4(self):
-        self.assertEqual(color.clip(-20, minimum=-4), -4)
-
-    def test5(self):
-        self.assertEqual(color.clip(300), 255)
-
-    def test6(self):
-        self.assertEqual(color.clip(-3), 0)
 
 
 class ReplaceString(TestCase):

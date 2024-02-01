@@ -85,11 +85,3 @@ class RasterImageTests(TestCase):
 
     def test_bytes(self):
         self.assertEqual(bytes(self.image), RASTER_IMAGE)
-
-
-@mock.patch("larry.random", random.Random(1706558124))
-class RandsignTests(TestCase):
-    def test(self):
-        self.assertEqual(larry.randsign(4), 4)
-        self.assertEqual(larry.randsign(4), 0)
-        self.assertEqual(larry.randsign(100), -19)

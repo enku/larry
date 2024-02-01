@@ -8,7 +8,7 @@ from configparser import ConfigParser
 from importlib.metadata import entry_points
 from itertools import cycle
 
-from larry import LOGGER, Color, ColorList, make_image_from_bytes, randsign
+from larry import LOGGER, Color, ColorList, make_image_from_bytes, utils
 from larry.color import combine_colors as combine
 from larry.config import load as load_config
 from larry.io import read_file
@@ -72,8 +72,8 @@ def gradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Return gradient within the same luminocity range as the original"""
     fuzz = config.getint("filters:gradient", "fuzz", fallback=0)
 
-    lum1 = max([orig_colors[0].luminocity() + randsign(fuzz), 0])
-    lum2 = min([orig_colors[-1].luminocity() + randsign(fuzz), 255])
+    lum1 = max([orig_colors[0].luminocity() + utils.randsign(fuzz), 0])
+    lum2 = min([orig_colors[-1].luminocity() + utils.randsign(fuzz), 255])
 
     colors = Color.gradient(
         Color.randcolor(lum=lum1), Color.randcolor(lum=lum2), len(orig_colors)
@@ -131,7 +131,7 @@ def shift(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Shift colors by a random amount"""
     colors = list(orig_colors)
     num_colors = len(colors)
-    places = randsign(num_colors - 1) or (num_colors - 1)
+    places = utils.randsign(num_colors - 1) or (num_colors - 1)
 
     if places == 0:
         return colors

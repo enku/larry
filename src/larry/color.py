@@ -7,16 +7,9 @@ import re
 from collections import namedtuple
 from dataclasses import dataclass
 from math import floor
-from typing import (
-    Callable,
-    Iterable,
-    Iterator,
-    Optional,
-    TypeAlias,
-    TypeGuard,
-    TypeVar,
-    Union,
-)
+from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
+
+from larry import utils
 
 ColorFloatType = TypeVar(  #  pylint: disable=invalid-name
     "ColorFloatType", bound="ColorFloat"
@@ -142,15 +135,15 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green + value
 
             red, green, blue = [
-                int(clip(component)) for component in (red, green, blue)
+                int(utils.clip(component)) for component in (red, green, blue)
             ]
 
             return Color(red, green, blue)
 
         return Color(
-            clip(self.red + value.red),
-            clip(self.blue + value.blue),
-            clip(self.green + value.green),
+            utils.clip(self.red + value.red),
+            utils.clip(self.blue + value.blue),
+            utils.clip(self.green + value.green),
         )
 
     def __mul__(self, value: Color | float) -> Color:
@@ -161,7 +154,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green * value
             blue = self.blue * value
 
-            red, green, blue = [int(clip(i)) for i in (red, green, blue)]
+            red, green, blue = [int(utils.clip(i)) for i in (red, green, blue)]
 
             return Color(red, green, blue)
 
@@ -421,9 +414,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             elif i == 5:
                 red, green, blue = value, aa, bb
 
-        red = int(clip(red * 255))
-        green = int(clip(green * 255))
-        blue = int(clip(blue * 255))
+        red = int(utils.clip(red * 255))
+        green = int(utils.clip(green * 255))
+        blue = int(utils.clip(blue * 255))
 
         return cls(red, green, blue)
 
@@ -443,7 +436,7 @@ def ungray(
         return color.is_gray() and color not in black_or_white
 
     def modify(channel: int) -> int:
-        return clip(round(amount * channel))
+        return utils.clip(round(amount * channel))
 
     return [
         (
@@ -453,19 +446,6 @@ def ungray(
         )
         for color in colors
     ]
-
-
-def between_0_and_1(value: float) -> TypeGuard[float]:
-    """Return true if value is between 0 and 1 (inclusive)"""
-    return 0 <= value <= 1
-
-
-def clip(value, *, minimum=0, maximum=255):
-    """Return value that is no larger than maximum and no smaller than minimum"""
-    value = min(value, maximum)
-    value = max(value, minimum)
-
-    return value
 
 
 @dataclass(frozen=True)
@@ -479,7 +459,7 @@ class ColorFloat:
 
     def __post_init__(self) -> None:
         for channel in ["red", "green", "blue", "alpha"]:
-            if not between_0_and_1(getattr(self, channel)):
+            if not utils.between(getattr(self, channel), 0, 1):
                 raise ValueError(f"{channel} must be between 0 and 1")
 
     @classmethod

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import random
 from importlib.metadata import distribution
 from io import BytesIO
 from typing import Any, Iterable, Protocol, Type
@@ -158,8 +157,3 @@ class RasterImage:
             self.image.convert("RGB").save(bytes_io, self.image_format)
 
         return bytes_io.getvalue()
-
-
-def randsign(num: int) -> int:
-    """Return a random integer between -num and num"""
-    return random.choice([-1, 1]) * random.randint(0, num)
