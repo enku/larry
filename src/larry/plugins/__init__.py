@@ -64,7 +64,7 @@ def load(name: str) -> PluginType:
     return PLUGINS[name]
 
 
-class GIRepository:
+class GIRepository:  # pylint: disable=too-few-public-methods
     """Proxy for the gobject introspection repository
 
     Used so that the plugins don't have to import gi.repository at the top-level

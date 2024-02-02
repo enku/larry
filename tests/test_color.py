@@ -1,4 +1,4 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,duplicate-code
 import random
 from unittest import mock
 
@@ -26,7 +26,7 @@ class ColorReTests(TestCase):
         self.assertEqual(colors, expected)
 
 
-class ColorTests(TestCase):
+class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
     def test_is_gray(self):
         self.assertTrue(Color("#bfbfbf").is_gray())
         self.assertTrue(Color("#ffffff").is_gray())

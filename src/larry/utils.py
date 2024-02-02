@@ -17,6 +17,11 @@ def clip(value, *, minimum=0, maximum=255):
 
 
 def parse_range(string: str) -> tuple[int, int] | tuple[float, float]:
+    """Given a string like "min max" return the range (min, max)
+
+    Ensure that (min, max) are either both floats or both ints.
+    Raise ValueError if min > max
+    """
     parts = string.strip().split(None, 1)
 
     if len(parts) != 2:

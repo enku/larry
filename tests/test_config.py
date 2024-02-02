@@ -24,7 +24,7 @@ value = 26
 colors = ["red", "green", "blue"]
 """
         path = os.path.join(self.tmpdir, "test.toml")
-        with open(path, "w") as fp:
+        with open(path, "w", encoding="utf-8") as fp:
             fp.write(toml)
 
         config_obj = config.load(path)
@@ -39,7 +39,7 @@ class GetPluginConfigTests(TestCase):
 [plugins:test]
 foo = bar
 """
-        with open(path, "w") as fp:
+        with open(path, "w", encoding="utf-8") as fp:
             fp.write(config_str)
 
         plugin_config = config.get_plugin_config("test", path)
@@ -60,7 +60,7 @@ value = 26
 colors = ["red", "green", "blue"]
 """
         path = os.path.join(self.tmpdir, "test.toml")
-        with open(path, "w") as fp:
+        with open(path, "w", encoding="utf-8") as fp:
             fp.write(toml)
 
         result = config.load_toml_config(path)

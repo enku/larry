@@ -1,7 +1,4 @@
 # pylint: disable=missing-docstring
-import random
-from unittest import mock
-
 import larry
 from larry import config
 from larry.color import Color
@@ -67,6 +64,7 @@ class RasterImageTests(TestCase):
         colors = sorted(self.image.get_colors(), key=Color.luminocity)
 
         expected = make_colors(
+            # pylint: disable=line-too-long
             "#a889e9 #ae8ed9 #b594c9 #bc99ba #c39faa #c9a49a #d0aa8b #d7af7b #deb56b #e5bb5c"
         )
         self.assertEqual(colors, expected)
@@ -79,7 +77,7 @@ class RasterImageTests(TestCase):
 
         colors = sorted(image.get_colors(), key=Color.luminocity)
         expected = make_colors(
-            "#000000 #0000ff #ff0000 #00ff00 #ae8ed9 #bc99ba #c9a49a #d7af7b #e5bb5c #ffffff"
+            "#000 #00f #f00 #0f0 #ae8ed9 #bc99ba #c9a49a #d7af7b #e5bb5c #fff"
         )
         self.assertEqual(colors, expected)
 
