@@ -85,7 +85,8 @@ class ThemeTests(TestCase):
         settings = gio.Settings.return_value
         settings.set_string.assert_called_once_with("name", "testtheme")
 
-    def test_delete(self):
+    @mock.patch.object(GIRepository, "Gio", create=True)
+    def test_delete(self, gio):
         """Delete itself from the filesystem"""
         theme_path = f"{self.tmpdir}/.themes/testtheme"
         os.makedirs(theme_path)
@@ -96,6 +97,7 @@ class ThemeTests(TestCase):
         theme.delete()
 
         self.assertFalse(theme.path.exists())
+        gio.Settings.return_value.reset.assert_not_called()
 
     @mock.patch.object(GIRepository, "Gio", create=True)
     def test_delete_when_current_theme(self, gio):
