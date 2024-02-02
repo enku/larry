@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import os
 import os.path
 import random
 from pathlib import Path
@@ -10,13 +11,112 @@ from larry.plugins import GIRepository, gnome_shell
 from . import CSS, ConfigTestCase, TestCase, make_colors
 
 
+class ThemeTests(TestCase):
+    def test_init_with_name(self):
+        name = "testtheme"
+
+        theme = gnome_shell.Theme(name)
+
+        self.assertEqual(theme.name, "testtheme")
+        self.assertEqual(theme.path, Path("~/.themes/testtheme").expanduser())
+
+    def test_init_with_path(self):
+        path = "/path/to/testtheme"
+
+        theme = gnome_shell.Theme(path)
+
+        self.assertEqual(theme.name, "testtheme")
+        self.assertEqual(theme.path, Path("/path/to/testtheme").expanduser())
+
+    @mock.patch.object(GIRepository, "Gio", create=True)
+    def test_current(self, gio):
+        gio.Settings.return_value.get_string.return_value = "test"
+
+        theme = gnome_shell.Theme.current()
+
+        self.assertEqual(theme.name, "test")
+
+    def test_copy(self):
+        theme_path = f"{self.tmpdir}/.themes/testtheme"
+        os.makedirs(theme_path)
+        theme = gnome_shell.Theme(theme_path)
+        expanduser = mock_expanduser(self.tmpdir)
+
+        with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
+            copy = theme.copy()
+
+        self.assertTrue(copy.path.exists())
+        self.assertTrue((copy.path / "index.theme").exists())
+
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_from_template(self):
+        template_path = f"{self.tmpdir}/.themes/template"
+        os.makedirs(template_path)
+        create_theme(Path(template_path) / "gnome-shell")
+        colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        expanduser = mock_expanduser(self.tmpdir)
+
+        with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
+            theme = gnome_shell.Theme.from_template(template_path, colors)
+
+        self.assertTrue(theme.path.exists())
+
+        css = theme.gnome_shell_css_path.read_text(encoding="utf-8")
+        theme_colors = [Color(s) for s in COLORS_RE.findall(css)]
+
+        expected = make_colors(
+            "#4a3441 #33242d #943972 #6c0044 #943972 #6c0044 #33242d"
+        )
+        self.assertEqual(theme_colors, expected)
+
+    @mock.patch.object(GIRepository, "Gio", create=True)
+    def test_set(self, gio):
+        theme_path = f"{self.tmpdir}/.themes/testtheme"
+        os.makedirs(theme_path)
+        theme = gnome_shell.Theme(theme_path)
+        expanduser = mock_expanduser(self.tmpdir)
+
+        with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
+            theme.set()
+
+        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
+        settings = gio.Settings.return_value
+        settings.set_string.assert_called_once_with("name", "testtheme")
+
+    def test_delete(self):
+        """Delete itself from the filesystem"""
+        theme_path = f"{self.tmpdir}/.themes/testtheme"
+        os.makedirs(theme_path)
+        theme = gnome_shell.Theme(theme_path)
+
+        self.assertTrue(theme.path.exists())
+
+        theme.delete()
+
+        self.assertFalse(theme.path.exists())
+
+    @mock.patch.object(GIRepository, "Gio", create=True)
+    def test_delete_when_current_theme(self, gio):
+        theme_path = f"{self.tmpdir}/.themes/testtheme"
+        os.makedirs(theme_path)
+        theme = gnome_shell.Theme(theme_path)
+        gio.Settings.return_value.get_string.return_value = theme.name
+
+        self.assertTrue(theme.path.exists())
+
+        expanduser = mock_expanduser(self.tmpdir)
+        with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
+            theme.delete()
+
+        self.assertFalse(theme.path.exists())
+        gio.Settings.return_value.reset.assert_called_once_with("name")
+
+
+@mock.patch("larry.plugins.gnome_shell.Theme", autospec=True)
 class PluginTests(ConfigTestCase):
-    @mock.patch("larry.plugins.gnome_shell.get_current_theme")
-    @mock.patch("larry.plugins.gnome_shell.create_new_theme")
-    @mock.patch("larry.plugins.gnome_shell.set_theme")
-    @mock.patch("larry.plugins.gnome_shell.delete_theme")
-    def test(self, delete_theme, set_theme, create_new_theme, get_current_theme):
-        get_current_theme.return_value = "larry-test"
+    def test(self, theme_cls):
         self.add_section("plugins:gnome_shell")
         self.add_config(template="test-template")
         colors = make_colors(
@@ -24,74 +124,31 @@ class PluginTests(ConfigTestCase):
         )
         config = self.config["plugins:gnome_shell"]
 
+        current_theme = mock.Mock()
+        current_theme.name = "larry-test"
+        theme_cls.current.return_value = current_theme
         gnome_shell.plugin(colors, config)
 
-        get_current_theme.assert_called_once_with()
-        create_new_theme.assert_called_once_with("test-template", colors, config)
-        set_theme.assert_called_once_with(create_new_theme.return_value)
-        delete_theme.assert_called_once_with("larry-test")
+        theme_cls.current.assert_called_once_with()
+        theme_cls.from_template.assert_called_once_with("test-template", colors)
+        theme = theme_cls.from_template.return_value
+        theme.set.assert_called_once_with()
+        current_theme.delete.assert_called_once_with()
 
-
-@mock.patch.object(GIRepository, "Gio", create=True)
-class GetCurrentThemeTests(TestCase):
-    def test(self, gio):
-        settings = gio.Settings.return_value
-        settings.get_string.return_value = "test"
-
-        self.assertEqual(gnome_shell.get_current_theme(), "test")
-        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
-        settings.get_string.assert_called_once_with(gnome_shell.THEME_GSETTINGS_NAME)
-
-
-class CreateNewThemeTests(TestCase):
-    @mock.patch("larry.color.random", random.Random(1))
-    def test(self):
-        home_dir = Path(self.tmpdir)
-        home_dir.joinpath(".themes").mkdir()
-        template_dir = home_dir / "template"
-        create_theme(template_dir)
+    def test_when_current_theme_is_not_a_larry_theme(self, theme_cls):
+        self.add_section("plugins:gnome_shell")
+        self.add_config(template="test-template")
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
-        expanduser = mock_expanduser(self.tmpdir)
+        config = self.config["plugins:gnome_shell"]
 
-        with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
-            theme_name = gnome_shell.create_new_theme(str(template_dir), colors, None)
+        current_theme = mock.Mock()
+        current_theme.name = "Adwaita"
+        theme_cls.current.return_value = current_theme
+        gnome_shell.plugin(colors, config)
 
-        new_theme = home_dir / ".themes" / theme_name
-        self.assertTrue((new_theme).exists())
-        new_css = (new_theme / "gnome-shell/gnome-shell.css").read_text(
-            encoding="UTF-8"
-        )
-        new_theme_colors = [Color(s) for s in COLORS_RE.findall(new_css)]
-        expected = make_colors(
-            "#4a3441 #33242d #943972 #6c0044 #943972 #6c0044 #33242d"
-        )
-        self.assertEqual(new_theme_colors, expected)
-
-
-@mock.patch.object(GIRepository, "Gio", create=True)
-class SetThemeTests(TestCase):
-    def test(self, gio):
-        gnome_shell.set_theme("test")
-
-        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
-        settings = gio.Settings.return_value
-        settings.set_string.assert_called_once_with("name", "test")
-
-
-class DeleteThemeTests(TestCase):
-    def test(self):
-        fake_theme_dir = Path(f"{self.tmpdir}") / "fake_theme"
-        fake_theme_dir.mkdir()
-
-        with mock.patch(
-            "larry.plugins.gnome_shell.pathlib.Path.expanduser"
-        ) as expanduser:
-            expanduser.return_value = fake_theme_dir
-            gnome_shell.delete_theme("fake_theme")
-
-        self.assertFalse(fake_theme_dir.exists())
+        current_theme.delete.assert_not_called()
 
 
 def create_theme(theme_dir):
