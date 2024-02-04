@@ -77,3 +77,26 @@ class ClipTests(TestCase):
 
     def test6(self):
         self.assertEqual(utils.clip(-3), 0)
+
+
+class AngularDistanceTests(TestCase):
+    def test_simple(self):
+        self.assertEqual(utils.angular_distance(270, 360), 90)
+        self.assertEqual(utils.angular_distance(270, 0), 90)
+
+    def test_single_wrap(self):
+        self.assertAlmostEqual(utils.angular_distance(270, 1), 91)
+
+    def test_multi_wrap(self):
+        self.assertAlmostEqual(utils.angular_distance(270, 990), 0)
+
+
+class BucketsTest(TestCase):
+    def test(self):
+        start = 0
+        stop = 10
+        step = 2
+
+        self.assertEqual(
+            utils.buckets(start, stop, step), [(0, 2), (2, 4), (4, 6), (6, 8), (8, 10)]
+        )

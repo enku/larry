@@ -42,3 +42,22 @@ def parse_range(string: str) -> tuple[int, int] | tuple[float, float]:
 def randsign(num: int) -> int:
     """Return a random integer between -num and num"""
     return random.choice([-1, 1]) * random.randint(0, num)
+
+
+def angular_distance(angle1, angle2):
+    """Return the (closest) angular distance between the 2 angles (degrees)"""
+    return abs((angle1 - angle2 + 180) % 360 - 180)
+
+
+def buckets(start, stop, step):
+    """Return 2-tuple ranges of step-size buckets from start to stop"""
+    bl = []
+    low, high = start, start + step
+
+    while low < stop:
+        bl.append((low, high))
+
+        low = high
+        high = min(high + step, stop)
+
+    return bl

@@ -486,6 +486,31 @@ class LightenTests(TestCase):
         self.assertEqual(new_colors, make_colors("#00dd00 #ffde7f #b2b2ff #ffc0ca"))
 
 
+class ChromeFocusTests(TestCase):
+    def test(self):
+        config = make_config("larry")
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+
+        colors = filters.chromefocus(orig_colors, config)
+
+        expected = make_colors(
+            "#8f8f8f #754fc7 #838383 #808080 #9772ea #9f9f9f #e8e8e8 #e9e9e9"
+        )
+        self.assertEqual(colors, expected)
+
+    def test_with_0_range(self):
+        config = make_config("chromefocus", range="0")
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+
+        colors = filters.chromefocus(orig_colors, config)
+
+        self.assertEqual(colors, orig_colors)
+
+
 class GetOpacityTests(TestCase):
     config = make_config("test", opacity=0.5, foo=0.7, bar=7.0)
 
