@@ -10,6 +10,7 @@ from importlib.metadata import entry_points
 from itertools import cycle
 
 from larry import LOGGER, Color, ColorList, make_image_from_bytes, utils
+from larry.color import DEFAULT_SOFTNESS
 from larry.color import combine_colors as combine
 from larry.config import load as load_config
 from larry.io import read_file
@@ -144,6 +145,13 @@ def shift(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
 def pastelize(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Pastelize all the original colors"""
     return [orig_color.pastelize() for orig_color in orig_colors]
+
+
+def soften(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+    """Pastelize all the original colors"""
+    softness = config.getfloat("filters:soften", "softness", fallback=DEFAULT_SOFTNESS)
+
+    return [orig_color.soften(softness) for orig_color in orig_colors]
 
 
 def random(

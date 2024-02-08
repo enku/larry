@@ -200,6 +200,32 @@ class PastelizeTests(TestCase):
         self.assertEqual(colors, expected)
 
 
+class SoftenTests(TestCase):
+    def test(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        config = make_config("soften")
+        colors = filters.soften(orig_colors, config)
+
+        expected = make_colors(
+            "#bb6fc6 #b49ee3 #c1a5b6 #bfba83 #c9b5f4 #cfc798 #97f38b #95eef4"
+        )
+        self.assertEqual(colors, expected)
+
+    def test_with_softness(self):
+        orig_colors = make_colors(
+            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+        )
+        config = make_config("soften", softness="0.7")
+        colors = filters.soften(orig_colors, config)
+
+        expected = make_colors(
+            "#d5a2dd #d0c3ee #d9c6d2 #d8d5b0 #ded2f8 #e2ddbe #bff8b8 #bef5f8"
+        )
+        self.assertEqual(colors, expected)
+
+
 class BrightenTests(TestCase):
     orig_colors = make_colors(
         "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
