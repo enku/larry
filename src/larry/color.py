@@ -31,6 +31,8 @@ PARSERS: dict[re.Pattern, ColorSpecStringParser] = {}
 PASTEL_SATURATION = 50
 PASTEL_BRIGHTNESS = 100
 
+DEFAULT_SOFTNESS = 0.5
+
 
 class BadColorSpecError(ValueError):
     """Exception when an invalid spec was passed to the Color initializer"""
@@ -258,6 +260,18 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         hsv = self.to_hsv()
 
         return self.from_hsv((hsv[0], saturation, brightness))
+
+    def soften(self, softness: float = DEFAULT_SOFTNESS) -> Color:
+        """Return a new color softer than the original
+
+        This is like .pastelize() but with softer colors
+        """
+        h, s, v = self.to_hsv()
+
+        s *= 1 - softness
+        v = min(100, v + softness * (100 - v))
+
+        return type(self).from_hsv((h, s, v))
 
     def luminize(self, luminocity: float) -> Color:
         """Return new color with given luminocity

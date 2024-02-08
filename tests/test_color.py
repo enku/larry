@@ -392,6 +392,12 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
 
         self.assertEqual(Color.from_hsv(hsv), Color("#dbdbdb"))
 
+    def test_soften(self):
+        self.assertEqual(Color("#9a59db").soften(), Color("#c9a6ec"))
+
+    def test_soften_with_softness(self):
+        self.assertEqual(Color("#9a59db").soften(softness=0.7), Color("#dec8f4"))
+
 
 class ReplaceString(TestCase):
     def test1(self):
