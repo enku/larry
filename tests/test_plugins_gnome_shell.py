@@ -52,7 +52,7 @@ class ThemeTests(TestCase):
     def test_from_template(self):
         template_path = f"{self.tmpdir}/.themes/template"
         os.makedirs(template_path)
-        create_theme(Path(template_path) / "gnome-shell")
+        create_theme(Path(template_path, "gnome-shell"))
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
