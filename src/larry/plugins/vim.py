@@ -11,7 +11,7 @@ from larry import LOGGER, Color, ColorList
 from larry.config import ConfigType
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class HighlightGroup:
     """vim highlightgroup"""
 

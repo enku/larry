@@ -462,7 +462,7 @@ def ungray(
     ]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ColorFloat:
     """Like Color but a quadruplet of floats [0..1]"""
 
