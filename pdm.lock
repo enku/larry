@@ -22,7 +22,7 @@ files = [
 
 [[package]]
 name = "black"
-version = "24.1.1"
+version = "24.2.0"
 requires_python = ">=3.8"
 summary = "The uncompromising code formatter."
 dependencies = [
@@ -35,20 +35,20 @@ dependencies = [
     "typing-extensions>=4.0.1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "black-24.1.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2588021038bd5ada078de606f2a804cadd0a3cc6a79cb3e9bb3a8bf581325a4c"},
-    {file = "black-24.1.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1a95915c98d6e32ca43809d46d932e2abc5f1f7d582ffbe65a5b4d1588af7445"},
-    {file = "black-24.1.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2fa6a0e965779c8f2afb286f9ef798df770ba2b6cee063c650b96adec22c056a"},
-    {file = "black-24.1.1-cp310-cp310-win_amd64.whl", hash = "sha256:5242ecd9e990aeb995b6d03dc3b2d112d4a78f2083e5a8e86d566340ae80fec4"},
-    {file = "black-24.1.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:fc1ec9aa6f4d98d022101e015261c056ddebe3da6a8ccfc2c792cbe0349d48b7"},
-    {file = "black-24.1.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:0269dfdea12442022e88043d2910429bed717b2d04523867a85dacce535916b8"},
-    {file = "black-24.1.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b3d64db762eae4a5ce04b6e3dd745dcca0fb9560eb931a5be97472e38652a161"},
-    {file = "black-24.1.1-cp311-cp311-win_amd64.whl", hash = "sha256:5d7b06ea8816cbd4becfe5f70accae953c53c0e53aa98730ceccb0395520ee5d"},
-    {file = "black-24.1.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:e2c8dfa14677f90d976f68e0c923947ae68fa3961d61ee30976c388adc0b02c8"},
-    {file = "black-24.1.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:a21725862d0e855ae05da1dd25e3825ed712eaaccef6b03017fe0853a01aa45e"},
-    {file = "black-24.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:07204d078e25327aad9ed2c64790d681238686bce254c910de640c7cc4fc3aa6"},
-    {file = "black-24.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:a83fe522d9698d8f9a101b860b1ee154c1d25f8a82ceb807d319f085b2627c5b"},
-    {file = "black-24.1.1-py3-none-any.whl", hash = "sha256:5cdc2e2195212208fbcae579b931407c1fa9997584f0a415421748aeafff1168"},
-    {file = "black-24.1.1.tar.gz", hash = "sha256:48b5760dcbfe5cf97fd4fba23946681f3a81514c6ab8a45b50da67ac8fbc6c7b"},
+    {file = "black-24.2.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6981eae48b3b33399c8757036c7f5d48a535b962a7c2310d19361edeef64ce29"},
+    {file = "black-24.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d533d5e3259720fdbc1b37444491b024003e012c5173f7d06825a77508085430"},
+    {file = "black-24.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:61a0391772490ddfb8a693c067df1ef5227257e72b0e4108482b8d41b5aee13f"},
+    {file = "black-24.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:992e451b04667116680cb88f63449267c13e1ad134f30087dec8527242e9862a"},
+    {file = "black-24.2.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:163baf4ef40e6897a2a9b83890e59141cc8c2a98f2dda5080dc15c00ee1e62cd"},
+    {file = "black-24.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:e37c99f89929af50ffaf912454b3e3b47fd64109659026b678c091a4cd450fb2"},
+    {file = "black-24.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4f9de21bafcba9683853f6c96c2d515e364aee631b178eaa5145fc1c61a3cc92"},
+    {file = "black-24.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:9db528bccb9e8e20c08e716b3b09c6bdd64da0dd129b11e160bf082d4642ac23"},
+    {file = "black-24.2.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d84f29eb3ee44859052073b7636533ec995bd0f64e2fb43aeceefc70090e752b"},
+    {file = "black-24.2.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:1e08fb9a15c914b81dd734ddd7fb10513016e5ce7e6704bdd5e1251ceee51ac9"},
+    {file = "black-24.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:810d445ae6069ce64030c78ff6127cd9cd178a9ac3361435708b907d8a04c693"},
+    {file = "black-24.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:ba15742a13de85e9b8f3239c8f807723991fbfae24bad92d34a2b12e81904982"},
+    {file = "black-24.2.0-py3-none-any.whl", hash = "sha256:e8a6ae970537e67830776488bca52000eaa37fa63b9988e8c487458d9cd5ace6"},
+    {file = "black-24.2.0.tar.gz", hash = "sha256:bce4f25c27c3435e4dace4815bcb2008b87e167e3bf4ee47ccdc5ce906eb4894"},
 ]
 
 [[package]]
@@ -332,20 +332,20 @@ files = [
 
 [[package]]
 name = "pycairo"
-version = "1.25.1"
+version = "1.26.0"
 requires_python = ">=3.8"
 summary = "Python interface for cairo"
 files = [
-    {file = "pycairo-1.25.1-cp310-cp310-win32.whl", hash = "sha256:cacb5c2abbfdfc79c728ab261ff791511e4957b606c660f9b380975b678b728f"},
-    {file = "pycairo-1.25.1-cp310-cp310-win_amd64.whl", hash = "sha256:109ebbeb5bbc510b726fc31251071264dec241e5084d0668f846d7e17e5af8e0"},
-    {file = "pycairo-1.25.1-cp310-cp310-win_arm64.whl", hash = "sha256:b19269a8bf9ab5e3c617f2699bed00977fd02ff304339a233654456c0236f7c6"},
-    {file = "pycairo-1.25.1-cp311-cp311-win32.whl", hash = "sha256:b10e58a3ce41e487aae15050b630742e880d4135cee7a69cee2c0ea2a0b4bd0a"},
-    {file = "pycairo-1.25.1-cp311-cp311-win_amd64.whl", hash = "sha256:fcf5511b05a652a0ef87f626bf26bfc1b796a67f0d1bd40781c62986fb41c356"},
-    {file = "pycairo-1.25.1-cp311-cp311-win_arm64.whl", hash = "sha256:4133ba3ef6d875aa1b16643dc0801846f463b8e78750f5308c41902dfeac5b9a"},
-    {file = "pycairo-1.25.1-cp312-cp312-win32.whl", hash = "sha256:56fee2837a07ecd914f4fbf78ff59445f78becd658fe36125101925dd489eb94"},
-    {file = "pycairo-1.25.1-cp312-cp312-win_amd64.whl", hash = "sha256:fb31eec2c41ec74e23dc0fc9feb4007b4c37f78ec76220ed92530b342e09821a"},
-    {file = "pycairo-1.25.1-cp312-cp312-win_arm64.whl", hash = "sha256:27011d822952d7817130fc17f490de94328590bc8d45bdbca9ec4a47039fca22"},
-    {file = "pycairo-1.25.1.tar.gz", hash = "sha256:7e2be4fbc3b4536f16db7a11982cbf713e75069a4d73d44fe5a49b68423f5c0c"},
+    {file = "pycairo-1.26.0-cp310-cp310-win32.whl", hash = "sha256:696ba8024d2827e66e088a6e05a3b0aea30d289476bcb2ca47c9670d40900a50"},
+    {file = "pycairo-1.26.0-cp310-cp310-win_amd64.whl", hash = "sha256:b6690a00fb225c19f42d76660e676aba7ae7cb18f3632cb02bce7f0d9b9c3800"},
+    {file = "pycairo-1.26.0-cp310-cp310-win_arm64.whl", hash = "sha256:1d54e28170a5e790269d9db4c195cca5152ff018ba7e330d0ed05d86ccc2ea7d"},
+    {file = "pycairo-1.26.0-cp311-cp311-win32.whl", hash = "sha256:5986b8da3e7de7ab931d7ad527938df38f75d3a3bdea2b515c786c5ca2c5093c"},
+    {file = "pycairo-1.26.0-cp311-cp311-win_amd64.whl", hash = "sha256:d374d9ec6d2f791bf57105d87a9028db1ef2b687848f64a524e447033eae7229"},
+    {file = "pycairo-1.26.0-cp311-cp311-win_arm64.whl", hash = "sha256:20a31af89d92ffd5fc60c08e65ff649f16e18621a14a40dbdb049fc74942d7a9"},
+    {file = "pycairo-1.26.0-cp312-cp312-win32.whl", hash = "sha256:d63929ab5a2f890a333f2f2f51de9f1c9fe20d1bddc982c2ca577b737448d72f"},
+    {file = "pycairo-1.26.0-cp312-cp312-win_amd64.whl", hash = "sha256:8616408ae93de4824a3777ec532ea75643e4bf74e49d601062c0b1788180c962"},
+    {file = "pycairo-1.26.0-cp312-cp312-win_arm64.whl", hash = "sha256:a611e4d82ad8470138bb46d465d47e8db826d9d80b6a520ccd83ee007f2073e4"},
+    {file = "pycairo-1.26.0.tar.gz", hash = "sha256:2dddd0a874fbddb21e14acd9b955881ee1dc6e63b9c549a192d613a907f9cbeb"},
 ]
 
 [[package]]
@@ -417,12 +417,12 @@ files = [
 
 [[package]]
 name = "types-pillow"
-version = "10.2.0.20240206"
+version = "10.2.0.20240213"
 requires_python = ">=3.8"
 summary = "Typing stubs for Pillow"
 files = [
-    {file = "types-Pillow-10.2.0.20240206.tar.gz", hash = "sha256:f0de5107ff8362ffdbbd53ec896202ac905e6ab22ae784b46bcdad160ea143b9"},
-    {file = "types_Pillow-10.2.0.20240206-py3-none-any.whl", hash = "sha256:abc339ae28af5916146a7729261480d68ac902cd4ff57e0bdd402eee7962644d"},
+    {file = "types-Pillow-10.2.0.20240213.tar.gz", hash = "sha256:4800b61bf7eabdae2f1b17ade0d080709ed33e9f26a2e900e470e8b56ebe2387"},
+    {file = "types_Pillow-10.2.0.20240213-py3-none-any.whl", hash = "sha256:062c5a0f20301a30f2df4db583f15b3c2a1283a12518d1f9d81396154e12c1af"},
 ]
 
 [[package]]
