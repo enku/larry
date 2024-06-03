@@ -401,6 +401,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def from_hsv(cls, hsv: tuple[float, float, float]) -> Color:
         """Create a color from HSV value (tuple)"""
 
+        red = blue = green = 0.0
         hue, saturation, value = hsv[0] / 360.0, hsv[1] / 100.0, hsv[2] / 100.0
         if hue < 0.0:
             hue = hue + 1
