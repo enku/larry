@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import importlib.metadata
 import random
 from configparser import ConfigParser
 from copy import deepcopy
@@ -50,6 +51,13 @@ class LoadFilterTests(TestCase):
     def test_when_filter_does_not_exist(self):
         with self.assertRaises(filters.FilterNotFound):
             filters.load_filter("bogus")
+
+    def test_when_filter_wont_load(self):
+        with self.assertRaises(filters.FilterNotFound):
+            with mock.patch.object(
+                importlib.metadata.EntryPoint, "load", side_effect=ModuleNotFoundError
+            ):
+                filters.load_filter("random")
 
 
 class FiltersListTests(TestCase):
@@ -185,6 +193,10 @@ class ShiftTests(TestCase):
             "#754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9 #7e118f"
         )
         self.assertEqual(colors, expected)
+
+    def test_shift_single_item(self):
+        orig_colors = make_colors("#7e118f")
+        self.assertEqual(filters.shift(orig_colors, None), orig_colors)
 
 
 class PastelizeTests(TestCase):

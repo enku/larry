@@ -50,6 +50,10 @@ class ParseRange(TestCase):
     def test_extra_spaces(self):
         self.assertEqual(utils.parse_range(" -10   -5	"), (-10, -5))
 
+    def test_single_word_raises_valueerror(self) -> None:
+        with self.assertRaises(ValueError):
+            (utils.parse_range("1.5"))
+
 
 @mock.patch("larry.utils.random", random.Random(1706558124))
 class RandsignTests(TestCase):
