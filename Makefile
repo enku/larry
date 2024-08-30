@@ -5,6 +5,7 @@ sdist := dist/$(package)-$(version).tar.gz
 wheel := dist/$(package)-$(version)-py3-none-any.whl
 sources := $(shell find src -type f -print)
 tests := $(shell find tests -type f -print)
+python_src := $(filter %.py, $(sources) $(tests))
 
 
 .coverage: $(sources) $(tests)
@@ -42,7 +43,10 @@ clean:
 	rm -rf .venv build dist __pypackages__
 
 
+.fmt: $(python_src)
+	pdm run isort $?
+	pdm run black $?
+	touch $@
+
 .PHONY: fmt
-fmt:
-	pdm run isort src tests
-	pdm run black src tests
+fmt: .fmt

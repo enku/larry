@@ -2,6 +2,7 @@
 .ropeproject/
 /.coverage
 /.envrc
+/.fmt
 /.pdm-python
 /.pdm.toml
 /.venv/
