@@ -6,7 +6,7 @@
 </p>
 <br>
 
-## larry
+## About
 
 `larry` is a Python script and framework for colorizing your
 desktop/terminal. It was originally written to colorize the Larry The
@@ -27,9 +27,20 @@ colorizing lots of things. Included plugins are:
 
 * command: for running an arbitrary command (build your own)
 
-It should be possible to create your own plugins.  As a reference for creating
-a third-party larry plugin, see the
-[larry-rgb](https://github.com/enku/larry-rgb) plugin.
+## Plugins
+
+ILarry can be extended with plugins. The following is a list of plugins
+available:
+
+* [larry-rgb](https://github.com/enku/larry-rgb): larry-rgb is a plugin for
+  larry that pics colors from your (background) image and smoothly transitions
+  your LEDs from color to color.
+
+* [larry4mac](https://github.com/enku/larry4mac): a set of larry plugins for
+  MacOS.
+
+
+## Installation
 
 Installable via pip:
 
