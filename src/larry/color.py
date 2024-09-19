@@ -82,7 +82,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     @classmethod
     def _handle_str_colorspec(cls, color_str: str) -> tuple[int, int, int]:
         """Handle *colorspec* of type str"""
-        from larry.names import NAMES  # pylint: disable=import-outside-toplevel
+        from larry.names import (  # pylint: disable=import-outside-toplevel,cyclic-import
+            NAMES,
+        )
 
         color_str = color_str.strip('"')
 
