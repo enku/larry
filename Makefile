@@ -9,7 +9,7 @@ python_src := $(filter %.py, $(sources) $(tests))
 
 
 .coverage: $(sources) $(tests)
-	pdm run coverage run -m unittest discover
+	pdm run coverage run -m tests
 
 
 .PHONY: test
