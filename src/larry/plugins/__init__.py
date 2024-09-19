@@ -73,8 +73,7 @@ class GIRepository:  # pylint: disable=too-few-public-methods
 
     Gio: Any
 
-    # pragma: no cover
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str):  # pragma: no cover
         repo = importlib.__import__("gi.repository", fromlist=[name])
 
         return getattr(repo, name)
