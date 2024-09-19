@@ -74,3 +74,10 @@ def mock_write_file(bytes_io):
         bytes_io.write(data)
 
     return write_file
+
+
+def mock_write_text_file(bytes_io):
+    def write_text_file(_filename: str, text: str, encoding: str = "utf8"):
+        bytes_io.write(text.encode(encoding))
+
+    return write_text_file

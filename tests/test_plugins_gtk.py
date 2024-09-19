@@ -5,15 +5,15 @@ from unittest import mock
 
 from larry.plugins import gtk
 
-from . import CSS, ConfigTestCase, make_colors, mock_write_file
+from . import CSS, ConfigTestCase, make_colors, mock_write_text_file
 
 
 @mock.patch("larry.color.random", random.Random(1))
-@mock.patch("larry.plugins.gtk.write_file")
+@mock.patch("larry.plugins.gtk.write_text_file")
 class GtkTests(ConfigTestCase):
-    def test(self, write_file):
+    def test(self, write_text_file):
         output = io.BytesIO()
-        write_file.side_effect = mock_write_file(output)
+        write_text_file.side_effect = mock_write_text_file(output)
         cssfile = f"{self.tmpdir}/input.css"
 
         with open(cssfile, "w", encoding="UTF-8") as fp:

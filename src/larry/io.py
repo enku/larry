@@ -51,3 +51,8 @@ def write_file(filename: str, data: bytes) -> int:
 
     with open(filename, "wb") as myfile:
         return myfile.write(data)
+
+
+def write_text_file(filename: str, text: str, encoding: str = "utf8") -> int:
+    """Like write_file, but accepts text and encoding"""
+    return write_file(filename, text.encode(encoding))

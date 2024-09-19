@@ -3,7 +3,7 @@
 from larry import Color, ColorList
 from larry.color import COLORS_RE, replace_string, ungray
 from larry.config import ConfigType
-from larry.io import read_file, write_file
+from larry.io import read_file, write_text_file
 
 DEFAULT_GRAY_THRESHOLD = 35
 
@@ -21,4 +21,4 @@ def plugin(colors: ColorList, config: ConfigType):
     }
     new_css = replace_string(orig_css, colormap)
 
-    write_file(outfile, new_css.encode())
+    write_text_file(outfile, new_css)

@@ -19,7 +19,6 @@ def plugin(colors: ColorList, _config: ConfigType) -> None:
         weight = BOLD if name == "today" else NORMAL
         config = f"{config}{name} 38;{weight};{color.red};{color.green};{color.blue}\n"
 
-    io.write_file(
-        f"{platformdirs.user_config_dir()}/terminal-colors.d/cal.scheme",
-        config.encode("UTF-8"),
+    io.write_text_file(
+        f"{platformdirs.user_config_dir()}/terminal-colors.d/cal.scheme", config
     )
