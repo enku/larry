@@ -3,7 +3,7 @@
 
 [metadata]
 groups = ["default", "dev", "gnome"]
-strategy = ["cross_platform"]
+strategy = []
 lock_version = "4.5.0"
 content_hash = "sha256:97a234fc10d17bcc987c4fbaf92ba6de437dbf70eb90f4d49018ec0c6e6c6c79"
 
