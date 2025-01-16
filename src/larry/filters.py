@@ -2,7 +2,6 @@
 
 import collections
 import io
-import math
 import random as rand
 import typing as t
 from configparser import ConfigParser
