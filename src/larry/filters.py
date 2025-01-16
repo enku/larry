@@ -4,9 +4,13 @@ import collections
 import io
 import random as rand
 import typing as t
+from collections import Counter
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 from itertools import cycle
+
+import numpy as np
+from scipy.spatial import distance
 
 from larry import LOGGER, Color, ColorList, make_image_from_bytes, utils
 from larry.color import DEFAULT_SOFTNESS
@@ -298,10 +302,15 @@ def reduce(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     if amount == 0:
         return orig_colors
 
-    num_chunks = num_colors // amount
-    middle = math.ceil(num_chunks / 2)
+    dominant_colors = get_dominant_colors(orig_colors, amount)
+    colors = []
 
-    return [orig_colors[i] for i in range(middle, num_colors, num_chunks)]
+    for color in orig_colors:
+        if color in dominant_colors:
+            colors.append(color)
+        else:
+            colors.append(closest_color(color, dominant_colors))
+    return colors
 
 
 def subgradient(orig_colors: ColorList, config: ConfigParser) -> ColorList:
@@ -443,3 +452,17 @@ def new_image_colors(
     replacer_colors_cycle = cycle(image_colors)
 
     return [next(replacer_colors_cycle) for _ in range(count)]
+
+
+def get_dominant_colors(colors: ColorList, n: int) -> ColorList:
+    """Return the n most dominant colors from the list"""
+    color_counts = Counter(colors)
+
+    return [color for color, _ in color_counts.most_common(n)]
+
+
+def closest_color(color: Color, colors: ColorList) -> Color:
+    """Given the list of Colors, return the one closest to the given color"""
+    distances = [distance.euclidean(color, c) for c in colors]
+
+    return colors[np.argmin(distances)]

@@ -404,7 +404,13 @@ class ReduceTests(TestCase):
 
         colors = filters.reduce(self.orig_colors, config)
 
-        expected = "#e21888 #f9a423"
+        expected = (
+            "#2b0308 #250182 #250182 #250182 #250182 #2b0308 #250182 #250182 #2b0308"
+            " #2b0308 #250182 #2b0308 #250182 #2b0308 #2b0308 #250182 #250182 #250182"
+            " #250182 #250182 #250182 #250182 #2b0308 #250182 #250182 #2b0308 #2b0308"
+            " #250182 #250182 #250182 #2b0308 #2b0308 #250182 #250182 #2b0308 #2b0308"
+            " #250182 #250182 #250182 #250182"
+        )
         self.assertEqual(colors, make_colors(expected))
 
         config = make_config("bogus")
@@ -413,11 +419,17 @@ class ReduceTests(TestCase):
         self.assertEqual(colors, make_colors(expected))
 
     def test_with_custom_amount(self):
-        config = make_config("reduce", amount=5)
+        config = make_config("reduce", amount=3)
 
         colors = filters.reduce(self.orig_colors, config)
 
-        expected = "#173347 #2a9d54 #d8697f #fc8675 #d0d0fa"
+        expected = (
+            "#2b0308 #250182 #142356 #250182 #142356 #2b0308 #142356 #250182 #2b0308"
+            " #142356 #250182 #2b0308 #142356 #2b0308 #2b0308 #250182 #142356 #142356"
+            " #142356 #142356 #250182 #142356 #142356 #250182 #142356 #142356 #142356"
+            " #142356 #250182 #142356 #2b0308 #142356 #142356 #142356 #142356 #142356"
+            " #250182 #142356 #142356 #250182"
+        )
         self.assertEqual(colors, make_colors(expected))
 
     def test_cannot_reduce_to_zero(self):
