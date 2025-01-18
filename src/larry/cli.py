@@ -6,7 +6,7 @@ import logging
 import os
 import signal
 import sys
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from larry import LOGGER, Color, __version__, make_image_from_bytes
 from larry.config import DEFAULT_CONFIG_PATH
@@ -58,6 +58,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     """Perform a single iteration of Larry"""
     config = load_config(config_path)
+    colors: Iterable[Color]
 
     if config["larry"].getboolean("pause", False):
         LOGGER.info("Larry is paused")
@@ -73,11 +74,10 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
         LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
-        num_colors = len(orig_colors)
-        colors = iter(orig_colors)
-        filter_names = config["larry"].get("filter", "gradient").split()
+        colors = list(orig_colors)
+        num_colors = len(colors)
 
-        for filter_name in filter_names:
+        for filter_name in config["larry"].get("filter", "gradient").split():
             try:
                 cfilter = load_filter(filter_name)
             except FilterNotFound:
@@ -85,20 +85,17 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
                 LOGGER.exception(error_message)
             else:
                 LOGGER.debug("Calling filter %s", filter_name)
-                colors = cfilter(colors, num_colors, config)
+                colors = cfilter(iter(colors), num_colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 
     color_list = list(colors)
-    image = image.replace(orig_colors, color_list)
 
     outfile = os.path.expanduser(config["larry"]["output"])
-    write_file(outfile, bytes(image))
+    write_file(outfile, bytes(image.replace(orig_colors, color_list)))
 
     # now run any plugins
-    plugins = config["larry"].get("plugins", "").split()
-
-    for plugin_name in plugins:
+    for plugin_name in config.get("larry", "plugins", fallback="").split():
         loop.call_soon(do_plugin, plugin_name, color_list, config_path)
 
 
