@@ -5,7 +5,9 @@ from configparser import ConfigParser
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Apply a color filter over the colors"""
     color_str = config["filters:colorify"].get("color", fallback="#ff0000")
     color = Color(color_str)

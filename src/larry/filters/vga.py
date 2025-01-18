@@ -5,7 +5,9 @@ from configparser import ConfigParser
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """A blast from the past"""
     bits = config.getint("filters:vga", "bits", fallback=8)
     div = 256 / bits

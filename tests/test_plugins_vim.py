@@ -6,7 +6,9 @@ from larry.plugins import vim
 
 from . import ConfigTestCase, TestCase, make_colors
 
-COLORS = make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9")
+COLORS = list(
+    make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9")
+)
 COLOR_STR = """
 " Comment
 ALEErrorSign: bg=073642

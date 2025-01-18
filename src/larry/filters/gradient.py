@@ -6,7 +6,9 @@ from larry import utils
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Return gradient within the same luminocity range as the original"""
     fuzz = config.getint("filters:gradient", "fuzz", fallback=0)
     colors = list(orig_colors)
@@ -15,5 +17,5 @@ def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator
     lum2 = min([colors[-1].luminocity() + utils.randsign(fuzz), 255])
 
     return Color.gradient(
-        Color.randcolor(lum=lum1), Color.randcolor(lum=lum2), len(colors)
+        Color.randcolor(lum=lum1), Color.randcolor(lum=lum2), num_colors
     )

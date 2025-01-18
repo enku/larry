@@ -7,7 +7,9 @@ from larry.color import Color, ColorGenerator
 from larry.io import read_file
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    _orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Swap colors from source"""
     source = config.get("filters:swap", "source", fallback=None)
     if source is None:
@@ -27,6 +29,5 @@ def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator
         source_colors = list(image.get_colors())
 
     source_colors.sort(key=Color.luminocity)
-    colors = list(orig_colors)
 
-    return Color.generate_from(source_colors, len(colors), randomize=False)
+    return Color.generate_from(source_colors, num_colors, randomize=False)

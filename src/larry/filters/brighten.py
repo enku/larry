@@ -5,7 +5,9 @@ from configparser import ConfigParser
 from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Return brightened (or darkend) version of the colors"""
     percent = config.getint("filters:brighten", "percent", fallback=-20)
 

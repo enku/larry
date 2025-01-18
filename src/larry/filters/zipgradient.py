@@ -5,10 +5,11 @@ from configparser import ConfigParser
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Return the result of n gradients zipped"""
     colors = list(orig_colors)
-    num_colors = len(colors)
     gradient_count = config.getint("filters:zipgradient", "colors", fallback=2)
     steps = num_colors // gradient_count
 

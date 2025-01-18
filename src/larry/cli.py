@@ -71,20 +71,21 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
 
     if colors_str:
         LOGGER.debug("using colors from config")
-        colors = (Color(i.strip()) for i in colors_str)
+        colors = [Color(i.strip()) for i in colors_str]
     else:
-        colors = orig_colors
+        num_colors = len(orig_colors)
+        colors = iter(orig_colors)
         filter_names = config["larry"].get("filter", "gradient").split()
 
         for filter_name in filter_names:
             try:
-                filter_ = load_filter(filter_name)
+                cfilter = load_filter(filter_name)
             except FilterNotFound:
                 error_message = f"Color filter {filter_name} not found. Skipping."
                 LOGGER.exception(error_message)
             else:
                 LOGGER.debug("Calling filter %s", filter_name)
-                colors = filter_(colors, config)
+                colors = cfilter(colors, num_colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 

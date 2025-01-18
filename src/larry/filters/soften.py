@@ -5,7 +5,9 @@ from configparser import ConfigParser
 from larry.color import DEFAULT_SOFTNESS, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Pastelize all the original colors"""
     softness = config.getfloat("filters:soften", "softness", fallback=DEFAULT_SOFTNESS)
 

@@ -78,8 +78,11 @@ class RunTests(ConfigTestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+                iter(make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff")),
+                6,
+                None,
             ),
+            6,
             None,
         )
         image = make_image_from_bytes(read_file(f"{self.tmpdir}/larry.svg"))

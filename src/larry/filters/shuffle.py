@@ -6,7 +6,9 @@ from configparser import ConfigParser
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, _config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, _config: ConfigParser
+) -> ColorGenerator:
     """Shuffle the rgb for each color
 
     But keep the same saturation and brightness as the original

@@ -11,7 +11,7 @@ from . import load_filter
 
 
 def cfilter(
-    orig_colors: ColorGenerator, config: ConfigParser
+    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
 ) -> ColorGenerator:  # pragma: no cover
     """Yeah, coz how could we live without a random filter?"""
     try:
@@ -34,6 +34,6 @@ def cfilter(
         filter_name = random.choice(filter_names)
         filter_ = load_filter(filter_name)
         LOGGER.debug("random: running filter: %s", filter_name)
-        new_colors = filter_(new_colors, config)
+        new_colors = filter_(new_colors, num_colors, config)
 
     return new_colors

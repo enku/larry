@@ -10,10 +10,11 @@ from . import FilterError
 from .utils import get_opacity, new_image_colors
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Dissolve image into colors from another image"""
-    colors = list(orig_colors)
-    aux_colors = new_image_colors(len(colors), config, "dissolve")
+    aux_colors = new_image_colors(num_colors, config, "dissolve")
     opacity = get_opacity(config, "dissolve")
 
     amount = config["filters:dissolve"].getint("amount", fallback=50)

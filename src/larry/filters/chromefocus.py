@@ -7,7 +7,9 @@ from larry import utils
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Focus on a particular color and fade out the others"""
     focus_range = config.getfloat("filters:chromefocus", "range", fallback=5.0)
 

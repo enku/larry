@@ -5,7 +5,9 @@ from configparser import ConfigParser
 from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
+def cfilter(
+    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
+) -> ColorGenerator:
     """Convert colors to grayscale"""
     new_saturation = config.getfloat("filters:grayscale", "saturation", fallback=0.0)
 

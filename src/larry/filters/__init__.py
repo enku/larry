@@ -12,7 +12,7 @@ from importlib.metadata import entry_points
 from larry.color import ColorGenerator
 from larry.config import load as load_config
 
-Filter = t.Callable[[ColorGenerator, ConfigParser], ColorGenerator]
+Filter = t.Callable[[ColorGenerator, int, ConfigParser], ColorGenerator]
 
 
 class FilterNotFound(LookupError):
