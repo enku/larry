@@ -1,6 +1,8 @@
 # pylint: disable=missing-docstring
 import tempfile
+from configparser import ConfigParser
 from pathlib import Path
+from typing import Any
 from unittest import TestCase as StdlibTestCase
 
 from larry import config
@@ -81,3 +83,14 @@ def mock_write_text_file(bytes_io):
         bytes_io.write(text.encode(encoding))
 
     return write_text_file
+
+
+def make_config(name: str, section: str = "filters", **settings: Any) -> ConfigParser:
+    _config = ConfigParser()
+    section = f"{section}:{name}"
+    _config.add_section(section)
+
+    for key, value in settings.items():
+        _config[section][key] = str(value)
+
+    return _config
