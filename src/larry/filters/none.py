@@ -2,12 +2,12 @@
 
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, _config: ConfigParser) -> ColorGenerator:
     """A NO-OP filter
 
     This is an filter that simply returns the original colors.
     """
-    return list(orig_colors)
+    return orig_colors

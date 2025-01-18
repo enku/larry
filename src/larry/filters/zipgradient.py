@@ -2,30 +2,30 @@
 
 from configparser import ConfigParser
 
-from larry import Color, ColorList
+from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Return the result of n gradients zipped"""
-    num_colors = len(orig_colors)
+    colors = list(orig_colors)
+    num_colors = len(colors)
     gradient_count = config.getint("filters:zipgradient", "colors", fallback=2)
     steps = num_colors // gradient_count
 
     # You need at least 2 steps to make a gradient
     if steps < 2:
-        return orig_colors
+        yield from colors
+        return
 
     i = steps
-    color = Color.randcolor(lum=orig_colors[0].luminocity())
+    color = Color.randcolor(lum=colors[0].luminocity())
 
-    colors: ColorList = []
-    while len(colors) < num_colors:
-        next_color = Color.randcolor(
-            lum=orig_colors[min(i, num_colors - 1)].luminocity()
-        )
+    num_needed = num_colors
+    while num_needed > 0:
+        next_color = Color.randcolor(lum=colors[min(i, num_colors - 1)].luminocity())
         grad = Color.gradient(color, next_color, steps)
-        colors += [*grad][1:]
+        new_colors = [*grad][1:][:num_needed]
+        yield from new_colors
         i += steps
+        num_needed -= len(new_colors)
         color = next_color
-
-    return colors[:num_colors]

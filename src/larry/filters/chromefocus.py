@@ -3,21 +3,24 @@
 import collections
 from configparser import ConfigParser
 
-from larry import Color, ColorList, utils
+from larry import utils
+from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Focus on a particular color and fade out the others"""
     focus_range = config.getfloat("filters:chromefocus", "range", fallback=5.0)
 
     if focus_range == 0:
-        return list(orig_colors)
+        yield from orig_colors
+        return
 
     factor = config.getfloat("filters:chromefocus", "factor", fallback=0.0)
     buckets = utils.buckets(0, 360, focus_range)
     hue_counts: collections.Counter[tuple[float, float]] = collections.Counter()
 
-    for color in orig_colors:
+    colors = list(orig_colors)
+    for color in colors:
         hue = color.to_hsv()[0]
         for bucket in buckets:
             if bucket[0] <= hue < bucket[1]:
@@ -26,13 +29,9 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     average_hue = sum(hue_counts.most_common(1)[0][0]) / 2
 
-    colors = []
-    for color in orig_colors:
+    for color in colors:
         h, s, v = color.to_hsv()
         if utils.angular_distance(h, average_hue) <= focus_range:
-            colors.append(color)
+            yield color
         else:
-            colors.append(Color.from_hsv((h, factor * s, v)))
-            continue
-
-    return colors
+            yield Color.from_hsv((h, factor * s, v))

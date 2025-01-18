@@ -9,10 +9,10 @@ import typing as t
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
-from larry import ColorList
+from larry.color import ColorGenerator
 from larry.config import load as load_config
 
-Filter = t.Callable[[ColorList, ConfigParser], ColorList]
+Filter = t.Callable[[ColorGenerator, ConfigParser], ColorGenerator]
 
 
 class FilterNotFound(LookupError):

@@ -83,7 +83,7 @@ class LuminocityTests(FilterTestCase):
         expected = make_colors(
             "#51269a #20887c #82683a #22b00a #91a101 #c97867 #49e315 #adcc3f"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 class InverseTests(FilterTestCase):
@@ -98,7 +98,7 @@ class InverseTests(FilterTestCase):
         expected = make_colors(
             "#81ee70 #8ab038 #7ca28a #7f86cf #688d15 #606cb4 #c617dd #ca2016"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 class GradientTests(FilterTestCase):
@@ -115,7 +115,7 @@ class GradientTests(FilterTestCase):
         expected = make_colors(
             "#51269a #4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     @mock.patch("larry.utils.random", random.Random(12345))
@@ -129,7 +129,7 @@ class GradientTests(FilterTestCase):
         expected = make_colors(
             "#8b41ff #7c4eef #6e5bdf #5f69cf #5176bf #4284af #34919f #269f90"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 class ZipgradientTests(FilterTestCase):
@@ -146,7 +146,7 @@ class ZipgradientTests(FilterTestCase):
         expected = make_colors(
             "#44559d #3785a0 #2bb5a4 #62b18c #9aad74 #d2a95d #9dc543 #68e229"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     def test_with_colors_option(self):
@@ -159,7 +159,7 @@ class ZipgradientTests(FilterTestCase):
         expected = make_colors(
             "#4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce #4cdabd"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     def test_when_not_enough_steps(self):
         config = make_config("zipgradient", colors=9)
@@ -168,7 +168,7 @@ class ZipgradientTests(FilterTestCase):
         )
         colors = self.filter(orig_colors, config)
 
-        self.assertEqual(colors, orig_colors)
+        self.assertEqual(list(colors), orig_colors)
 
 
 class ShuffleTests(FilterTestCase):
@@ -184,7 +184,7 @@ class ShuffleTests(FilterTestCase):
         expected = make_colors(
             "#108f7e #c7754f #83755c #803078 #72ea97 #4b9f92 #3822e8 #df34e9"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 @mock.patch("larry.utils.random", random.Random(1))
@@ -200,11 +200,11 @@ class ShiftTests(FilterTestCase):
         expected = make_colors(
             "#754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9 #7e118f"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     def test_shift_single_item(self):
         orig_colors = make_colors("#7e118f")
-        self.assertEqual(self.filter(orig_colors, None), orig_colors)
+        self.assertEqual(list(self.filter(orig_colors, None)), orig_colors)
 
 
 class PastelizeTests(FilterTestCase):
@@ -219,7 +219,7 @@ class PastelizeTests(FilterTestCase):
         expected = make_colors(
             "#ed7fff #a77fff #ff7fd0 #fff37f #a67fff #ffec7f #8eff7f #7ff7ff"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 class SoftenTests(FilterTestCase):
@@ -235,7 +235,7 @@ class SoftenTests(FilterTestCase):
         expected = make_colors(
             "#bb6fc6 #b49ee3 #c1a5b6 #bfba83 #c9b5f4 #cfc798 #97f38b #95eef4"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     def test_with_softness(self):
         orig_colors = make_colors(
@@ -247,7 +247,7 @@ class SoftenTests(FilterTestCase):
         expected = make_colors(
             "#d5a2dd #d0c3ee #d9c6d2 #d8d5b0 #ded2f8 #e2ddbe #bff8b8 #bef5f8"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
 
 class BrightenTests(FilterTestCase):
@@ -263,7 +263,7 @@ class BrightenTests(FilterTestCase):
 
         # Kind of strange that brighten darkens by default
         expected = "#650e72 #5e3f9f #694a5e #666126 #795bbb #7f763c #2eba1b #2ab2ba"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_percent_option(self):
         config = make_config("brighten", percent=40)
@@ -271,7 +271,7 @@ class BrightenTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#b018c8 #a46fff #b782a4 #b3a943 #d3a0ff #dfce69 #50ff30 #4affff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 class SubtractTests(FilterTestCase):
@@ -285,14 +285,14 @@ class SubtractTests(FilterTestCase):
         colors = self.filter(self.orig_colors, None)
 
         expected = "#7e8f11 #75c74f #83755d #803079 #97ea72 #9f4b93 #3922e8 #35e9df"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     @mock.patch("larry.filters.subtract.random", random.Random(12))
     def test2(self):
         colors = self.filter(self.orig_colors, None)
 
         expected = "#b3fff0 #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 @mock.patch("larry.filters.randbright.random", random.Random(1))
@@ -306,7 +306,7 @@ class RandbrightTests(FilterTestCase):
         colors = self.filter(self.orig_colors, None)
 
         expected = "#861298 #24183d #9f718e #433f19 #ffd1ff #ffec79 #57ff34 #3bfaff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 class ContrastTests(FilterTestCase):
@@ -319,7 +319,7 @@ class ContrastTests(FilterTestCase):
         colors = self.filter(self.orig_colors, None)
 
         expected = "#000000 #24183d #4e3746 #6a6528 #8c69d8 #b1a454 #45ff29 #44ffff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 @mock.patch("larry.color.random", random.Random(1))
@@ -335,7 +335,7 @@ class SwapTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#666666 #000000 #254351 #1c343f #7c8e96 #a7b3b9 #d3d9dc #ffffff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_source_image(self):
         config = make_config("swap", source=DEFAULT_INPUT_PATH)
@@ -343,7 +343,7 @@ class SwapTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#666666 #1c343f #000000 #254351 #7c8e96 #a7b3b9 #d3d9dc #ffffff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 class NoneTests(FilterTestCase):
@@ -369,14 +369,14 @@ class VGATests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#600080 #6040c0 #804060 #806020 #8060e0 #808040 #20e020 #20c0e0"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_bits_option(self):
         config = make_config("vga", bits=4)
         colors = self.filter(self.orig_colors, config)
 
         expected = "#400080 #4040c0 #804040 #804000 #8040c0 #808040 #00c000 #00c0c0"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 class GrayscaleTests(FilterTestCase):
@@ -390,21 +390,21 @@ class GrayscaleTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#8f8f8f #c7c7c7 #838383 #808080 #eaeaea #9f9f9f #e8e8e8 #e9e9e9"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_saturation_setting(self):
         config = make_config("grayscale", saturation=30)
         colors = self.filter(self.orig_colors, config)
 
         expected = "#89648f #9e8bc7 #835b74 #807c59 #b9a3ea #9f986f #aae8a2 #a3e5e9"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_saturation_setting_above_100(self):
         config = make_config("grayscale", saturation=130)
         colors = self.filter(self.orig_colors, config)
 
         expected = "#75008f #1600c7 #830044 #807100 #1700ea #9f8100 #00e800 #00d8e9"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
 
 class ReduceTests(FilterTestCase):
@@ -432,12 +432,12 @@ class ReduceTests(FilterTestCase):
             " #250182 #250182 #250182 #2b0308 #2b0308 #250182 #250182 #2b0308 #2b0308"
             " #250182 #250182 #250182 #250182"
         )
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
         config = make_config("bogus")
         colors = self.filter(self.orig_colors, config)
 
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_custom_amount(self):
         config = make_config("reduce", amount=3)
@@ -451,14 +451,14 @@ class ReduceTests(FilterTestCase):
             " #142356 #250182 #142356 #2b0308 #142356 #142356 #142356 #142356 #142356"
             " #250182 #142356 #142356 #250182"
         )
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_cannot_reduce_to_zero(self):
         config = make_config("reduce", amount=0)
 
         colors = self.filter(self.orig_colors, config)
 
-        self.assertEqual(colors, self.orig_colors)
+        self.assertEqual(list(colors), self.orig_colors)
 
 
 class SubGradientTests(FilterTestCase):
@@ -473,7 +473,7 @@ class SubGradientTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = "#231815 #727f88 #00b6ff #dd8138 #00ffbf #7fccff #ffa97f #7fd9ff"
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_size_argument(self):
         config = make_config("subgradient", size=3)
@@ -483,21 +483,21 @@ class SubGradientTests(FilterTestCase):
         expected = (
             "#231815 #11678a #00b6ff #dd8138 #aea69b #7fccff #ffa97f #bfc1bf #7fd9ff"
         )
-        self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(list(colors), make_colors(expected))
 
     def test_with_invalid_size(self):
         config = make_config("subgradient", size=1)
 
         colors = self.filter(self.orig_colors, config)
 
-        self.assertEqual(colors, self.orig_colors)
+        self.assertEqual(list(colors), self.orig_colors)
 
     def test_with_no_config(self):
         config = make_config("bogus")
 
         colors = self.filter(self.orig_colors, config)
 
-        self.assertEqual(colors, self.orig_colors)
+        self.assertEqual(list(colors), self.orig_colors)
 
 
 class ColorifyTests(FilterTestCase):
@@ -509,7 +509,9 @@ class ColorifyTests(FilterTestCase):
         new_colors = self.filter(orig_colors, config)
 
         # red is the default color
-        self.assertEqual(new_colors, make_colors("#dd0000 #ff7f7f #ff0000 #ffc0c0"))
+        self.assertEqual(
+            list(new_colors), make_colors("#dd0000 #ff7f7f #ff0000 #ffc0c0")
+        )
 
     def test_custom_color_and_pastels(self):
         orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
@@ -517,7 +519,9 @@ class ColorifyTests(FilterTestCase):
 
         new_colors = self.filter(orig_colors, config)
 
-        self.assertEqual(new_colors, make_colors("#0000dd #7f7fff #0000ff #c0c0ff"))
+        self.assertEqual(
+            list(new_colors), make_colors("#0000dd #7f7fff #0000ff #c0c0ff")
+        )
 
 
 @mock.patch("larry.filters.dissolve.random", random.Random(1))
@@ -531,7 +535,9 @@ class DissolveTests(FilterTestCase):
         )
         new_colors = self.filter(orig_colors, config)
 
-        self.assertEqual(new_colors, make_colors("#00dd00 #606752 #b2b2ff #ffc0ca"))
+        self.assertEqual(
+            list(new_colors), make_colors("#00dd00 #606752 #b2b2ff #ffc0ca")
+        )
 
     def test_invalid_amount(self):
         orig_colors = make_colors("#00dd00 #ffde7f #0000ff #ffc0cb")
@@ -551,7 +557,9 @@ class DarkenTests(FilterTestCase):
 
         new_colors = self.filter(orig_colors, config)
 
-        self.assertEqual(new_colors, make_colors("#004200 #606752 #0000ff #938184"))
+        self.assertEqual(
+            list(new_colors), make_colors("#004200 #606752 #0000ff #938184")
+        )
 
 
 class LightenTests(FilterTestCase):
@@ -563,7 +571,9 @@ class LightenTests(FilterTestCase):
 
         new_colors = self.filter(orig_colors, config)
 
-        self.assertEqual(new_colors, make_colors("#00dd00 #ffde7f #b2b2ff #ffc0ca"))
+        self.assertEqual(
+            list(new_colors), make_colors("#00dd00 #ffde7f #b2b2ff #ffc0ca")
+        )
 
 
 class ChromeFocusTests(FilterTestCase):
@@ -580,7 +590,7 @@ class ChromeFocusTests(FilterTestCase):
         expected = make_colors(
             "#8f8f8f #754fc7 #838383 #808080 #9772ea #9f9f9f #e8e8e8 #e9e9e9"
         )
-        self.assertEqual(colors, expected)
+        self.assertEqual(list(colors), expected)
 
     def test_with_0_range(self):
         config = make_config("chromefocus", range="0")
@@ -590,4 +600,4 @@ class ChromeFocusTests(FilterTestCase):
 
         colors = self.filter(orig_colors, config)
 
-        self.assertEqual(colors, orig_colors)
+        self.assertEqual(list(colors), orig_colors)

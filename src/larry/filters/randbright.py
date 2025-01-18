@@ -3,9 +3,10 @@
 import random
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, _config: ConfigParser) -> ColorGenerator:
     """Each color is darkened/lightened by a random value"""
-    return [i.luminize(random.randint(0, 255)) for i in orig_colors]
+    for color in orig_colors:
+        yield color.luminize(random.randint(0, 255))

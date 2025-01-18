@@ -3,15 +3,16 @@
 import random
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, _config: ConfigParser) -> ColorGenerator:
     """XXX"""
-    color = random.choice(orig_colors)
+    colors = list(orig_colors)
+    color = random.choice(colors)
     sign = random.choice([-1, 1])
 
     if sign == -1:
-        return [i - color for i in orig_colors]
+        return (i - color for i in colors)
 
-    return [i + color for i in orig_colors]
+    return (i + color for i in orig_colors)

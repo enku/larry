@@ -2,11 +2,12 @@
 
 from configparser import ConfigParser
 
-from larry import Color, ColorList, make_image_from_bytes
+from larry import make_image_from_bytes
+from larry.color import Color, ColorGenerator
 from larry.io import read_file
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Swap colors from source"""
     source = config.get("filters:swap", "source", fallback=None)
     if source is None:
@@ -23,8 +24,9 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
         raw_image_data = read_file(source)
         image = make_image_from_bytes(raw_image_data)
 
-        source_colors = [*image.get_colors()]
+        source_colors = list(image.get_colors())
 
     source_colors.sort(key=Color.luminocity)
+    colors = list(orig_colors)
 
-    return [*Color.generate_from(source_colors, len(orig_colors), randomize=False)]
+    return Color.generate_from(source_colors, len(colors), randomize=False)

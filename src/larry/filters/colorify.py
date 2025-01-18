@@ -2,10 +2,10 @@
 
 from configparser import ConfigParser
 
-from larry import Color, ColorList
+from larry.color import Color, ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Apply a color filter over the colors"""
     color_str = config["filters:colorify"].get("color", fallback="#ff0000")
     color = Color(color_str)
@@ -15,4 +15,4 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     fix_bw = config["filters:colorify"].getboolean("fix_bw", fallback=False)
 
-    return [orig_color.colorify(color, fix_bw) for orig_color in orig_colors]
+    return (orig_color.colorify(color, fix_bw) for orig_color in orig_colors)

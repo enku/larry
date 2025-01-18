@@ -2,9 +2,10 @@
 
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, _config: ConfigParser) -> ColorGenerator:
     """Return orig_colors inversed"""
-    return [i.inverse() for i in orig_colors]
+    for color in orig_colors:
+        yield color.inverse()

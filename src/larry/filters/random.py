@@ -4,14 +4,15 @@ import random
 from configparser import ConfigParser
 from importlib.metadata import entry_points
 
-from larry import LOGGER, ColorList
+from larry import LOGGER
+from larry.color import ColorGenerator
 
 from . import load_filter
 
 
 def cfilter(
-    orig_colors: ColorList, config: ConfigParser
-) -> ColorList:  # pragma: no cover
+    orig_colors: ColorGenerator, config: ConfigParser
+) -> ColorGenerator:  # pragma: no cover
     """Yeah, coz how could we live without a random filter?"""
     try:
         include_str = config["filters:random"]["include"]

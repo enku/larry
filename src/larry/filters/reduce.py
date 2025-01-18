@@ -2,14 +2,15 @@
 
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 from .utils import closest_color, get_dominant_colors
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Reduce the number of distinct colors"""
-    num_colors = len(orig_colors)
+    colors = list(orig_colors)
+    num_colors = len(colors)
     amount = num_colors // 20
 
     try:
@@ -18,14 +19,13 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
         pass
 
     if amount == 0:
-        return orig_colors
+        yield from colors
+        return
 
-    dominant_colors = get_dominant_colors(orig_colors, amount)
-    colors = []
+    dominant_colors = get_dominant_colors(colors, amount)
 
-    for color in orig_colors:
+    for color in colors:
         if color in dominant_colors:
-            colors.append(color)
+            yield color
         else:
-            colors.append(closest_color(color, dominant_colors))
-    return colors
+            yield closest_color(color, dominant_colors)

@@ -2,17 +2,14 @@
 
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Return brightened (or darkend) version of the colors"""
     percent = config.getint("filters:brighten", "percent", fallback=-20)
-    colors: ColorList = []
 
     for color in orig_colors:
         lum = color.luminocity()
         new_lum = lum + 0.01 * percent * lum
-        colors.append(color.luminize(new_lum))
-
-    return colors
+        yield color.luminize(new_lum)

@@ -3,16 +3,17 @@
 import random
 from configparser import ConfigParser
 
-from larry import ColorList
+from larry.color import ColorGenerator
 from larry.color import combine_colors as combine
 
 from . import FilterError
 from .utils import get_opacity, new_image_colors
 
 
-def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
+def cfilter(orig_colors: ColorGenerator, config: ConfigParser) -> ColorGenerator:
     """Dissolve image into colors from another image"""
-    aux_colors = new_image_colors(len(orig_colors), config, "dissolve")
+    colors = list(orig_colors)
+    aux_colors = new_image_colors(len(colors), config, "dissolve")
     opacity = get_opacity(config, "dissolve")
 
     amount = config["filters:dissolve"].getint("amount", fallback=50)
@@ -21,11 +22,11 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     weights = [100 - amount, amount]
 
-    return [
+    return (
         combine(
             random.choices([orig_color, aux_color], weights, k=1)[0],
             orig_color,
             opacity,
         )
         for orig_color, aux_color in zip(orig_colors, aux_colors)
-    ]
+    )

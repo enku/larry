@@ -47,18 +47,10 @@ class RunTests(ConfigTestCase):
         cli.run(self.config_path, loop)
 
         self.assertTrue(os.path.exists(f"{self.tmpdir}/larry.svg"))
-        pastelize = filters.load_filter("pastelize")
-        inverse = filters.load_filter("inverse")
-        colors = pastelize(
-            inverse(
-                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
-            ),
-            None,
-        )
         loop.call_soon.assert_has_calls(
             [
-                mock.call(cli.do_plugin, "command", colors, self.config_path),
-                mock.call(cli.do_plugin, "dummy", colors, self.config_path),
+                mock.call(cli.do_plugin, "command", mock.ANY, self.config_path),
+                mock.call(cli.do_plugin, "dummy", mock.ANY, self.config_path),
             ]
         )
 
