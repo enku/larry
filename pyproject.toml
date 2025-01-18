@@ -69,16 +69,6 @@ build-backend = "pdm.pep517.api"
 
 [tool.pdm]
 version = { source = "scm" }
-[tool.pdm.dev-dependencies]
-dev = [
-    "black>=22.6.0",
-    "build>=0.8.0",
-    "coverage>=6.4.2",
-    "mypy>=0.971",
-    "pylint>=2.14.5",
-    "types-Pillow>=9.4.0.13",
-]
-
 [tool.pylint.FORMAT]
 max-line-length = 88
 
@@ -87,3 +77,14 @@ profile = "black"
 
 [tool.coverage.run]
 source = ["larry"]
+
+[dependency-groups]
+dev = [
+    "black>=22.6.0",
+    "build>=0.8.0",
+    "coverage>=6.4.2",
+    "mypy>=0.971",
+    "pylint>=2.14.5",
+    "types-Pillow>=9.4.0.13",
+    "scipy-stubs>=1.15.1.0",
+]

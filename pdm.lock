@@ -5,7 +5,7 @@
 groups = ["default", "dev", "gnome"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:ca7f316dd9e20774d3187b8719b29931ababdf17f5deb8a5ba62652ac3a85113"
+content_hash = "sha256:0e7f90d04e7886758c4179f38d4dcad707384db2d1876852102e693aaa3d9cb3"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -276,6 +276,19 @@ files = [
 ]
 
 [[package]]
+name = "optype"
+version = "0.8.0"
+requires_python = ">=3.10"
+summary = "Building blocks for precise & flexible type hints"
+dependencies = [
+    "typing-extensions>=4.10; python_version < \"3.13\"",
+]
+files = [
+    {file = "optype-0.8.0-py3-none-any.whl", hash = "sha256:90a7760177f2e7feae379a60445fceec37b932b75a00c3d96067497573c5e84d"},
+    {file = "optype-0.8.0.tar.gz", hash = "sha256:8cbfd452d6f06c7c70502048f38a0d5451bc601054d3a577dd09c7d6363950e1"},
+]
+
+[[package]]
 name = "packaging"
 version = "24.2"
 requires_python = ">=3.8"
@@ -456,6 +469,19 @@ files = [
     {file = "scipy-1.15.1-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:2722a021a7929d21168830790202a75dbb20b468a8133c74a2c0230c72626b6c"},
     {file = "scipy-1.15.1-cp313-cp313t-win_amd64.whl", hash = "sha256:bc7136626261ac1ed988dca56cfc4ab5180f75e0ee52e58f1e6aa74b5f3eacd5"},
     {file = "scipy-1.15.1.tar.gz", hash = "sha256:033a75ddad1463970c96a88063a1df87ccfddd526437136b6ee81ff0312ebdf6"},
+]
+
+[[package]]
+name = "scipy-stubs"
+version = "1.15.1.0"
+requires_python = ">=3.10"
+summary = "Type annotations for SciPy"
+dependencies = [
+    "optype>=0.8.0",
+]
+files = [
+    {file = "scipy_stubs-1.15.1.0-py3-none-any.whl", hash = "sha256:f6e8f8dfd2aaa343705c46ac1fdc69556ea8a0a9b0645cb3af4dd652665a452f"},
+    {file = "scipy_stubs-1.15.1.0.tar.gz", hash = "sha256:25756486635594025ed3249b6fb659c29dc5874c7b55565ad248b13a4ff4fa1c"},
 ]
 
 [[package]]
