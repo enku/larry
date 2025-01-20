@@ -1,32 +1,28 @@
 """reduce color filter"""
 
+import random
 from configparser import ConfigParser
 
-from larry.color import ColorGenerator
+from larry.color import Color, ColorGenerator, ColorList
 
-from .utils import closest_color, get_dominant_colors
+from .utils import closest_color
 
 
 def cfilter(
     orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
 ) -> ColorGenerator:
     """Reduce the number of distinct colors"""
-    amount = num_colors // 20
+    default_amount = 64
+    amount = config.getint("filters:reduce", "amount", fallback=default_amount)
 
-    try:
-        amount = config["filters:reduce"].getint("amount", fallback=amount)
-    except KeyError:
-        pass
-
-    if amount == 0:
+    if amount == 0 or num_colors <= amount:
         yield from orig_colors
         return
 
     colors = list(orig_colors)
-    dominant_colors = get_dominant_colors(colors, amount)
+    selected_colors: ColorList = random.choices(colors, k=amount)
 
-    for color in colors:
-        if color in dominant_colors:
-            yield color
-        else:
-            yield closest_color(color, dominant_colors)
+    yield from (
+        color if color in selected_colors else closest_color(color, selected_colors)
+        for color in colors
+    )

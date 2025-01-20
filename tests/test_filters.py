@@ -409,11 +409,12 @@ class GrayscaleTests(FilterTestCase):
         self.assertEqual(list(colors), make_colors(expected))
 
 
+@mock.patch("larry.filters.reduce.random", random.Random(1))
 class ReduceTests(FilterTestCase):
     entry_point = "reduce"
     orig_colors = sorted(
         make_colors(
-            "#effeff #859673 #d8697f #abefdb #173347 #72de89 #69fc45 #fc8675 #f57074"
+            " #effeff #859673 #d8697f #abefdb #173347 #72de89 #69fc45 #fc8675 #f57074"
             " #7e1831 #50ed07 #77b098 #b8c839 #deb94d #8db935 #4ef582 #29fb4f #625c1d"
             " #39dea8 #0916da #250182 #38bc5e #f9a423 #098d23 #dc5c14 #a85e09 #2b0308"
             " #aaffdc #4291b4 #ba47ea #748c08 #142356 #3cb96d #d0d0fa #6bba34 #274974"
@@ -422,24 +423,12 @@ class ReduceTests(FilterTestCase):
         key=Color.luminocity,
     )
 
-    def test(self):
+    def test_with_default_amount(self):
         config = make_config("reduce")
 
         colors = self.filter(iter(self.orig_colors), 40, config)
 
-        expected = (
-            "#2b0308 #250182 #250182 #250182 #250182 #2b0308 #250182 #250182 #2b0308"
-            " #2b0308 #250182 #2b0308 #250182 #2b0308 #2b0308 #250182 #250182 #250182"
-            " #250182 #250182 #250182 #250182 #2b0308 #250182 #250182 #2b0308 #2b0308"
-            " #250182 #250182 #250182 #2b0308 #2b0308 #250182 #250182 #2b0308 #2b0308"
-            " #250182 #250182 #250182 #250182"
-        )
-        self.assertEqual(list(colors), make_colors(expected))
-
-        config = make_config("bogus")
-        colors = self.filter(iter(self.orig_colors), 40, config)
-
-        self.assertEqual(list(colors), make_colors(expected))
+        self.assertEqual(list(colors), self.orig_colors)
 
     def test_with_custom_amount(self):
         config = make_config("reduce", amount=3)
@@ -447,11 +436,11 @@ class ReduceTests(FilterTestCase):
         colors = self.filter(iter(self.orig_colors), 40, config)
 
         expected = (
-            "#2b0308 #250182 #142356 #250182 #142356 #2b0308 #142356 #250182 #2b0308"
-            " #142356 #250182 #2b0308 #142356 #2b0308 #2b0308 #250182 #142356 #142356"
-            " #142356 #142356 #250182 #142356 #142356 #250182 #142356 #142356 #142356"
-            " #142356 #250182 #142356 #2b0308 #142356 #142356 #142356 #142356 #142356"
-            " #250182 #142356 #142356 #250182"
+            " #7e1831 #7e1831 #7e1831 #7e1831 #7e1831 #7e1831 #7e1831 #7e1831 #7e1831"
+            " #4ef582 #7e1831 #7e1831 #4ef582 #7e1831 #f9a423 #7e1831 #4ef582 #4ef582"
+            " #4ef582 #4ef582 #f9a423 #4ef582 #4ef582 #f9a423 #4ef582 #f9a423 #4ef582"
+            " #4ef582 #f9a423 #4ef582 #f9a423 #f9a423 #4ef582 #4ef582 #f9a423 #4ef582"
+            " #4ef582 #4ef582 #4ef582 #4ef582"
         )
         self.assertEqual(list(colors), make_colors(expected))
 

@@ -46,13 +46,6 @@ def new_image_colors(
     return [next(replacer_colors_cycle) for _ in range(count)]
 
 
-def get_dominant_colors(colors: ColorList, n: int) -> ColorList:
-    """Return the n most dominant colors from the list"""
-    color_counts = Counter(colors)
-
-    return [color for color, _ in color_counts.most_common(n)]
-
-
 def closest_color(color: Color, colors: ColorList) -> Color:
     """Given the list of Colors, return the one closest to the given color"""
     distances = [distance.euclidean(color, c) for c in colors]
