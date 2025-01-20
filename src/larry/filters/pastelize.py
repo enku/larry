@@ -2,12 +2,9 @@
 
 from configparser import ConfigParser
 
-from larry.color import ColorGenerator
+from larry import ColorList
 
 
-def cfilter(
-    orig_colors: ColorGenerator, _num_colors: int, _config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Pastelize all the original colors"""
-    for color in orig_colors:
-        yield color.pastelize()
+    return [orig_color.pastelize() for orig_color in orig_colors]

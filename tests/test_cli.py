@@ -47,10 +47,18 @@ class RunTests(ConfigTestCase):
         cli.run(self.config_path, loop)
 
         self.assertTrue(os.path.exists(f"{self.tmpdir}/larry.svg"))
+        pastelize = filters.load_filter("pastelize")
+        inverse = filters.load_filter("inverse")
+        colors = pastelize(
+            inverse(
+                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+            ),
+            None,
+        )
         loop.call_soon.assert_has_calls(
             [
-                mock.call(cli.do_plugin, "command", mock.ANY, self.config_path),
-                mock.call(cli.do_plugin, "dummy", mock.ANY, self.config_path),
+                mock.call(cli.do_plugin, "command", colors, self.config_path),
+                mock.call(cli.do_plugin, "dummy", colors, self.config_path),
             ]
         )
 
@@ -78,11 +86,9 @@ class RunTests(ConfigTestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                iter(make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff")),
-                6,
+                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"),
                 None,
             ),
-            6,
             None,
         )
         image = make_image_from_bytes(read_file(f"{self.tmpdir}/larry.svg"))
@@ -90,7 +96,7 @@ class RunTests(ConfigTestCase):
         self.assertEqual(set(colors), set(image_colors))
 
     def test_colors_from_config(self):
-        color_str = "red white blue pink yellow orange"
+        color_str = "red white blue pink yellow"
         self.add_config(colors=color_str, filter="none")
 
         loop = mock.Mock()

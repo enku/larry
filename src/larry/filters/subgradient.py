@@ -3,19 +3,27 @@
 from configparser import ConfigParser
 from itertools import islice
 
-from larry.color import Color, ColorGenerator
+from larry import Color, ColorList
 
 
-def cfilter(
-    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Like zipgradient, but gradients are a subset of the original colors"""
+    num_colors = len(orig_colors)
+    index = 0
     size = num_colors // 20
-    size = config.getint("filters:subgradient", "size", fallback=size)
+    new_colors: ColorList = []
+
+    try:
+        size = config["filters:subgradient"].getint("size", fallback=size)
+    except KeyError:
+        pass
 
     if size < 2:
-        yield from orig_colors
-        return
+        return orig_colors
 
-    while chunk := list(islice(orig_colors, size)):
-        yield from Color.gradient(chunk[0], chunk[-1], size)
+    while chunk := orig_colors[index : index + size]:
+        grad = Color.gradient(chunk[0], chunk[-1], size)
+        new_colors.extend(grad)
+        index += size
+
+    return new_colors

@@ -2,13 +2,12 @@
 
 from configparser import ConfigParser
 
-from larry.color import Color, ColorGenerator
+from larry import Color, ColorList
 
 
-def cfilter(
-    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """A blast from the past"""
+    colors: ColorList = []
     bits = config.getint("filters:vga", "bits", fallback=8)
     div = 256 / bits
 
@@ -17,4 +16,6 @@ def cfilter(
         red = int(red // div * div)
         green = int(green // div * div)
         blue = int(blue // div * div)
-        yield Color(red, green, blue)
+        colors.append(Color(red, green, blue))
+
+    return colors

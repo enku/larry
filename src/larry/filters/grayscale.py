@@ -2,15 +2,16 @@
 
 from configparser import ConfigParser
 
-from larry.color import Color, ColorGenerator
+from larry import Color, ColorList
 
 
-def cfilter(
-    orig_colors: ColorGenerator, _num_colors: int, config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Convert colors to grayscale"""
+    colors: ColorList = []
     new_saturation = config.getfloat("filters:grayscale", "saturation", fallback=0.0)
 
     for color in orig_colors:
         hue, _, value = color.to_hsv()
-        yield Color.from_hsv((hue, new_saturation, value))
+        colors.append(Color.from_hsv((hue, new_saturation, value)))
+
+    return colors

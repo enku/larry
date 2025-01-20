@@ -67,15 +67,15 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
     image = make_image_from_bytes(raw_image_data)
 
-    orig_colors = image.get_colors()
+    orig_colors = list(image.get_colors())
+    orig_colors.sort(key=Color.luminocity)
     colors_str = config["larry"].get("colors", "").strip().split()
 
     if colors_str:
         LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
-        colors = list(orig_colors)
-        num_colors = len(colors)
+        colors = orig_colors.copy()
 
         for filter_name in config["larry"].get("filter", "gradient").split():
             try:
@@ -85,18 +85,19 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
                 LOGGER.exception(error_message)
             else:
                 LOGGER.debug("Calling filter %s", filter_name)
-                colors = cfilter(iter(colors), num_colors, config)
+                colors = cfilter(colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 
-    color_list = list(colors)
+    if colors != orig_colors:
+        image = image.replace(orig_colors, colors)
 
     outfile = os.path.expanduser(config["larry"]["output"])
-    write_file(outfile, bytes(image.replace(orig_colors, color_list)))
+    write_file(outfile, bytes(image))
 
     # now run any plugins
     for plugin_name in config.get("larry", "plugins", fallback="").split():
-        loop.call_soon(do_plugin, plugin_name, color_list, config_path)
+        loop.call_soon(do_plugin, plugin_name, colors, config_path)
 
 
 def run_every(interval: float, config_path: str, loop) -> None:

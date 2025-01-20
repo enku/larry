@@ -2,12 +2,9 @@
 
 from configparser import ConfigParser
 
-from larry.color import Color, ColorGenerator
+from larry import Color, ColorList
 
 
-def cfilter(
-    orig_colors: ColorGenerator, _num_colors: int, _config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, _config: ConfigParser) -> ColorList:
     """Return colors with the same luminocity as the original"""
-    for color in orig_colors:
-        yield Color.randcolor(lum=color.luminocity())
+    return [Color.randcolor(lum=i.luminocity()) for i in orig_colors]

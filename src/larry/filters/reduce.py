@@ -3,26 +3,24 @@
 import random
 from configparser import ConfigParser
 
-from larry.color import Color, ColorGenerator, ColorList
+from larry import ColorList
 
 from .utils import closest_color
 
 
-def cfilter(
-    orig_colors: ColorGenerator, num_colors: int, config: ConfigParser
-) -> ColorGenerator:
+def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Reduce the number of distinct colors"""
     default_amount = 64
     amount = config.getint("filters:reduce", "amount", fallback=default_amount)
 
+    num_colors = len(orig_colors)
     if amount == 0 or num_colors <= amount:
-        yield from orig_colors
-        return
+        return orig_colors
 
     colors = list(orig_colors)
     selected_colors: ColorList = random.choices(colors, k=amount)
 
-    yield from (
+    return [
         color if color in selected_colors else closest_color(color, selected_colors)
         for color in colors
-    )
+    ]
