@@ -8,6 +8,7 @@ from larry import Color, ColorList, utils
 
 def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Focus on a particular color and fade out the others"""
+    angular_distance = utils.angular_distance
     focus_range = config.getfloat("filters:chromefocus", "range", fallback=5.0)
 
     if focus_range == 0:
@@ -26,13 +27,12 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
     average_hue = sum(hue_counts.most_common(1)[0][0]) / 2
 
-    colors = []
-    for color in orig_colors:
-        h, s, v = color.to_hsv()
-        if utils.angular_distance(h, average_hue) <= focus_range:
-            colors.append(color)
-        else:
-            colors.append(Color.from_hsv((h, factor * s, v)))
-            continue
-
-    return colors
+    return [
+        (
+            color
+            if angular_distance(h, average_hue) <= focus_range
+            else Color.from_hsv((h, factor * s, v))
+        )
+        for color in orig_colors
+        for h, s, v in [color.to_hsv()]
+    ]
