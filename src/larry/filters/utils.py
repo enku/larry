@@ -1,7 +1,6 @@
 """color filter utilities"""
 
 import random
-from collections import Counter
 from configparser import ConfigParser
 from itertools import cycle
 

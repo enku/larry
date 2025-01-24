@@ -1,7 +1,6 @@
 """subgradient color filter"""
 
 from configparser import ConfigParser
-from itertools import islice
 
 from larry import Color, ColorList
 
