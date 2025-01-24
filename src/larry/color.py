@@ -593,19 +593,11 @@ def parse_hash_rgb(color_str: str) -> tuple[int, int, int]:
             int(color_str[2] * 2, 16),
         )
 
-    return (
-        int(color_str[0:2], 16),
-        int(color_str[2:4], 16),
-        int(color_str[4:6], 16),
-    )
+    return (int(color_str[0:2], 16), int(color_str[2:4], 16), int(color_str[4:6], 16))
 
 
 @parser(r"\{\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*\}")
 def parse_floats_in_curly_braces(color_str: str) -> tuple[int, int, int]:
     """{r, g, b}"""
     red, green, blue = color_str[1:-1].split(",")
-    return (
-        int(float(red) * 255),
-        int(float(green) * 255),
-        int(float(blue) * 255),
-    )
+    return (int(float(red) * 255), int(float(green) * 255), int(float(blue) * 255))

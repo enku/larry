@@ -429,9 +429,7 @@ d {
         self.assertEqual(result, expected)
 
     def test2(self):
-        colormap = {
-            Color("#333"): Color("#ffffff"),
-        }
+        colormap = {Color("#333"): Color("#ffffff")}
         result = color.replace_string(CSS, colormap)
         expected = """\
 a {

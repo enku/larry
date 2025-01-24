@@ -88,3 +88,6 @@ dev = [
     "types-Pillow>=9.4.0.13",
     "scipy-stubs>=1.15.1.0",
 ]
+
+[tool.black]
+skip_magic_trailing_comma = true
