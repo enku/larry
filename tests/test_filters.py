@@ -441,6 +441,7 @@ class ReduceTests(FilterTestCase):
             " #4ef582 #4ef582 #4ef582 #4ef582"
         )
         self.assertEqual(colors, make_colors(expected))
+        self.assertEqual(len(set(colors)), 3)
 
     def test_cannot_reduce_to_zero(self):
         config = make_config("reduce", amount=0)
