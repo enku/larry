@@ -306,20 +306,22 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         yield from_color
 
         fsteps = float(steps - 1)
-        inc_red = (to_color.red - from_color.red) / fsteps
-        inc_green = (to_color.green - from_color.green) / fsteps
-        inc_blue = (to_color.blue - from_color.blue) / fsteps
 
-        new_red = float(from_color.red)
-        new_blue = float(from_color.blue)
-        new_green = float(from_color.green)
+        if fsteps:
+            inc_red = (to_color.red - from_color.red) / fsteps
+            inc_green = (to_color.green - from_color.green) / fsteps
+            inc_blue = (to_color.blue - from_color.blue) / fsteps
 
-        for _ in range(steps - 2):  # minus the 2 endpoints
-            new_red = new_red + inc_red
-            new_green = new_green + inc_green
-            new_blue = new_blue + inc_blue
-            new_color = cls(int(new_red), int(new_green), int(new_blue))
-            yield new_color
+            new_red = float(from_color.red)
+            new_blue = float(from_color.blue)
+            new_green = float(from_color.green)
+
+            for _ in range(steps - 2):  # minus the 2 endpoints
+                new_red = new_red + inc_red
+                new_green = new_green + inc_green
+                new_blue = new_blue + inc_blue
+                new_color = cls(int(new_red), int(new_green), int(new_blue))
+                yield new_color
 
         yield to_color
 

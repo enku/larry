@@ -131,6 +131,16 @@ class GradientTests(FilterTestCase):
         )
         self.assertEqual(colors, expected)
 
+    @mock.patch("larry.color.random", random.Random(1))
+    def test_with_1_input_color(self) -> None:
+        config = make_config("gradient")
+        orig_colors = make_colors("#7e118f")
+        colors = self.filter(orig_colors, config)
+
+        expected = make_colors("#51269a #14544c")
+
+        self.assertEqual(expected, colors)
+
 
 class ZipgradientTests(FilterTestCase):
     entry_point = "zipgradient"
