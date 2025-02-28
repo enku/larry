@@ -1,6 +1,7 @@
 # pylint: disable=missing-docstring
 import io
 import os.path
+from configparser import ConfigParser
 
 from larry import config
 
@@ -151,3 +152,22 @@ class StrFromConfigValueTests(TestCase):
         # I'm not sure what this should equal, but I'm also not sure this is ever going
         # to happen
         self.assertEqual(result, "this\n    is\n    a\n\n    test")
+
+
+class IsPausedTests(TestCase):
+    def test_empty_config(self):
+        my_config = ConfigParser()
+        my_config.update({"larry": {}})
+        self.assertFalse(config.is_paused(my_config))
+
+    def test_config_set_true(self):
+        my_config = ConfigParser()
+        my_config.update({"larry": {"pause": "1"}})
+
+        self.assertTrue(config.is_paused(my_config))
+
+    def test_config_set_false(self):
+        my_config = ConfigParser()
+        my_config.update({"larry": {"pause": "0"}})
+
+        self.assertFalse(config.is_paused(my_config))

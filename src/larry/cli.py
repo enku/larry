@@ -9,7 +9,7 @@ import sys
 from typing import Iterable, Sequence
 
 from larry import LOGGER, Color, __version__, make_image_from_bytes
-from larry.config import DEFAULT_CONFIG_PATH
+from larry.config import DEFAULT_CONFIG_PATH, is_paused
 from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.io import read_file, write_file
@@ -60,7 +60,7 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     config = load_config(config_path)
     colors: Iterable[Color]
 
-    if config["larry"].getboolean("pause", False):
+    if is_paused(config):
         LOGGER.info("Larry is paused")
         return
 

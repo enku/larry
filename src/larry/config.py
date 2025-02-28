@@ -75,6 +75,11 @@ def config_from_toml(toml: dict[str, dict[str, Any]]) -> configparser.ConfigPars
     return config
 
 
+def is_paused(config: configparser.ConfigParser) -> bool:
+    """Return True if config is configured to pause"""
+    return config["larry"].getboolean("pause", False)
+
+
 def str_from_table(name: str, values: dict[str, Any]) -> str:
     """Given the key/value dict and table name, return equivalent INI string"""
     table_io = io.StringIO()
