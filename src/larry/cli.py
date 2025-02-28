@@ -34,25 +34,58 @@ class Handler:
         cls._handler = handler
 
 
-def parse_args(argv: Sequence[str]) -> argparse.Namespace:
-    """Parse command-line arguments"""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {__version__}"
-    )
-    parser.add_argument(
-        "--config", "-c", type=str, dest="config_path", default=DEFAULT_CONFIG_PATH
-    )
-    parser.add_argument("--debug", action="store_true", default=False)
-    parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
-    parser.add_argument(
-        "--list-plugins", action="store_true", default=False, help="List known plugins"
-    )
-    parser.add_argument(
-        "--list-filters", action="store_true", default=False, help="List known filters"
-    )
+def main(argv=None) -> None:
+    """Actual program entry point"""
+    logging.basicConfig()
+    args = parse_args(argv[1:] if argv is not None else sys.argv[1:])
+    config = load_config(args.config_path)
 
-    return parser.parse_args(argv)
+    if args.debug or config["larry"].getboolean("debug", fallback=False):
+        LOGGER.setLevel("DEBUG")
+
+    LOGGER.debug("args=%s", args)
+
+    if args.list_plugins:
+        print(list_plugins(args.config_path), end="")
+        return
+
+    if args.list_filters:
+        print(list_filters(args.config_path), end="")
+        return
+
+    loop = asyncio.new_event_loop()
+
+    if args.interval:
+        loop.add_signal_handler(
+            signal.SIGUSR1, run_every, args.interval, args.config_path, loop
+        )
+        loop.call_soon(run_every, args.interval, args.config_path, loop)
+    else:
+        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path, loop)
+        run(args.config_path, loop)
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        LOGGER.info("User interrupted")
+        loop.stop()
+    finally:
+        loop.close()
+
+
+def run_every(interval: float, config_path: str, loop) -> None:
+    """Run *callback* immediately and then every *interval* seconds after"""
+    if handler := Handler.get():
+        LOGGER.info("received signal to change wallpaper")
+        handler.cancel()
+
+    run(config_path, loop)
+
+    if interval == 0:
+        return
+
+    handler = loop.call_later(interval, run_every, interval, config_path, loop)
+    Handler.set(handler)
 
 
 def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
@@ -100,55 +133,22 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
         loop.call_soon(do_plugin, plugin_name, colors, config_path)
 
 
-def run_every(interval: float, config_path: str, loop) -> None:
-    """Run *callback* immediately and then every *interval* seconds after"""
-    if handler := Handler.get():
-        LOGGER.info("received signal to change wallpaper")
-        handler.cancel()
+def parse_args(argv: Sequence[str]) -> argparse.Namespace:
+    """Parse command-line arguments"""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
+    parser.add_argument(
+        "--config", "-c", type=str, dest="config_path", default=DEFAULT_CONFIG_PATH
+    )
+    parser.add_argument("--debug", action="store_true", default=False)
+    parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
+    parser.add_argument(
+        "--list-plugins", action="store_true", default=False, help="List known plugins"
+    )
+    parser.add_argument(
+        "--list-filters", action="store_true", default=False, help="List known filters"
+    )
 
-    run(config_path, loop)
-
-    if interval == 0:
-        return
-
-    handler = loop.call_later(interval, run_every, interval, config_path, loop)
-    Handler.set(handler)
-
-
-def main(argv=None) -> None:
-    """Actual program entry point"""
-    logging.basicConfig()
-    args = parse_args(argv[1:] if argv is not None else sys.argv[1:])
-    config = load_config(args.config_path)
-
-    if args.debug or config["larry"].getboolean("debug", fallback=False):
-        LOGGER.setLevel("DEBUG")
-
-    LOGGER.debug("args=%s", args)
-
-    if args.list_plugins:
-        print(list_plugins(args.config_path), end="")
-        return
-
-    if args.list_filters:
-        print(list_filters(args.config_path), end="")
-        return
-
-    loop = asyncio.new_event_loop()
-
-    if args.interval:
-        loop.add_signal_handler(
-            signal.SIGUSR1, run_every, args.interval, args.config_path, loop
-        )
-        loop.call_soon(run_every, args.interval, args.config_path, loop)
-    else:
-        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path, loop)
-        run(args.config_path, loop)
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        LOGGER.info("User interrupted")
-        loop.stop()
-    finally:
-        loop.close()
+    return parser.parse_args(argv)
