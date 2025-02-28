@@ -8,10 +8,12 @@ import signal
 import sys
 from typing import Iterable, Sequence
 
-from larry import LOGGER, Color, __version__, make_image_from_bytes
+from larry import LOGGER, __version__
+from larry.color import Color
 from larry.config import DEFAULT_CONFIG_PATH, is_paused
 from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
+from larry.image import make_image_from_bytes
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins
 

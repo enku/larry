@@ -6,7 +6,8 @@ import os.path
 import signal
 from unittest import mock
 
-from larry import cli, filters, make_image_from_bytes
+from larry import cli, filters
+from larry.image import make_image_from_bytes
 from larry.io import read_file
 
 from . import ConfigTestCase, make_colors

@@ -2,7 +2,8 @@
 
 from configparser import ConfigParser
 
-from larry import Color, ColorList, make_image_from_bytes
+from larry.color import Color, ColorList
+from larry.image import make_image_from_bytes
 from larry.io import read_file
 
 
