@@ -1,17 +1,18 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 import io
-import random
-from unittest import mock
+from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry.plugins import cal
 
-from . import ConfigTestCase, make_colors, mock_write_file
+from . import make_colors, mock_write_file
 
 
-@mock.patch("larry.color.random", random.Random(1))
+@given("random")
 @mock.patch("larry.plugins.cal.io.write_file")
-class CalTests(ConfigTestCase):
-    def test(self, write_file):
+class CalTests(TestCase):
+    def test(self, write_file, fixtures: Fixtures):
         output = io.BytesIO()
         write_file.side_effect = mock_write_file(output)
         colors = make_colors(

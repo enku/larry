@@ -1,21 +1,25 @@
 # pylint: disable=missing-docstring
-from unittest import mock
+from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry.plugins import GIRepository, gnome_terminal
 
-from . import ConfigTestCase, TestCase, make_colors
+from . import make_colors
 
 
+@given("config")
 @mock.patch.object(GIRepository, "Gio", create=True)
-class PluginTests(ConfigTestCase):
-    def test(self, gio):
-        self.add_section("plugins:gnome_terminal")
-        self.add_config(profiles="a b c", color="1d1e28")
+class PluginTests(TestCase):
+    def test(self, gio, fixtures: Fixtures) -> None:
+        config = fixtures.config
+        config.add_section("plugins:gnome_terminal")
+        config.add_config(profiles="a b c", color="1d1e28")
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
 
-        gnome_terminal.plugin(colors, self.config["plugins:gnome_terminal"])
+        gnome_terminal.plugin(colors, config.config["plugins:gnome_terminal"])
 
         new_with_path_calls = []
         for profile in "abc":

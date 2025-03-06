@@ -1,13 +1,13 @@
 # pylint: disable=missing-docstring
-from unittest import mock
+from unittest import TestCase, mock
 
 from larry.plugins import GIRepository, background
 
-from . import ConfigTestCase, make_colors
+from . import make_colors
 
 
 @mock.patch.object(GIRepository, "Gio", create=True)
-class BackgroundTests(ConfigTestCase):
+class BackgroundTests(TestCase):
     def test(self, gio):
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"

@@ -67,8 +67,6 @@ zipgradient = "larry.filters.zipgradient:cfilter"
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
-[tool.pdm]
-version = { source = "scm" }
 [tool.pylint.FORMAT]
 max-line-length = 88
 
@@ -78,6 +76,9 @@ profile = "black"
 [tool.coverage.run]
 source = ["larry"]
 
+
+[tool.pdm]
+version = { source = "scm" }
 [dependency-groups]
 dev = [
     "black>=22.6.0",
@@ -87,6 +88,7 @@ dev = [
     "pylint>=2.14.5",
     "types-Pillow>=9.4.0.13",
     "scipy-stubs>=1.15.1.0",
+    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
 ]
 
 [tool.black]

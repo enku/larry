@@ -1,8 +1,8 @@
 # pylint: disable=missing-docstring
+from unittest import TestCase
+
 import larry
 from larry import config
-
-from . import TestCase
 
 
 class ConfigTypeTests(TestCase):

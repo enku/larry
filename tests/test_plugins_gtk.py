@@ -1,31 +1,33 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 import io
-import random
-from unittest import mock
+from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry.plugins import gtk
 
-from . import CSS, ConfigTestCase, make_colors, mock_write_text_file
+from . import CSS, make_colors, mock_write_text_file
 
 
-@mock.patch("larry.color.random", random.Random(1))
+@given("random", "config", "tmpdir")
 @mock.patch("larry.plugins.gtk.write_text_file")
-class GtkTests(ConfigTestCase):
-    def test(self, write_text_file):
+class GtkTests(TestCase):
+    def test(self, write_text_file, fixtures: Fixtures) -> None:
         output = io.BytesIO()
         write_text_file.side_effect = mock_write_text_file(output)
-        cssfile = f"{self.tmpdir}/input.css"
+        cssfile = f"{fixtures.tmpdir}/input.css"
 
         with open(cssfile, "w", encoding="UTF-8") as fp:
             fp.write(CSS)
 
-        self.add_section("plugins:gtk")
-        self.add_config(template=cssfile, location="/dev/null")
+        config = fixtures.config
+        config.add_section("plugins:gtk")
+        config.add_config(template=cssfile, location="/dev/null")
 
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
-        gtk.plugin(colors, self.config["plugins:gtk"])
+        gtk.plugin(colors, config.config["plugins:gtk"])
 
         expected = """\
 a {

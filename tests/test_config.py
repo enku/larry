@@ -2,20 +2,22 @@
 import io
 import os.path
 from configparser import ConfigParser
+from unittest import TestCase
+
+from unittest_fixtures import Fixtures, given
 
 from larry import config
 
-from . import TestCase
 
-
+@given("tmpdir")
 class LoadTests(TestCase):
-    def test_when_file_does_not_exist(self):
-        path = os.path.join(self.tmpdir, "bogus")
+    def test_when_file_does_not_exist(self, fixtures: Fixtures) -> None:
+        path = os.path.join(fixtures.tmpdir, "bogus")
         config_obj = config.load(path)
 
         self.assertIn("input", config_obj["DEFAULT"])
 
-    def test_loads_toml(self):
+    def test_loads_toml(self, fixtures: Fixtures) -> None:
         toml = """\
 title = "test"
 
@@ -24,7 +26,7 @@ name = "vase"
 value = 26
 colors = ["red", "green", "blue"]
 """
-        path = os.path.join(self.tmpdir, "test.toml")
+        path = os.path.join(fixtures.tmpdir, "test.toml")
         with open(path, "w", encoding="utf-8") as fp:
             fp.write(toml)
 
@@ -33,9 +35,10 @@ colors = ["red", "green", "blue"]
         self.assertEqual(config_obj["inventory.main"]["value"], "26")
 
 
+@given("tmpdir")
 class GetPluginConfigTests(TestCase):
-    def test(self):
-        path = os.path.join(self.tmpdir, "larry.cfg")
+    def test(self, fixtures: Fixtures) -> None:
+        path = os.path.join(fixtures.tmpdir, "larry.cfg")
         config_str = """\
 [plugins:test]
 foo = bar
@@ -50,8 +53,9 @@ foo = bar
         self.assertNotIn("foo", plugin_config)
 
 
+@given("tmpdir")
 class LoadTomlConfig(TestCase):
-    def test(self):
+    def test(self, fixtures: Fixtures) -> None:
         toml = """\
 [inventory]
 
@@ -60,7 +64,7 @@ name = "vase"
 value = 26
 colors = ["red", "green", "blue"]
 """
-        path = os.path.join(self.tmpdir, "test.toml")
+        path = os.path.join(fixtures.tmpdir, "test.toml")
         with open(path, "w", encoding="utf-8") as fp:
             fp.write(toml)
 

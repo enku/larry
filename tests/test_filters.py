@@ -2,14 +2,16 @@
 import importlib.metadata
 import random
 from inspect import signature
-from unittest import mock
+from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry import filters
 from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
 from larry.filters.random import cfilter as random_filter
 
-from . import TestCase, make_colors, make_config
+from . import make_colors, make_config
 
 
 class FilterTestCase(TestCase):
@@ -20,9 +22,10 @@ class FilterTestCase(TestCase):
         return filters.load_filter(self.entry_point)
 
 
+@given("tmpdir")
 class ListFiltersTestsi(TestCase):
-    def test(self):
-        config_path = f"{self.tmpdir}/larry.cfg"
+    def test(self, fixtures: Fixtures) -> None:
+        config_path = f"{fixtures.tmpdir}/larry.cfg"
         with open(config_path, "w", encoding="UTF-8") as fp:
             fp.write(
                 """\

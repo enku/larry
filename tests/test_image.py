@@ -1,9 +1,11 @@
 """tests for larry.image"""
 
+from unittest import TestCase
+
 from larry.color import Color
 from larry.image import RasterImage, SVGImage, make_image_from_bytes
 
-from . import RASTER_IMAGE, SVG_IMAGE, TestCase, make_colors
+from . import RASTER_IMAGE, SVG_IMAGE, make_colors
 
 
 # pylint: disable=missing-docstring

@@ -1,10 +1,10 @@
 # pylint: disable=missing-docstring,duplicate-code
 import random
-from unittest import mock
+from unittest import TestCase, mock
 
 from larry import color
 
-from . import CSS, TestCase, make_colors
+from . import CSS, make_colors
 
 Color = color.Color
 ColorFloat = color.ColorFloat

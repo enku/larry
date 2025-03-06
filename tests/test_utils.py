@@ -1,10 +1,8 @@
 # pylint: disable=missing-docstring
 import random
-from unittest import mock
+from unittest import TestCase, mock
 
 from larry import utils
-
-from . import TestCase
 
 
 class Between(TestCase):

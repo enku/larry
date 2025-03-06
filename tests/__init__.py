@@ -3,7 +3,9 @@ import tempfile
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any
-from unittest import TestCase as StdlibTestCase
+from unittest import TestCase
+
+from unittest_fixtures import given
 
 from larry import config
 from larry.color import Color
@@ -31,40 +33,6 @@ d {
   color: #333;
 }
 """
-
-
-class TestCase(StdlibTestCase):
-    def setUp(self):
-        super().setUp()
-
-        td = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
-        self.addCleanup(td.cleanup)
-        self.tmpdir = td.name
-
-
-class ConfigTestCase(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.config_path = f"{self.tmpdir}/larry.cfg"
-        self._section = "larry"
-        self.config = config.load(self.config_path)
-        self.add_config(output=f"{self.tmpdir}/larry.svg")
-
-    def add_config(self, **kwargs):
-        for name, value in kwargs.items():
-            self.config[self._section][name] = str(value)
-
-        self._dump()
-
-    def add_section(self, name: str):
-        self.config.add_section(name)
-        self._section = name
-        self._dump()
-
-    def _dump(self):
-        with open(self.config_path, "w", encoding="UTF-8") as fp:
-            self.config.write(fp)
 
 
 def make_colors(colors: str) -> list[Color]:

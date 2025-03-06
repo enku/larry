@@ -1,10 +1,12 @@
 # pylint: disable=missing-docstring
 import random
-from unittest import mock
+from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry.plugins import vim
 
-from . import ConfigTestCase, TestCase, make_colors
+from . import make_colors
 
 COLORS = list(
     make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9")
@@ -32,27 +34,30 @@ CONVERSION = [
 ]
 
 
-@mock.patch("larry.color.random", random.Random(1))
-class PluginTests(ConfigTestCase):
+@given("random", "config")
+class PluginTests(TestCase):
     @mock.patch("larry.plugins.vim.start")
     @mock.patch("larry.plugins.vim.VimProtocol.run")
-    def test(self, run, start):
-        self.add_section("plugins:vim")
-        self.add_config(
+    def test(self, run, start, fixtures: Fixtures) -> None:
+        config = fixtures.config
+        config.add_section("plugins:vim")
+        config.add_config(
             listen_address="localhost.invalid", port=65336, colors=COLOR_STR
         )
-        vim.plugin(COLORS, self.config["plugins:vim"])
-        start.assert_called_once_with(self.config["plugins:vim"])
-        run.assert_called_once_with(CONVERSION, self.config["plugins:vim"])
+        vim.plugin(COLORS, config.config["plugins:vim"])
+        start.assert_called_once_with(config.config["plugins:vim"])
+        run.assert_called_once_with(CONVERSION, config.config["plugins:vim"])
 
 
-class StartTests(ConfigTestCase):
+@given("config")
+class StartTests(TestCase):
     @mock.patch("larry.plugins.vim.asyncio.get_event_loop")
-    def test(self, get_event_loop):
-        self.add_section("plugins:vim")
-        self.add_config(listen_address="localhost.invalid", port=65336)
+    def test(self, get_event_loop, fixtures: Fixtures) -> None:
+        config = fixtures.config
+        config.add_section("plugins:vim")
+        config.add_config(listen_address="localhost.invalid", port=65336)
 
-        vim.start(self.config["plugins:vim"])
+        vim.start(config.config["plugins:vim"])
 
         get_event_loop.assert_called_once_with()
         loop = get_event_loop.return_value
@@ -64,7 +69,7 @@ class StartTests(ConfigTestCase):
 
 
 @mock.patch("larry.color.random", random.Random(1))
-class GetNewColorsTests(ConfigTestCase):
+class GetNewColorsTests(TestCase):
     def test(self):
         new_colors = vim.get_new_colors(COLOR_STR, COLORS)
 

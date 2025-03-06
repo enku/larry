@@ -1,21 +1,27 @@
 # pylint: disable=missing-docstring
+from unittest import TestCase
+
+from unittest_fixtures import Fixtures, given
+
 from larry import plugins
 from larry.io import read_file
 from larry.plugins import command
 
-from . import ConfigTestCase, TestCase, make_colors
+from . import make_colors
 
 
-class DoPluginTest(ConfigTestCase):
-    def test(self):
+@given("config", "tmpdir")
+class DoPluginTest(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        config = fixtures.config
         plugin = "command"
-        output_file = f"{self.tmpdir}/test.txt"
-        self.add_config(plugins=plugin)
-        self.add_section("plugins:command")
-        self.add_config(command=f"cat > {output_file}")
+        output_file = f"{fixtures.tmpdir}/test.txt"
+        config.add_config(plugins=plugin)
+        config.add_section("plugins:command")
+        config.add_config(command=f"cat > {output_file}")
         colors = make_colors("#ff0000 #ffffff #0000ff")
 
-        plugins.do_plugin(plugin, colors, self.config_path)
+        plugins.do_plugin(plugin, colors, config.path)
 
         output = read_file(output_file)
         self.assertEqual(output, b"#ff0000\n#ffffff\n#0000ff")
@@ -31,11 +37,13 @@ class PluginsList(TestCase):
             self.assertTrue(callable(item[1]))
 
 
-class ListPlugins(ConfigTestCase):
-    def test(self):
-        self.add_config(plugins="command vim")
+@given("config")
+class ListPlugins(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        config = fixtures.config
+        config.add_config(plugins="command vim")
 
-        output = plugins.list_plugins(self.config_path)
+        output = plugins.list_plugins(config.path)
 
         self.assertIn("[X] command", output)
         self.assertIn("[X] vim", output)
