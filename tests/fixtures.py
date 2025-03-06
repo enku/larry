@@ -10,7 +10,7 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 from larry import config as larry_config
 
 
-class Config:
+class ConfigMaker:
     def __init__(self, dirname: str) -> None:
         self.path = f"{dirname}/larry.cfg"
         self._section = "larry"
@@ -49,5 +49,5 @@ def tmpdir(_fixtures: Fixtures) -> FixtureContext[str]:
 
 
 @fixture("tmpdir")
-def config(fixtures: Fixtures) -> Config:
-    return Config(fixtures.tmpdir)
+def configmaker(fixtures: Fixtures) -> ConfigMaker:
+    return ConfigMaker(fixtures.tmpdir)

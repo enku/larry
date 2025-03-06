@@ -8,18 +8,18 @@ from larry.plugins import GIRepository, gnome_terminal
 from . import make_colors
 
 
-@given("config")
+@given("configmaker")
 @mock.patch.object(GIRepository, "Gio", create=True)
 class PluginTests(TestCase):
     def test(self, gio, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_section("plugins:gnome_terminal")
-        config.add_config(profiles="a b c", color="1d1e28")
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:gnome_terminal")
+        configmaker.add_config(profiles="a b c", color="1d1e28")
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
 
-        gnome_terminal.plugin(colors, config.config["plugins:gnome_terminal"])
+        gnome_terminal.plugin(colors, configmaker.config["plugins:gnome_terminal"])
 
         new_with_path_calls = []
         for profile in "abc":

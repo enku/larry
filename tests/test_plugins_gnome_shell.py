@@ -119,17 +119,17 @@ class ThemeTests(TestCase):
         gio.Settings.return_value.reset.assert_called_once_with("name")
 
 
-@given("config")
+@given("configmaker")
 @mock.patch("larry.plugins.gnome_shell.Theme", autospec=True)
 class PluginTests(TestCase):
     def test(self, theme_cls, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_section("plugins:gnome_shell")
-        config.add_config(template="test-template")
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:gnome_shell")
+        configmaker.add_config(template="test-template")
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
-        gnome_shell_config = config.config["plugins:gnome_shell"]
+        gnome_shell_config = configmaker.config["plugins:gnome_shell"]
 
         current_theme = mock.Mock()
         current_theme.name = "larry-test"
@@ -145,13 +145,13 @@ class PluginTests(TestCase):
     def test_when_current_theme_is_not_a_larry_theme(
         self, theme_cls, fixtures: Fixtures
     ) -> None:
-        config = fixtures.config
-        config.add_section("plugins:gnome_shell")
-        config.add_config(template="test-template")
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:gnome_shell")
+        configmaker.add_config(template="test-template")
         colors = make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
-        gnome_shell_config = config.config["plugins:gnome_shell"]
+        gnome_shell_config = configmaker.config["plugins:gnome_shell"]
 
         current_theme = mock.Mock()
         current_theme.name = "Adwaita"

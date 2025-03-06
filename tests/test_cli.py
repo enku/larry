@@ -42,16 +42,16 @@ class ParseArgsTests(TestCase):
         self.assertEqual(args, expected)
 
 
-@given("config")
+@given("configmaker")
 class RunTests(TestCase):
     def test_runs_filters_and_schedules_plugins(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_config(plugins="command dummy", filter="inverse pastelize")
+        configmaker = fixtures.configmaker
+        configmaker.add_config(plugins="command dummy", filter="inverse pastelize")
 
         loop = mock.Mock()
-        cli.run(config.path, loop)
+        cli.run(configmaker.path, loop)
 
-        self.assertTrue(os.path.exists(config.config["larry"]["output"]))
+        self.assertTrue(os.path.exists(configmaker.config["larry"]["output"]))
         pastelize = filters.load_filter("pastelize")
         inverse = filters.load_filter("inverse")
         colors = pastelize(
@@ -62,30 +62,30 @@ class RunTests(TestCase):
         )
         loop.call_soon.assert_has_calls(
             [
-                mock.call(cli.do_plugin, "command", colors, config.path),
-                mock.call(cli.do_plugin, "dummy", colors, config.path),
+                mock.call(cli.do_plugin, "command", colors, configmaker.path),
+                mock.call(cli.do_plugin, "dummy", colors, configmaker.path),
             ]
         )
 
     def test_pause_mode_does_nothing(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_config(
+        configmaker = fixtures.configmaker
+        configmaker.add_config(
             pause="1", plugins="command dummy", filter="inverse pastelize"
         )
 
         loop = mock.Mock()
-        cli.run(config.path, loop)
+        cli.run(configmaker.path, loop)
 
-        self.assertFalse(os.path.exists(config.config["larry"]["output"]))
+        self.assertFalse(os.path.exists(configmaker.config["larry"]["output"]))
         loop.call_soon.assert_not_called()
 
     @mock.patch("larry.cli.LOGGER")
     def test_logs_invalid_filters(self, logger, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_config(filter="inverse bogus pastelize")
+        configmaker = fixtures.configmaker
+        configmaker.add_config(filter="inverse bogus pastelize")
 
         loop = mock.Mock()
-        cli.run(config.path, loop)
+        cli.run(configmaker.path, loop)
 
         logger.exception.assert_called_once_with(
             "Color filter bogus not found. Skipping."
@@ -99,19 +99,19 @@ class RunTests(TestCase):
             ),
             None,
         )
-        image = make_image_from_bytes(read_file(config.config["larry"]["output"]))
+        image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
         image_colors = image.get_colors()
         self.assertEqual(set(colors), set(image_colors))
 
     def test_colors_from_config(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
+        configmaker = fixtures.configmaker
         color_str = "red white blue pink yellow"
-        config.add_config(colors=color_str, filter="none")
+        configmaker.add_config(colors=color_str, filter="none")
 
         loop = mock.Mock()
-        cli.run(config.path, loop)
+        cli.run(configmaker.path, loop)
 
-        image = make_image_from_bytes(read_file(config.config["larry"]["output"]))
+        image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
         image_colors = image.get_colors()
         colors = make_colors(color_str)
         self.assertEqual(set(colors), set(image_colors))
@@ -123,75 +123,77 @@ class RunTests(TestCase):
         write_file.assert_called()
 
 
-@given("config")
+@given("configmaker")
 class RunEveryTests(TestCase):
     def test_runs_and_schedules_to_run_again(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
+        configmaker = fixtures.configmaker
         with mock.patch("larry.cli.Handler") as mock_handler:
             mock_handler.get.return_value = None
             loop = mock.Mock()
-            cli.run_every(15.0, config.path, loop)
+            cli.run_every(15.0, configmaker.path, loop)
 
-        self.assertTrue(os.path.exists(config.config["larry"]["output"]))
+        self.assertTrue(os.path.exists(configmaker.config["larry"]["output"]))
         loop.call_later.assert_called_once_with(
-            15.0, cli.run_every, 15.0, config.path, loop
+            15.0, cli.run_every, 15.0, configmaker.path, loop
         )
         timer_handler = loop.call_later.return_value
         mock_handler.set_assert_called_once_with(timer_handler)
 
     def test_runs_only_once_with_interval_0(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
+        configmaker = fixtures.configmaker
         with mock.patch("larry.cli.Handler") as mock_handler:
             mock_handler.get.return_value = None
             loop = mock.Mock()
-            cli.run_every(0, config.path, loop)
+            cli.run_every(0, configmaker.path, loop)
 
         loop.call_later.assert_not_called()
 
     def test_cancel_existing_handler(self, fixtures: Fixtures) -> None:
-        config = fixtures.config
+        configmaker = fixtures.configmaker
         with mock.patch("larry.cli.Handler") as mock_handler:
             handler = mock.Mock()
             mock_handler.get.return_value = handler
             loop = mock.Mock()
-            cli.run_every(15.0, config.path, loop)
+            cli.run_every(15.0, configmaker.path, loop)
 
         handler.cancel.assert_called_once_with()
 
 
-@given("config")
+@given("configmaker")
 @mock.patch("larry.cli.asyncio.new_event_loop")
 class MainTests(TestCase):
     def test(self, new_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        argv = f"larry -c {config.path} --interval=60".split()
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} --interval=60".split()
 
         cli.main(argv)
 
         loop = new_event_loop.return_value
         loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, cli.run_every, 60, config.path, loop
+            signal.SIGUSR1, cli.run_every, 60, configmaker.path, loop
         )
-        loop.call_soon.assert_called_once_with(cli.run_every, 60, config.path, loop)
+        loop.call_soon.assert_called_once_with(
+            cli.run_every, 60, configmaker.path, loop
+        )
         loop.run_forever.assert_called_once_with()
         loop.close.assert_called_once_with()
 
     def test_with_interval_0(self, new_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        argv = f"larry -c {config.path} -n0".split()
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} -n0".split()
 
         cli.main(argv)
 
         loop = new_event_loop.return_value
         loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, cli.run, config.path, loop
+            signal.SIGUSR1, cli.run, configmaker.path, loop
         )
 
     def test_keyboard_interrupt_stops_loop(
         self, new_event_loop, fixtures: Fixtures
     ) -> None:
-        config = fixtures.config
-        argv = f"larry -c {config.path} --interval 60".split()
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} --interval 60".split()
         loop = new_event_loop.return_value
         loop.run_forever.side_effect = KeyboardInterrupt()
 
@@ -200,9 +202,9 @@ class MainTests(TestCase):
         loop.stop.assert_called_once_with()
 
     def test_list_plugins(self, new_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_config(plugins="command")
-        argv = f"larry -c {config.path} --list-plugins".split()
+        configmaker = fixtures.configmaker
+        configmaker.add_config(plugins="command")
+        argv = f"larry -c {configmaker.path} --list-plugins".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
@@ -212,8 +214,8 @@ class MainTests(TestCase):
         new_event_loop.assert_not_called()
 
     def test_list_filters(self, new_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        argv = f"larry -c {config.path} --list-filters".split()
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} --list-filters".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
@@ -224,8 +226,8 @@ class MainTests(TestCase):
 
     @mock.patch("larry.cli.LOGGER")
     def test_with_debug(self, logger, _new_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        argv = f"larry -c {config.path} --debug --list-plugins".split()
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} --debug --list-plugins".split()
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):

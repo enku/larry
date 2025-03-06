@@ -34,30 +34,30 @@ CONVERSION = [
 ]
 
 
-@given("random", "config")
+@given("random", "configmaker")
 class PluginTests(TestCase):
     @mock.patch("larry.plugins.vim.start")
     @mock.patch("larry.plugins.vim.VimProtocol.run")
     def test(self, run, start, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_section("plugins:vim")
-        config.add_config(
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:vim")
+        configmaker.add_config(
             listen_address="localhost.invalid", port=65336, colors=COLOR_STR
         )
-        vim.plugin(COLORS, config.config["plugins:vim"])
-        start.assert_called_once_with(config.config["plugins:vim"])
-        run.assert_called_once_with(CONVERSION, config.config["plugins:vim"])
+        vim.plugin(COLORS, configmaker.config["plugins:vim"])
+        start.assert_called_once_with(configmaker.config["plugins:vim"])
+        run.assert_called_once_with(CONVERSION, configmaker.config["plugins:vim"])
 
 
-@given("config")
+@given("configmaker")
 class StartTests(TestCase):
     @mock.patch("larry.plugins.vim.asyncio.get_event_loop")
     def test(self, get_event_loop, fixtures: Fixtures) -> None:
-        config = fixtures.config
-        config.add_section("plugins:vim")
-        config.add_config(listen_address="localhost.invalid", port=65336)
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:vim")
+        configmaker.add_config(listen_address="localhost.invalid", port=65336)
 
-        vim.start(config.config["plugins:vim"])
+        vim.start(configmaker.config["plugins:vim"])
 
         get_event_loop.assert_called_once_with()
         loop = get_event_loop.return_value
