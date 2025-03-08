@@ -1,17 +1,13 @@
 """Replace colors on the Larry the Cow wallpaper"""
 
-from __future__ import annotations
-
 import logging
 from importlib.metadata import distribution
-from io import BytesIO
-from typing import Any, Iterable, Protocol, Type
+from typing import Any
 from warnings import warn
 
-from PIL import Image as PillowImage
+from larry.color import Color, ColorList
 
-from larry.color import COLORS_RE, Color, ColorList, replace_string
-
+__all__ = ("__version__", "LOGGER", "Color", "ColorList")
 __version__ = distribution("larry").version
 
 LOGGER = logging.getLogger("larry")
