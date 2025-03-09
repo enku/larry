@@ -1,8 +1,8 @@
 <p align="center">
-<img src=".github/screenshot1.png" alt="Example Screenshot" width="100%">
+<img src="https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/larry/screenshot1.png" alt="Example Screenshot" width="100%">
 </p>
 <p align="center">
-<img src=".github/screenshot2.png" alt="Example Screenshot" width="100%">
+<img src="https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/larry/screenshot2.png" alt="Example Screenshot" width="100%">
 </p>
 <br>
 
