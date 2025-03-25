@@ -100,7 +100,7 @@ class RunTests(TestCase):
             None,
         )
         image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
-        image_colors = image.get_colors()
+        image_colors = image.colors
         self.assertEqual(set(colors), set(image_colors))
 
     def test_colors_from_config(self, fixtures: Fixtures) -> None:
@@ -112,7 +112,7 @@ class RunTests(TestCase):
         cli.run(configmaker.path, loop)
 
         image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
-        image_colors = image.get_colors()
+        image_colors = image.colors
         colors = make_colors(color_str)
         self.assertEqual(set(colors), set(image_colors))
 

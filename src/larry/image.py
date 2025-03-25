@@ -21,7 +21,8 @@ class Image(Protocol):
     def __bytes__(self) -> bytes:
         """Convert to a byte stream"""
 
-    def get_colors(self) -> Iterable[Color]:
+    @property
+    def colors(self) -> Iterable[Color]:
         """Return the Colors of this Image"""
 
     def replace(
@@ -53,7 +54,8 @@ class SVGImage:
         """Return a list of all the colors strings in the SVGImage"""
         return COLORS_RE.findall(self.svg)
 
-    def get_colors(self) -> set[Color]:
+    @property
+    def colors(self) -> set[Color]:
         """Return the Colors of this Image"""
         return {Color(i) for i in self.color_strings()}
 
@@ -81,7 +83,8 @@ class RasterImage:
         self.image_mode = self.image.mode
         self.image = self.image.convert("RGBA")
 
-    def get_colors(self) -> set[Color]:
+    @property
+    def colors(self) -> set[Color]:
         """Return the Colors of this Image"""
         width, height = self.image.size
 

@@ -24,7 +24,7 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
         raw_image_data = read_file(source)
         image = make_image_from_bytes(raw_image_data)
 
-        source_colors = [*image.get_colors()]
+        source_colors = [*image.colors]
 
     source_colors.sort(key=Color.luminocity)
 

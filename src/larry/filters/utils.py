@@ -71,9 +71,7 @@ def new_image_colors(
     If the image has fewer colors than requested, the colors are cycled.
     """
     image_colors = list(
-        make_image_from_bytes(
-            read_file(config[f"filters:{section}"].get(name))
-        ).get_colors()
+        make_image_from_bytes(read_file(config[f"filters:{section}"].get(name))).colors
     )
     if config[f"filters:{section}"].getboolean("shuffle", fallback=False):
         random.shuffle(image_colors)

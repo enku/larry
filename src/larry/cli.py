@@ -102,7 +102,7 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
     image = make_image_from_bytes(raw_image_data)
 
-    orig_colors = list(image.get_colors())
+    orig_colors = list(image.colors)
     orig_colors.sort(key=Color.luminocity)
     colors_str = config["larry"].get("colors", "").strip().split()
 

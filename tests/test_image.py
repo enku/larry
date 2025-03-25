@@ -28,8 +28,8 @@ class MakeImageFromBytesTest(TestCase):
 class SVGImageTests(TestCase):
     image = SVGImage(SVG_IMAGE)
 
-    def test_get_colors(self):
-        colors = sorted(self.image.get_colors(), key=Color.luminocity)
+    def test_colors(self):
+        colors = sorted(self.image.colors, key=Color.luminocity)
 
         expected = make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff")
 
@@ -41,7 +41,7 @@ class SVGImageTests(TestCase):
 
         image = self.image.replace(orig_colors, new_colors)
 
-        colors = sorted(image.get_colors(), key=Color.luminocity)
+        colors = sorted(image.colors, key=Color.luminocity)
         expected = make_colors("#0000ff #1c343f #ff0000 #666666 #00ff00 #ffffff")
         self.assertEqual(colors, expected)
 
@@ -55,8 +55,8 @@ class SVGImageTests(TestCase):
 class RasterImageTests(TestCase):
     image = RasterImage(RASTER_IMAGE)
 
-    def test_get_colors(self):
-        colors = sorted(self.image.get_colors(), key=Color.luminocity)
+    def test_colors(self):
+        colors = sorted(self.image.colors, key=Color.luminocity)
 
         expected = make_colors(
             # pylint: disable=line-too-long
@@ -70,7 +70,7 @@ class RasterImageTests(TestCase):
 
         image = self.image.replace(orig_colors, new_colors)
 
-        colors = sorted(image.get_colors(), key=Color.luminocity)
+        colors = sorted(image.colors, key=Color.luminocity)
         expected = make_colors(
             "#000 #00f #f00 #0f0 #ae8ed9 #bc99ba #c9a49a #d7af7b #e5bb5c #fff"
         )
