@@ -14,8 +14,9 @@ from larry import utils
 ColorFloatType = TypeVar(  #  pylint: disable=invalid-name
     "ColorFloatType", bound="ColorFloat"
 )
-ColorSpecStringParser: TypeAlias = Callable[[str], tuple[int, int, int]]
-ColorSpecType: TypeAlias = Union[str, "Color", tuple[int, int, int]]
+ColorTuple = tuple[int, int, int]
+ColorSpecStringParser: TypeAlias = Callable[[str], ColorTuple]
+ColorSpecType: TypeAlias = Union[str, "Color", ColorTuple]
 
 _COMPS = (">", "<", "=")
 
@@ -80,7 +81,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         return diff <= threshold
 
     @classmethod
-    def _handle_str_colorspec(cls, color_str: str) -> tuple[int, int, int]:
+    def _handle_str_colorspec(cls, color_str: str) -> ColorTuple:
         """Handle *colorspec* of type str"""
         from larry.names import (  # pylint: disable=import-outside-toplevel,cyclic-import
             NAMES,
@@ -547,7 +548,7 @@ def combine_colors(fg: Color, bg: Color, opacity: float) -> Color:
 
 
 def parser(regex: str):
-    """Register str -> tuple[int, int, int] parser with the given regex"""
+    """Register str -> ColorTuple parser with the given regex"""
     pattern = re.compile(f"{regex}$")
 
     def decorator(func: ColorSpecStringParser):
@@ -559,7 +560,7 @@ def parser(regex: str):
 
 
 @parser(r"rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)")
-def parse_rgb_with_parens(color_str: str) -> tuple[int, int, int]:
+def parse_rgb_with_parens(color_str: str) -> ColorTuple:
     """Parse rgb(n, n, n)"""
     red, green, blue = color_str[4:-1].split(",")
 
@@ -567,7 +568,7 @@ def parse_rgb_with_parens(color_str: str) -> tuple[int, int, int]:
 
 
 @parser(r"rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\S+\s*\)")
-def parse_rgba_with_parens(color_str: str) -> tuple[int, int, int]:
+def parse_rgba_with_parens(color_str: str) -> ColorTuple:
     """rbga(r, g, b, a).  alpha is dropped"""
     red, green, blue, *_ = color_str[5:-1].split(",")
 
@@ -575,7 +576,7 @@ def parse_rgba_with_parens(color_str: str) -> tuple[int, int, int]:
 
 
 @parser(r"\d+/\d+/\d+")
-def parse_rgb_with_slashes(color_str: str) -> tuple[int, int, int]:
+def parse_rgb_with_slashes(color_str: str) -> ColorTuple:
     """r/g/b"""
     red, green, blue = color_str.split("/")
 
@@ -583,7 +584,7 @@ def parse_rgb_with_slashes(color_str: str) -> tuple[int, int, int]:
 
 
 @parser(r"#?[0-9a-fA-F]{6}|#?[0-9a-fA-F]{3}")
-def parse_hash_rgb(color_str: str) -> tuple[int, int, int]:
+def parse_hash_rgb(color_str: str) -> ColorTuple:
     """rrggbb"""
     if color_str[0] == "#":
         color_str = color_str[1:]
@@ -599,7 +600,7 @@ def parse_hash_rgb(color_str: str) -> tuple[int, int, int]:
 
 
 @parser(r"\{\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*,\s*(0|1)\.\d+\s*\}")
-def parse_floats_in_curly_braces(color_str: str) -> tuple[int, int, int]:
+def parse_floats_in_curly_braces(color_str: str) -> ColorTuple:
     """{r, g, b}"""
     red, green, blue = color_str[1:-1].split(",")
     return (int(float(red) * 255), int(float(green) * 255), int(float(blue) * 255))
