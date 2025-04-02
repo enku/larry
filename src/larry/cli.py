@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import configparser
 import logging
 import os
 import signal
@@ -9,7 +10,7 @@ import sys
 from typing import Iterable, Sequence
 
 from larry import LOGGER, __version__
-from larry.color import Color
+from larry.color import Color, ColorList
 from larry.config import DEFAULT_CONFIG_PATH, is_paused
 from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
@@ -110,17 +111,7 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
         LOGGER.debug("using colors from config")
         colors = [Color(i.strip()) for i in colors_str]
     else:
-        colors = orig_colors.copy()
-
-        for filter_name in config["larry"].get("filter", "gradient").split():
-            try:
-                cfilter = load_filter(filter_name)
-            except FilterNotFound:
-                error_message = f"Color filter {filter_name} not found. Skipping."
-                LOGGER.exception(error_message)
-            else:
-                LOGGER.debug("Calling filter %s", filter_name)
-                colors = cfilter(colors, config)
+        colors = apply_filters(orig_colors, config)
 
     LOGGER.debug("new colors: %s", colors)
 
@@ -133,6 +124,26 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     # now run any plugins
     for plugin_name in config.get("larry", "plugins", fallback="").split():
         loop.call_soon(do_plugin, plugin_name, colors, config_path)
+
+
+def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> ColorList:
+    """Apply the config's filters to the given ColorList
+
+    Return the new ColorList
+    """
+    colors = colors.copy()
+
+    for filter_name in config["larry"].get("filter", "gradient").split():
+        try:
+            cfilter = load_filter(filter_name)
+        except FilterNotFound:
+            error_message = f"Color filter {filter_name} not found. Skipping."
+            LOGGER.exception(error_message)
+        else:
+            LOGGER.debug("Calling filter %s", filter_name)
+            colors = cfilter(colors, config)
+
+    return colors
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
