@@ -478,7 +478,7 @@ class SubGradientTests(FilterTestCase):
         expected = "#231815 #727f88 #00b6ff #dd8138 #00ffbf #7fccff #ffa97f #7fd9ff"
         self.assertEqual(colors, make_colors(expected))
 
-    def _test_with_size_argument(self):
+    def test_with_size_argument(self):
         config = make_config("subgradient", size=3)
 
         colors = self.filter(self.orig_colors, config)
