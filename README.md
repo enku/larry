@@ -29,7 +29,7 @@ colorizing lots of things. Included plugins are:
 
 ## Plugins
 
-ILarry can be extended with plugins. The following is a list of plugins
+Larry can be extended with plugins. The following is a list of plugins
 available:
 
 * [larry-rgb](https://github.com/enku/larry-rgb): larry-rgb is a plugin for
