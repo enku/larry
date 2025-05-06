@@ -75,6 +75,7 @@ profile = "black"
 
 [tool.coverage.run]
 source = ["larry"]
+omit = ["src/larry/__main__.py"]
 
 
 [tool.pdm]
