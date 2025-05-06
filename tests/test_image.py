@@ -1,6 +1,6 @@
 """tests for larry.image"""
 
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from larry.color import Color
 from larry.image import RasterImage, SVGImage, make_image_from_bytes
@@ -76,5 +76,16 @@ class RasterImageTests(TestCase):
         )
         self.assertEqual(colors, expected)
 
-    def test_bytes(self):
+    def test_bytes(self) -> None:
         self.assertEqual(bytes(self.image), RASTER_IMAGE)
+
+    def test_bytes_oserror(self):
+        image = self.image
+
+        with mock.patch.object(image, "image") as mock_image:
+            mock_image.save.side_effect = OSError("oops")
+            bytes(image)
+
+        mock_image.convert.assert_called_once_with("RGB")
+        converted_image = mock_image.convert.return_value
+        converted_image.save.assert_called_once_with(mock.ANY, image.image_format)
