@@ -607,3 +607,15 @@ class UngrayTests(TestCase):
         expected = make_colors("#ac78ac #000000 #553b55 #bf86bf #990066 #ffffff")
 
         self.assertEqual(colors, expected)
+
+
+class RGBW(TestCase):
+    def test_to_rgbw(self) -> None:
+        c = Color(180, 48, 229)
+
+        self.assertEqual((132, 0, 181, 48), c.to_rgbw())
+
+    def test_from_rgwb(self) -> None:
+        rgbw = (132, 0, 181, 48)
+
+        self.assertEqual(Color(180, 48, 229), Color.from_rgbw(rgbw))

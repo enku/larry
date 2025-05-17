@@ -440,6 +440,19 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         return cls(red, green, blue)
 
+    def to_rgbw(self) -> tuple[int, int, int, int]:
+        """Convert to RGBW tuple"""
+        white = min(*self)
+
+        return (self.red - white, self.green - white, self.blue - white, white)
+
+    @classmethod
+    def from_rgbw(cls, rgbw: tuple[int, int, int, int]) -> Color:
+        """Convert rgbw tuple to Color"""
+        red, green, blue, white = rgbw
+
+        return cls(red + white, green + white, blue + white)
+
 
 ColorList: TypeAlias = list[Color]
 ColorGenerator: TypeAlias = Iterator[Color]
