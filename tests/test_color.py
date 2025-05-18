@@ -619,3 +619,15 @@ class RGBWTests(TestCase):
         rgbw = (132, 0, 181, 48)
 
         self.assertEqual(Color(180, 48, 229), Color.from_rgbw(rgbw))
+
+
+class IntensifyTests(TestCase):
+    def test(self) -> None:
+        c = Color("#bf86bf")
+
+        self.assertEqual(Color("#bf5ebf"), c.intensify(0.7))
+
+    def test_zero(self) -> None:
+        c = Color("#bf86bf")
+
+        self.assertEqual(c, c.intensify(0))

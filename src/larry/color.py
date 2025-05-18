@@ -453,6 +453,24 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         return cls(red + white, green + white, blue + white)
 
+    def intensify(self, amount: float) -> Color:
+        """Return a new color with saturation intensified by given amount
+
+        amount is a value between -1 and 1 (inclusive)
+
+        =0 means same intensity (same color)
+        >0 means more intensity (saturation)
+        <0 means less intensity (towards gray)
+        """
+        if amount == 0:
+            # avoid rounding issues
+            return type(self)(self.red, self.green, self.blue)
+
+        factor = 1 + amount
+        hsv = self.to_hsv()
+
+        return Color.from_hsv((hsv[0], utils.clip(factor * hsv[1]), hsv[2]))
+
 
 ColorList: TypeAlias = list[Color]
 ColorGenerator: TypeAlias = Iterator[Color]
