@@ -609,7 +609,7 @@ class UngrayTests(TestCase):
         self.assertEqual(colors, expected)
 
 
-class RGBW(TestCase):
+class RGBWTests(TestCase):
     def test_to_rgbw(self) -> None:
         c = Color(180, 48, 229)
 
