@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from math import floor
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
+from sklearn.cluster import KMeans
+
 from larry import utils
 
 ColorFloatType = TypeVar(  #  pylint: disable=invalid-name
@@ -364,6 +366,20 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         yield from cls.generate_from(colors[:split], split)
         yield from cls.generate_from(colors[split:], needed - split)
+
+    @classmethod
+    def dominant(cls, colors: ColorList, needed: int, randomize=True) -> ColorList:
+        """Return the n dominant colors in colors"""
+        kmeans = KMeans(n_clusters=needed)
+        kmeans = kmeans.fit(colors)
+        centroids = kmeans.cluster_centers_
+
+        colors = [cls(int(i[0]), int(i[1]), int(i[2])) for i in centroids]
+
+        if randomize:
+            random.shuffle(colors)
+
+        return colors
 
     @classmethod
     def randhue(cls, saturation, brightness) -> Color:

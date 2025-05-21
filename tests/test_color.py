@@ -1,6 +1,8 @@
-# pylint: disable=missing-docstring,duplicate-code
+# pylint: disable=missing-docstring,duplicate-code,unused-argument
 import random
 from unittest import TestCase, mock
+
+from unittest_fixtures import Fixtures, given
 
 from larry import color
 
@@ -397,6 +399,23 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
 
     def test_soften_with_softness(self):
         self.assertEqual(Color("#9a59db").soften(softness=0.7), Color("#dec8f4"))
+
+
+@given("nprandom")
+class DominantTests(TestCase):
+    def test_dominant(self, fixtures: Fixtures) -> None:
+        colors = make_colors(
+            "#FF5733 #33FF57 #3357FF #FFFF33 #FF33FF #33FFFF #FF8C00 #8A2BE2 #FFD700"
+        )
+
+        dominant_colors = Color.dominant(colors, 4, randomize=False)
+
+        expected = ["#ffae19", "#5080f5", "#33ff57", "#ff33ff"]
+        self.assertEqual([Color(i) for i in expected], dominant_colors)
+
+        dominant_colors = Color.dominant(colors, 3, randomize=False)
+        expected = ["#ffae19", "#943cf5", "#33ffab"]
+        self.assertEqual([Color(i) for i in expected], dominant_colors)
 
 
 class ReplaceString(TestCase):

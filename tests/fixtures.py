@@ -5,6 +5,7 @@ import random as stdlib_random
 import tempfile
 from unittest import mock
 
+import numpy as np
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 from larry import config as larry_config
@@ -40,6 +41,15 @@ def random(
     _random = stdlib_random.Random(seed)
     with mock.patch(target, new=_random):
         yield _random
+
+
+@fixture()
+def nprandom(_fixtures: Fixtures, seed: int = 1) -> FixtureContext[None]:
+    original_state = np.random.get_state()
+
+    np.random.seed(seed)
+    yield None
+    np.random.set_state(original_state)
 
 
 @fixture()
