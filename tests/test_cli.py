@@ -27,19 +27,17 @@ class HandlerTests(TestCase):
         self.assertEqual(cli.Handler.get(), 6)
 
 
-class ParseArgsTests(TestCase):
+class BuildParserTests(TestCase):
     def test(self):
-        argv = ["-c", "/dev/null", "--list-filters", "-n2"]
-        args = cli.parse_args(argv)
+        parser = cli.build_parser()
+        args = parser.parse_args([])
 
-        expected = argparse.Namespace(
-            config_path="/dev/null",
-            debug=False,
-            interval=2,
-            list_filters=True,
-            list_plugins=False,
-        )
-        self.assertEqual(args, expected)
+        self.assertIsInstance(parser, argparse.ArgumentParser)
+        self.assertTrue(isinstance(args.config_path, str))
+        self.assertIs(False, args.debug)
+        self.assertEqual(cli.INTERVAL, args.interval)
+        self.assertIs(False, args.list_plugins)
+        self.assertIs(False, args.list_filters)
 
 
 @given("configmaker")

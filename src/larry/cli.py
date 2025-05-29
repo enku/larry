@@ -7,7 +7,7 @@ import logging
 import os
 import signal
 import sys
-from typing import Iterable, Sequence
+from typing import Iterable
 
 from larry import LOGGER, __version__
 from larry.color import Color, ColorList
@@ -40,7 +40,8 @@ class Handler:
 def main(argv=None) -> None:
     """Actual program entry point"""
     logging.basicConfig()
-    args = parse_args(argv[1:] if argv is not None else sys.argv[1:])
+    parser = build_parser()
+    args = parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
     config = load_config(args.config_path)
 
     if args.debug or config["larry"].getboolean("debug", fallback=False):
@@ -146,7 +147,7 @@ def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> Color
     return colors
 
 
-def parse_args(argv: Sequence[str]) -> argparse.Namespace:
+def build_parser() -> argparse.ArgumentParser:
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -163,5 +164,4 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--list-filters", action="store_true", default=False, help="List known filters"
     )
-
-    return parser.parse_args(argv)
+    return parser
