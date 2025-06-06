@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
+"""build rgb.py based on rgb.txt
+
+Usage: python buildrgb.py /path/to/rgb.txt
+"""
 import sys
 
 
 def main():
+    """Entry point"""
     print("from larry import Color\n\n")
     print("NAMES = {")
     rgb_txt = sys.argv[1]
