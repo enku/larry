@@ -6,7 +6,7 @@ def main():
     print("from larry import Color\n\n")
     print("NAMES = {")
     rgb_txt = sys.argv[1]
-    with open(rgb_txt) as rgbfile:
+    with open(rgb_txt, encoding="utf8") as rgbfile:
         for line in rgbfile:
             line = line.strip()
             if not line or line[0] == "#":
