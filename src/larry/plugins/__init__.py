@@ -2,6 +2,7 @@
 
 import importlib
 import io
+from functools import cache
 from importlib.metadata import entry_points
 from typing import Any, Callable, List, Tuple, TypeAlias
 
@@ -45,6 +46,7 @@ def list_plugins(config_path: str) -> str:
     return output.getvalue()
 
 
+@cache
 def load(name: str) -> PluginType:
     """Load and return the given plugin"""
     if name not in PLUGINS:
