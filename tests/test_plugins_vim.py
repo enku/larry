@@ -75,6 +75,20 @@ class GetNewColorsTests(TestCase):
 
         self.assertEqual(new_colors, CONVERSION)
 
+    def test_with_soften(self):
+        new_colors = vim.get_new_colors(COLOR_STR, COLORS, soften=True)
+
+        expected = [
+            ("ALEErrorSign", "guibg=#9658a0"),
+            ("ALEWarningSign", "guibg=#9658a0"),
+            ("ColorColumn", "guibg=#9658a0"),
+            ("ColorColumn", "guifg=#a2b7b9"),
+            ("CommandTSelection", "guibg=#e19deb"),
+            ("Comment", "guifg=#ffec7f"),
+            ("Constant", "guifg=#ccc688"),
+        ]
+        self.assertEqual(new_colors, expected)
+
 
 class VimProtocolTests(TestCase):
     def tearDown(self):

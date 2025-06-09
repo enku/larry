@@ -9,7 +9,6 @@ from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList
 from larry.config import ConfigType
-from larry.plugins import filtered
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,7 +20,6 @@ class HighlightGroup:
     color: Color
 
 
-@filtered
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """vim plugin"""
 
@@ -29,7 +27,9 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
         start(config)
 
     conversions = config.get("colors", "")
-    new_colors = get_new_colors(conversions, colors)
+    new_colors = get_new_colors(
+        conversions, colors, soften=config.getboolean("soften", fallback=False)
+    )
     VimProtocol.run(new_colors, config)
 
 
@@ -46,7 +46,9 @@ def start(config: ConfigType) -> None:
     loop.create_task(server)
 
 
-def get_new_colors(config: str, from_colors: ColorList) -> List[Tuple[str, str]]:
+def get_new_colors(
+    config: str, from_colors: ColorList, soften=False
+) -> List[Tuple[str, str]]:
     """Given the config and colors, return the vim colorscheme"""
     bg_color = from_colors[0]
     vim_configs = [*process_config(config)]
@@ -56,6 +58,10 @@ def get_new_colors(config: str, from_colors: ColorList) -> List[Tuple[str, str]]
     for vim_config in vim_configs:
         target = next(targets) if vim_config.key == "fg" else bg_color
         to_color = vim_config.color.colorify(target)
+
+        if soften:
+            to_color = to_color.soften()
+
         key = f"gui{vim_config.key}"
 
         to_colors.append((vim_config.name, f"{key}={to_color}"))
