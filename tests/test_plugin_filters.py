@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, fixture, given
 
 from larry.color import ColorList
 from larry.config import ConfigType
-from larry.plugins import filtered, make_filter_config, parse_filter_string
+from larry.plugins import filtered, make_filter_config
 
 from .utils import make_colors
 
@@ -74,11 +74,3 @@ class MakeFilterConfigTests(TestCase):
 
         filter_config = make_filter_config("other", config)
         self.assertEqual(filter_config["filters:other"]["bits"], "19")
-
-
-class ParseFilterString(TestCase):
-    def test(self) -> None:
-        self.assertEqual([], parse_filter_string("none"))
-        self.assertEqual([], parse_filter_string(""))
-        self.assertEqual([], parse_filter_string(" "))
-        self.assertEqual(["inverse", "vga"], parse_filter_string("inverse vga "))

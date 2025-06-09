@@ -75,10 +75,9 @@ def filtered(plugin: PluginType) -> PluginType:
 
     @wraps(plugin)
     def wrapper(colors: ColorList, config_: ConfigType) -> Any:
-        for filter_name in parse_filter_string(config_.get("filter") or ""):
+        for filter_name in (config_.get("filter") or "").split():
             cfilter = load_filter(filter_name)
-            filter_config = make_filter_config(filter_name, config_)
-            colors = cfilter(colors, filter_config)
+            colors = cfilter(colors, make_filter_config(filter_name, config_))
 
         return plugin(colors, config_)
 
@@ -115,11 +114,3 @@ def make_filter_config(filter_name, plugin_config: ConfigType) -> ConfigParser:
             config_parser[f"filters:{filter_name}"][key[offset:]] = value
 
     return config_parser
-
-
-def parse_filter_string(filter_string: str) -> list[str]:
-    parts = filter_string.split()
-
-    if parts == ["none"]:
-        return []
-    return parts
