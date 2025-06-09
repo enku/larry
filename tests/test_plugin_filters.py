@@ -1,9 +1,11 @@
 # pylint: disable=missing-docstring,unused-argument
 from configparser import SectionProxy
-from unittest import TestCase, mock
+from unittest import TestCase
 
 from unittest_fixtures import Fixtures, fixture, given
 
+from larry.color import ColorList
+from larry.config import ConfigType
 from larry.plugins import filtered, make_filter_config, parse_filter_string
 
 from .utils import make_colors
@@ -19,57 +21,45 @@ def section(fixtures: Fixtures) -> SectionProxy:
     return configmaker.config["plugins:test"]
 
 
-@fixture()
-def plugin_fixture(_fixtures: Fixtures) -> mock.Mock:
-    return mock.Mock(name="plugin")
+@filtered
+def plugin(colors: ColorList, _config: ConfigType) -> ColorList:
+    return colors
 
 
-@given(plugin_fixture, config=section)
+@given(config=section)
 class FilteredPluginTests(TestCase):
     def test_none(self, fixtures: Fixtures) -> None:
         config = fixtures.config
         config["filter"] = "none"
-        plugin = fixtures.plugin
-        filtered_plugin = filtered(plugin)
 
-        filtered_plugin(COLORS, config)
+        colors = plugin(COLORS, config)
 
-        plugin.assert_called_once_with(COLORS, config)
+        self.assertEqual(colors, COLORS)
 
     def test_inverse(self, fixtures: Fixtures) -> None:
         config = fixtures.config
-        plugin = fixtures.plugin
         config["filter"] = "inverse"
-        filtered_plugin = filtered(plugin)
 
-        filtered_plugin(COLORS, config)
+        colors = plugin(COLORS, config)
 
-        plugin.assert_called_once_with([i.inverse() for i in COLORS], config)
+        self.assertEqual(colors, [i.inverse() for i in COLORS])
 
     def test_with_filter_config(self, fixtures: Fixtures) -> None:
         config = fixtures.config
-        plugin = fixtures.plugin
         config["filter"] = "vga"
         config["filters:vga:bits"] = "7"
-        filtered_plugin = filtered(plugin)
 
-        filtered_plugin(COLORS, config)
+        colors = plugin(COLORS, config)
 
-        plugin.assert_called_once_with(
-            make_colors("#006ddb #db0000 #db006d #6d92b6"), config
-        )
+        self.assertEqual(colors, make_colors("#006ddb #db0000 #db006d #6d92b6"))
 
     def test_multiple_filters(self, fixtures: Fixtures) -> None:
         config = fixtures.config
-        plugin = fixtures.plugin
         config["filter"] = "inverse pastelize"
-        filtered_plugin = filtered(plugin)
 
-        filtered_plugin(COLORS, config)
+        colors = plugin(COLORS, config)
 
-        plugin.assert_called_once_with(
-            [i.inverse().pastelize() for i in COLORS], config
-        )
+        self.assertEqual(colors, [i.inverse().pastelize() for i in COLORS])
 
 
 @given(config=section)
