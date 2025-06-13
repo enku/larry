@@ -8,7 +8,7 @@ import sys
 
 def main():
     """Entry point"""
-    print("from larry import Color\n\n")
+    print("from larry.color import Color\n\n")
     print("NAMES = {")
     rgb_txt = sys.argv[1]
     with open(rgb_txt, encoding="utf8") as rgbfile:
