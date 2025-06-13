@@ -39,6 +39,9 @@ available:
 * [larry4mac](https://github.com/enku/larry4mac): a set of larry plugins for
   MacOS.
 
+* [defy-larry](https://github.com/enku/defy-larry): a larry plugin to change
+  the LED colors on the Dygma (Defy) kayboard.
+
 
 ## Installation
 
