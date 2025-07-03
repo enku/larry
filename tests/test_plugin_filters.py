@@ -8,12 +8,13 @@ from larry.color import ColorList
 from larry.config import ConfigType
 from larry.plugins import filtered, make_filter_config
 
+from . import fixtures as tf
 from .utils import make_colors
 
 COLORS = make_colors("#177AFF #FF1500 #FF0278 #799FCF")
 
 
-@fixture("configmaker")
+@fixture(tf.configmaker)
 def section(fixtures: Fixtures) -> SectionProxy:
     configmaker = fixtures.configmaker
     configmaker.add_section("plugins:test")

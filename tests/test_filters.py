@@ -11,6 +11,7 @@ from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
 from larry.filters.random import cfilter as random_filter
 
+from . import fixtures as tf
 from . import make_colors, make_config
 
 
@@ -22,7 +23,7 @@ class FilterTestCase(TestCase):
         return filters.load_filter(self.entry_point)
 
 
-@given("tmpdir")
+@given(tf.tmpdir)
 class ListFiltersTestsi(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         config_path = f"{fixtures.tmpdir}/larry.cfg"

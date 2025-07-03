@@ -6,10 +6,12 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import gtk
 
-from . import CSS, make_colors, mock_write_text_file
+from . import CSS
+from . import fixtures as tf
+from . import make_colors, mock_write_text_file
 
 
-@given("random", "configmaker", "tmpdir")
+@given(tf.random, tf.configmaker, tf.tmpdir)
 @mock.patch("larry.plugins.gtk.write_text_file")
 class GtkTests(TestCase):
     def test(self, write_text_file, fixtures: Fixtures) -> None:

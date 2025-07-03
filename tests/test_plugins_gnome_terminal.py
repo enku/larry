@@ -5,10 +5,11 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import GIRepository, gnome_terminal
 
+from . import fixtures as tf
 from . import make_colors
 
 
-@given("configmaker")
+@given(tf.configmaker)
 @mock.patch.object(GIRepository, "Gio", create=True)
 class PluginTests(TestCase):
     def test(self, gio, fixtures: Fixtures) -> None:

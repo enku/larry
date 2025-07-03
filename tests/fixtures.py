@@ -58,6 +58,6 @@ def tmpdir(_fixtures: Fixtures) -> FixtureContext[str]:
         yield tempdir
 
 
-@fixture("tmpdir")
+@fixture(tmpdir)
 def configmaker(fixtures: Fixtures) -> ConfigMaker:
     return ConfigMaker(fixtures.tmpdir)

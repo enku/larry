@@ -10,10 +10,12 @@ from unittest_fixtures import Fixtures, given
 from larry.color import COLORS_RE, Color
 from larry.plugins import GIRepository, gnome_shell
 
-from . import CSS, make_colors
+from . import CSS
+from . import fixtures as tf
+from . import make_colors
 
 
-@given("tmpdir")
+@given(tf.tmpdir)
 class ThemeTests(TestCase):
     def test_init_with_name(self, fixtures: Fixtures) -> None:
         name = "testtheme"
@@ -119,7 +121,7 @@ class ThemeTests(TestCase):
         gio.Settings.return_value.reset.assert_called_once_with("name")
 
 
-@given("configmaker")
+@given(tf.configmaker)
 @mock.patch("larry.plugins.gnome_shell.Theme", autospec=True)
 class PluginTests(TestCase):
     def test(self, theme_cls, fixtures: Fixtures) -> None:
