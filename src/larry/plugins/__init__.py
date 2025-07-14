@@ -10,7 +10,7 @@ from typing import Any, Callable, List, Tuple, TypeAlias
 from larry import LOGGER, config
 from larry.color import ColorList
 from larry.config import ConfigType
-from larry.filters import FilterNotFound, list_filters, load_filter
+from larry.filters import load_filter
 
 PluginType: TypeAlias = Callable[[ColorList, config.ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
