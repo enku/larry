@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring
 import argparse
+import asyncio
 import contextlib
 import io
 import os.path
@@ -233,3 +234,25 @@ class MainTests(TestCase):
             cli.main(argv)
 
         logger.setLevel.assert_called_once_with("DEBUG")
+
+
+class RunLoopTests(TestCase):
+    def test_runs_forever(self) -> None:
+        loop = mock.Mock(spec=asyncio.AbstractEventLoop)
+
+        cli.run_loop(loop)
+
+        loop.assert_has_calls(
+            [mock.call.run_forever(), mock.call.close()], any_order=False
+        )
+
+    def test_intercepts_keyboardinterrupt(self) -> None:
+        loop = mock.Mock(spec=asyncio.AbstractEventLoop)
+        loop.run_forever.side_effect = KeyboardInterrupt()
+
+        cli.run_loop(loop)
+
+        loop.assert_has_calls(
+            [mock.call.run_forever(), mock.call.stop(), mock.call.close()],
+            any_order=False,
+        )

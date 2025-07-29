@@ -68,13 +68,7 @@ def main(argv=None) -> None:
         loop.add_signal_handler(signal.SIGUSR1, run, args.config_path, loop)
         run(args.config_path, loop)
 
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        LOGGER.info("User interrupted")
-        loop.stop()
-    finally:
-        loop.close()
+    run_loop(loop)
 
 
 def run_every(interval: float, config_path: str, loop) -> None:
@@ -165,3 +159,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--list-filters", action="store_true", default=False, help="List known filters"
     )
     return parser
+
+
+def run_loop(loop: asyncio.AbstractEventLoop) -> None:
+    """Run the given loop forever until interrupted"""
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        LOGGER.info("User interrupted")
+        loop.stop()
+    finally:
+        loop.close()
