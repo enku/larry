@@ -10,7 +10,7 @@ from larry import filters
 from larry.config import DEFAULT_INPUT_PATH
 from larry.filters import utils
 
-from . import make_colors, make_config
+from .lib import make_colors, make_config
 
 
 class NewImageColorsTests(TestCase):

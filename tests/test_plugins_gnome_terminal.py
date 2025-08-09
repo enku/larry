@@ -5,7 +5,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import GIRepository, gnome_terminal
 
-from . import lib, make_colors
+from . import lib
 
 
 @given(lib.configmaker)
@@ -15,7 +15,7 @@ class PluginTests(TestCase):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_terminal")
         configmaker.add_config(profiles="a b c", color="1d1e28")
-        colors = make_colors(
+        colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
 

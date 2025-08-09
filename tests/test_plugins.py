@@ -7,7 +7,7 @@ from larry import plugins
 from larry.io import read_file
 from larry.plugins import command
 
-from . import lib, make_colors
+from . import lib
 
 
 @given(lib.configmaker, lib.tmpdir)
@@ -19,7 +19,7 @@ class DoPluginTest(TestCase):
         configmaker.add_config(plugins=plugin)
         configmaker.add_section("plugins:command")
         configmaker.add_config(command=f"cat > {output_file}")
-        colors = make_colors("#ff0000 #ffffff #0000ff")
+        colors = lib.make_colors("#ff0000 #ffffff #0000ff")
 
         plugins.do_plugin(plugin, colors, configmaker.path)
 

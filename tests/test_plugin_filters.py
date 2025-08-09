@@ -9,9 +9,8 @@ from larry.config import ConfigType
 from larry.plugins import filtered, make_filter_config
 
 from . import lib
-from .utils import make_colors
 
-COLORS = make_colors("#177AFF #FF1500 #FF0278 #799FCF")
+COLORS = lib.make_colors("#177AFF #FF1500 #FF0278 #799FCF")
 
 
 @fixture(lib.configmaker)
@@ -52,7 +51,7 @@ class FilteredPluginTests(TestCase):
 
         colors = plugin(COLORS, config)
 
-        self.assertEqual(colors, make_colors("#006ddb #db0000 #db006d #6d92b6"))
+        self.assertEqual(colors, lib.make_colors("#006ddb #db0000 #db006d #6d92b6"))
 
     def test_multiple_filters(self, fixtures: Fixtures) -> None:
         config = fixtures.config

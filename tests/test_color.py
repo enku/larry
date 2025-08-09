@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry import color
 
-from . import lib, make_colors
+from . import lib
 
 Color = color.Color
 ColorFloat = color.ColorFloat
@@ -278,19 +278,19 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual(Color("#000000").luminize(70), Color("#464646"))
 
     def test_gradient(self):
-        start, stop = make_colors("#000000 #ffffff")
+        start, stop = lib.make_colors("#000000 #ffffff")
         steps = 7
 
         colors = list(Color.gradient(start, stop, steps))
 
-        expected = make_colors(
+        expected = lib.make_colors(
             "#000000 #2a2a2a #555555 #7f7f7f #aaaaaa #d4d4d4 #ffffff"
         )
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     def test_generate_from_with_same_number_of_colors(self):
-        orig_colors = make_colors(
+        orig_colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
         colors = list(Color.generate_from(orig_colors, len(orig_colors)))
@@ -304,47 +304,47 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
     def test_generate_from_when_no_colors_provided_yields_random_colors(self):
         colors = list(Color.generate_from([], 5))
 
-        expected = make_colors("#442082 #3cfde6 #f1c26b #30f90e #c7dd01")
+        expected = lib.make_colors("#442082 #3cfde6 #f1c26b #30f90e #c7dd01")
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     def test_generate_from_when_not_enough_colors(self):
-        orig_colors = make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea")
+        orig_colors = lib.make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea")
 
         colors = list(Color.generate_from(orig_colors, 7))
 
-        expected = make_colors(
+        expected = lib.make_colors(
             "#754fc7 #835d75 #7e118f #807930 #87766e #8f74ac #9772ea"
         )
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     def test_generate_from_more_than_enough_colors(self):
-        orig_colors = make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea")
+        orig_colors = lib.make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea")
 
         colors = list(Color.generate_from(orig_colors, 3))
 
-        expected = make_colors("#754fc7 #7e118f #9772ea")
+        expected = lib.make_colors("#754fc7 #7e118f #9772ea")
         self.assertEqual(colors, expected)
 
     def test_generate_colors_when_2_input_colors_yields_gradient(self):
-        orig_colors = make_colors("#807930 #7e118f")
+        orig_colors = lib.make_colors("#807930 #7e118f")
 
         colors = list(Color.generate_from(orig_colors, 7))
 
         # gradient goes from input colors ordered by luminocity
-        expected = make_colors(
+        expected = lib.make_colors(
             "#7e118f #7e227f #7e336f #7e445f #7f564f #7f673f #807930"
         )
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
     def test_generate_from_when_needs_more_colors_than_input(self):
-        orig_colors = make_colors("#7e118f #754fc7 #835d75 #7f564f")
+        orig_colors = lib.make_colors("#7e118f #754fc7 #835d75 #7f564f")
 
         colors = list(Color.generate_from(orig_colors, 7))
 
-        expected = make_colors(
+        expected = lib.make_colors(
             "#754fc7 #835d75 #7e118f #7f564f #823cfd #e6f1c2 #6b30f9"
         )
         self.assertEqual(colors, expected)
@@ -404,7 +404,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
 @given(lib.nprandom)
 class DominantTests(TestCase):
     def test_dominant(self, fixtures: Fixtures) -> None:
-        colors = make_colors(
+        colors = lib.make_colors(
             "#FF5733 #33FF57 #3357FF #FFFF33 #FF33FF #33FFFF #FF8C00 #8A2BE2 #FFD700"
         )
 
@@ -583,47 +583,47 @@ class CombineColorsTests(TestCase):
 
 class UngrayTests(TestCase):
     def test_ungrays(self):
-        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+        orig_colors = lib.make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
 
         colors = color.ungray(orig_colors)
 
-        expected = make_colors("#ac78ac #660099 #553b55 #bf86bf #990066 #443044")
+        expected = lib.make_colors("#ac78ac #660099 #553b55 #bf86bf #990066 #443044")
 
         self.assertEqual(colors, expected)
 
     def test_can_specify_channel(self):
-        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+        orig_colors = lib.make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
 
         colors = color.ungray(orig_colors, channel="red")
 
-        expected = make_colors("#78acac #660099 #3b5555 #86bfbf #990066 #304444")
+        expected = lib.make_colors("#78acac #660099 #3b5555 #86bfbf #990066 #304444")
 
         self.assertEqual(colors, expected)
 
     def test_can_specify_amount(self):
-        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+        orig_colors = lib.make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
 
         colors = color.ungray(orig_colors, amount=1.3)
 
-        expected = make_colors("#ace0ac #660099 #556e55 #bff8bf #990066 #445844")
+        expected = lib.make_colors("#ace0ac #660099 #556e55 #bff8bf #990066 #445844")
 
         self.assertEqual(colors, expected)
 
     def test_multiple_channels(self):
-        orig_colors = make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
+        orig_colors = lib.make_colors("#acacac #660099 #555555 #bfbfbf #990066 #444444")
 
         colors = color.ungray(orig_colors, channel=["red", "green"], amount=0)
 
-        expected = make_colors("#0000ac #660099 #000055 #0000bf #990066 #000044")
+        expected = lib.make_colors("#0000ac #660099 #000055 #0000bf #990066 #000044")
 
         self.assertEqual(colors, expected)
 
     def test_skips_black_and_white(self):
-        orig_colors = make_colors("#acacac #000000 #555555 #bfbfbf #990066 #ffffff")
+        orig_colors = lib.make_colors("#acacac #000000 #555555 #bfbfbf #990066 #ffffff")
 
         colors = color.ungray(orig_colors)
 
-        expected = make_colors("#ac78ac #000000 #553b55 #bf86bf #990066 #ffffff")
+        expected = lib.make_colors("#ac78ac #000000 #553b55 #bf86bf #990066 #ffffff")
 
         self.assertEqual(colors, expected)
 

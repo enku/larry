@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 from larry.color import Color
 from larry.image import RasterImage, SVGImage, make_image_from_bytes
 
-from . import lib, make_colors
+from . import lib
 
 
 # pylint: disable=missing-docstring
@@ -31,18 +31,18 @@ class SVGImageTests(TestCase):
     def test_colors(self):
         colors = sorted(self.image.colors, key=Color.luminocity)
 
-        expected = make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff")
+        expected = lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff")
 
         self.assertEqual(colors, expected)
 
     def test_replace(self):
-        orig_colors = make_colors("#000000 #254351 #7c8e96")
-        new_colors = make_colors("#0000ff #00ff00 #ff0000")
+        orig_colors = lib.make_colors("#000000 #254351 #7c8e96")
+        new_colors = lib.make_colors("#0000ff #00ff00 #ff0000")
 
         image = self.image.replace(orig_colors, new_colors)
 
         colors = sorted(image.colors, key=Color.luminocity)
-        expected = make_colors("#0000ff #1c343f #ff0000 #666666 #00ff00 #ffffff")
+        expected = lib.make_colors("#0000ff #1c343f #ff0000 #666666 #00ff00 #ffffff")
         self.assertEqual(colors, expected)
 
     def test_bytes(self):
@@ -58,20 +58,20 @@ class RasterImageTests(TestCase):
     def test_colors(self):
         colors = sorted(self.image.colors, key=Color.luminocity)
 
-        expected = make_colors(
+        expected = lib.make_colors(
             # pylint: disable=line-too-long
             "#a889e9 #ae8ed9 #b594c9 #bc99ba #c39faa #c9a49a #d0aa8b #d7af7b #deb56b #e5bb5c"
         )
         self.assertEqual(colors, expected)
 
     def test_replace(self):
-        orig_colors = make_colors("#a889e9 #b594c9 #c39faa #d0aa8b #deb56b")
-        new_colors = make_colors("#0000ff #00ff00 #ff0000 #000000 #ffffff")
+        orig_colors = lib.make_colors("#a889e9 #b594c9 #c39faa #d0aa8b #deb56b")
+        new_colors = lib.make_colors("#0000ff #00ff00 #ff0000 #000000 #ffffff")
 
         image = self.image.replace(orig_colors, new_colors)
 
         colors = sorted(image.colors, key=Color.luminocity)
-        expected = make_colors(
+        expected = lib.make_colors(
             "#000 #00f #f00 #0f0 #ae8ed9 #bc99ba #c9a49a #d7af7b #e5bb5c #fff"
         )
         self.assertEqual(colors, expected)

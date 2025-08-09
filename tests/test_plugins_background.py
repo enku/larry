@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 
 from larry.plugins import GIRepository, background
 
-from . import make_colors
+from .lib import make_colors
 
 
 @mock.patch.object(GIRepository, "Gio", create=True)

@@ -13,7 +13,7 @@ from larry import cli, filters
 from larry.image import make_image_from_bytes
 from larry.io import read_file
 
-from . import lib, make_colors
+from . import lib
 
 
 class HandlerTests(TestCase):
@@ -55,7 +55,7 @@ class RunTests(TestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
             ),
             None,
         )
@@ -94,7 +94,7 @@ class RunTests(TestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
             ),
             None,
         )
@@ -112,7 +112,7 @@ class RunTests(TestCase):
 
         image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
         image_colors = image.colors
-        colors = make_colors(color_str)
+        colors = lib.make_colors(color_str)
         self.assertEqual(set(colors), set(image_colors))
 
     def test_run_with_no_config(self, fixtures: Fixtures) -> None:

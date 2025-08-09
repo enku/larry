@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import cal
 
-from . import lib, make_colors, mock_write_file
+from . import lib
 
 
 @given(lib.random)
@@ -14,8 +14,8 @@ from . import lib, make_colors, mock_write_file
 class CalTests(TestCase):
     def test(self, write_file, fixtures: Fixtures):
         output = io.BytesIO()
-        write_file.side_effect = mock_write_file(output)
-        colors = make_colors(
+        write_file.side_effect = lib.mock_write_file(output)
+        colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
 

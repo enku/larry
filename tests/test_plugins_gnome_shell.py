@@ -10,7 +10,7 @@ from unittest_fixtures import Fixtures, given
 from larry.color import COLORS_RE, Color
 from larry.plugins import GIRepository, gnome_shell
 
-from . import lib, make_colors
+from . import lib
 
 
 @given(lib.tmpdir)
@@ -56,7 +56,7 @@ class ThemeTests(TestCase):
         template_path = f"{fixtures.tmpdir}/.themes/template"
         os.makedirs(template_path)
         create_theme(Path(template_path, "gnome-shell"))
-        colors = make_colors(
+        colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
         expanduser = mock_expanduser(fixtures.tmpdir)
@@ -69,7 +69,7 @@ class ThemeTests(TestCase):
         css = theme.gnome_shell_css_path.read_text(encoding="utf-8")
         theme_colors = [Color(s) for s in COLORS_RE.findall(css)]
 
-        expected = make_colors(
+        expected = lib.make_colors(
             "#4a3441 #33242d #943972 #6c0044 #943972 #6c0044 #33242d"
         )
         self.assertEqual(theme_colors, expected)
@@ -126,7 +126,7 @@ class PluginTests(TestCase):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_shell")
         configmaker.add_config(template="test-template")
-        colors = make_colors(
+        colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
         gnome_shell_config = configmaker.config["plugins:gnome_shell"]
@@ -148,7 +148,7 @@ class PluginTests(TestCase):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_shell")
         configmaker.add_config(template="test-template")
-        colors = make_colors(
+        colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
         gnome_shell_config = configmaker.config["plugins:gnome_shell"]
