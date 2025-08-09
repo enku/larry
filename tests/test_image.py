@@ -5,18 +5,18 @@ from unittest import TestCase, mock
 from larry.color import Color
 from larry.image import RasterImage, SVGImage, make_image_from_bytes
 
-from . import RASTER_IMAGE, SVG_IMAGE, make_colors
+from . import lib, make_colors
 
 
 # pylint: disable=missing-docstring
 class MakeImageFromBytesTest(TestCase):
     def test_svg(self):
-        image = make_image_from_bytes(SVG_IMAGE)
+        image = make_image_from_bytes(lib.SVG_IMAGE)
 
         self.assertTrue(isinstance(image, SVGImage))
 
     def test_raster(self):
-        image = make_image_from_bytes(RASTER_IMAGE)
+        image = make_image_from_bytes(lib.RASTER_IMAGE)
 
         self.assertTrue(isinstance(image, RasterImage))
 
@@ -26,7 +26,7 @@ class MakeImageFromBytesTest(TestCase):
 
 
 class SVGImageTests(TestCase):
-    image = SVGImage(SVG_IMAGE)
+    image = SVGImage(lib.SVG_IMAGE)
 
     def test_colors(self):
         colors = sorted(self.image.colors, key=Color.luminocity)
@@ -46,14 +46,14 @@ class SVGImageTests(TestCase):
         self.assertEqual(colors, expected)
 
     def test_bytes(self):
-        self.assertEqual(bytes(self.image), SVG_IMAGE)
+        self.assertEqual(bytes(self.image), lib.SVG_IMAGE)
 
     def test_str(self):
-        self.assertEqual(str(self.image), SVG_IMAGE.decode("UTF-8"))
+        self.assertEqual(str(self.image), lib.SVG_IMAGE.decode("UTF-8"))
 
 
 class RasterImageTests(TestCase):
-    image = RasterImage(RASTER_IMAGE)
+    image = RasterImage(lib.RASTER_IMAGE)
 
     def test_colors(self):
         colors = sorted(self.image.colors, key=Color.luminocity)
@@ -77,7 +77,7 @@ class RasterImageTests(TestCase):
         self.assertEqual(colors, expected)
 
     def test_bytes(self) -> None:
-        self.assertEqual(bytes(self.image), RASTER_IMAGE)
+        self.assertEqual(bytes(self.image), lib.RASTER_IMAGE)
 
     def test_bytes_oserror(self):
         image = self.image

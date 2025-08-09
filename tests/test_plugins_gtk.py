@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import gtk
 
-from . import CSS, lib, make_colors, mock_write_text_file
+from . import lib, make_colors, mock_write_text_file
 
 
 @given(lib.random, lib.configmaker, lib.tmpdir)
@@ -18,7 +18,7 @@ class GtkTests(TestCase):
         cssfile = f"{fixtures.tmpdir}/input.css"
 
         with open(cssfile, "w", encoding="UTF-8") as fp:
-            fp.write(CSS)
+            fp.write(lib.CSS)
 
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gtk")

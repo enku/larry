@@ -10,7 +10,7 @@ from unittest_fixtures import Fixtures, given
 from larry.color import COLORS_RE, Color
 from larry.plugins import GIRepository, gnome_shell
 
-from . import CSS, lib, make_colors
+from . import lib, make_colors
 
 
 @given(lib.tmpdir)
@@ -164,7 +164,7 @@ class PluginTests(TestCase):
 def create_theme(theme_dir):
     css_path = theme_dir / "gnome-shell.css"
     css_path.parent.mkdir(parents=True)
-    css_path.write_text(CSS, encoding="UTF-8")
+    css_path.write_text(lib.CSS, encoding="UTF-8")
 
 
 def mock_expanduser(home: str):

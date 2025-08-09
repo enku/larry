@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry import color
 
-from . import CSS, lib, make_colors
+from . import lib, make_colors
 
 Color = color.Color
 ColorFloat = color.ColorFloat
@@ -14,7 +14,7 @@ ColorFloat = color.ColorFloat
 
 class ColorReTests(TestCase):
     def test_can_find_colors(self):
-        colors = color.COLORS_RE.findall(CSS)
+        colors = color.COLORS_RE.findall(lib.CSS)
 
         expected = [
             "#4a4a4a",
@@ -424,7 +424,7 @@ class ReplaceString(TestCase):
             Color("#4a4a4a"): Color("#ffffff"),
             Color("#3a7e94"): Color("#000000"),
         }
-        result = color.replace_string(CSS, colormap)
+        result = color.replace_string(lib.CSS, colormap)
         expected = """\
 a {
   color: #ffffff;
@@ -449,7 +449,7 @@ d {
 
     def test2(self):
         colormap = {Color("#333"): Color("#ffffff")}
-        result = color.replace_string(CSS, colormap)
+        result = color.replace_string(lib.CSS, colormap)
         expected = """\
 a {
   color: #4a4a4a;
@@ -474,7 +474,7 @@ d {
 
     def test3(self):
         colormap = {Color("#002d6c"): Color("#1245ef")}
-        result = color.replace_string(CSS, colormap)
+        result = color.replace_string(lib.CSS, colormap)
         expected = """\
 a {
   color: #4a4a4a;
