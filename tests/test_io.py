@@ -6,10 +6,10 @@ from unittest_fixtures import Fixtures, given
 
 from larry import io
 
-from . import fixtures as tf
+from . import lib
 
 
-@given(tf.tmpdir)
+@given(lib.tmpdir)
 class ReadFileTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         filename = path.join(fixtures.tmpdir, "test")
@@ -28,7 +28,7 @@ class ReadFileTests(TestCase):
         self.assertEqual(result, b"test")
 
 
-@given(tf.tmpdir)
+@given(lib.tmpdir)
 class WriteFileTests(TestCase):
     def test(self, fixtures: Fixtures):
         filename = path.join(fixtures.tmpdir, "test")

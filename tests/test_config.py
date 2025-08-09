@@ -8,10 +8,10 @@ from unittest_fixtures import Fixtures, given
 
 from larry import config
 
-from . import fixtures as tf
+from . import lib
 
 
-@given(tf.tmpdir)
+@given(lib.tmpdir)
 class LoadTests(TestCase):
     def test_when_file_does_not_exist(self, fixtures: Fixtures) -> None:
         path = os.path.join(fixtures.tmpdir, "bogus")
@@ -37,7 +37,7 @@ colors = ["red", "green", "blue"]
         self.assertEqual(config_obj["inventory.main"]["value"], "26")
 
 
-@given(tf.tmpdir)
+@given(lib.tmpdir)
 class GetPluginConfigTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         path = os.path.join(fixtures.tmpdir, "larry.cfg")
@@ -55,7 +55,7 @@ foo = bar
         self.assertNotIn("foo", plugin_config)
 
 
-@given(tf.tmpdir)
+@given(lib.tmpdir)
 class LoadTomlConfig(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         toml = """\

@@ -7,11 +7,10 @@ from larry import plugins
 from larry.io import read_file
 from larry.plugins import command
 
-from . import fixtures as tf
-from . import make_colors
+from . import lib, make_colors
 
 
-@given(tf.configmaker, tf.tmpdir)
+@given(lib.configmaker, lib.tmpdir)
 class DoPluginTest(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
@@ -38,7 +37,7 @@ class PluginsList(TestCase):
             self.assertTrue(callable(item[1]))
 
 
-@given(tf.configmaker)
+@given(lib.configmaker)
 class ListPlugins(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker

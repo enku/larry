@@ -6,9 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry import color
 
-from . import CSS
-from . import fixtures as tf
-from . import make_colors
+from . import CSS, lib, make_colors
 
 Color = color.Color
 ColorFloat = color.ColorFloat
@@ -403,7 +401,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual(Color("#9a59db").soften(softness=0.7), Color("#dec8f4"))
 
 
-@given(tf.nprandom)
+@given(lib.nprandom)
 class DominantTests(TestCase):
     def test_dominant(self, fixtures: Fixtures) -> None:
         colors = make_colors(

@@ -6,8 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import vim
 
-from . import fixtures as tf
-from . import make_colors
+from . import lib, make_colors
 
 COLORS = list(
     make_colors("#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9")
@@ -35,7 +34,7 @@ CONVERSION = [
 ]
 
 
-@given(tf.random, tf.configmaker)
+@given(lib.random, lib.configmaker)
 class PluginTests(TestCase):
     @mock.patch("larry.plugins.vim.start")
     @mock.patch("larry.plugins.vim.VimProtocol.run")
@@ -50,7 +49,7 @@ class PluginTests(TestCase):
         run.assert_called_once_with(CONVERSION, configmaker.config["plugins:vim"])
 
 
-@given(tf.configmaker)
+@given(lib.configmaker)
 class StartTests(TestCase):
     @mock.patch("larry.plugins.vim.asyncio.get_event_loop")
     def test(self, get_event_loop, fixtures: Fixtures) -> None:

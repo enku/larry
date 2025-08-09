@@ -6,11 +6,10 @@ from unittest_fixtures import Fixtures, given
 
 from larry.plugins import cal
 
-from . import fixtures as tf
-from . import make_colors, mock_write_file
+from . import lib, make_colors, mock_write_file
 
 
-@given(tf.random)
+@given(lib.random)
 @mock.patch("larry.plugins.cal.io.write_file")
 class CalTests(TestCase):
     def test(self, write_file, fixtures: Fixtures):

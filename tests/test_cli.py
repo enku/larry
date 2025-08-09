@@ -13,8 +13,7 @@ from larry import cli, filters
 from larry.image import make_image_from_bytes
 from larry.io import read_file
 
-from . import fixtures as tf
-from . import make_colors
+from . import lib, make_colors
 
 
 class HandlerTests(TestCase):
@@ -42,7 +41,7 @@ class BuildParserTests(TestCase):
         self.assertIs(False, args.list_filters)
 
 
-@given(tf.configmaker)
+@given(lib.configmaker)
 class RunTests(TestCase):
     def test_runs_filters_and_schedules_plugins(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
@@ -123,7 +122,7 @@ class RunTests(TestCase):
         write_file.assert_called()
 
 
-@given(tf.configmaker)
+@given(lib.configmaker)
 class RunEveryTests(TestCase):
     def test_runs_and_schedules_to_run_again(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
@@ -159,7 +158,7 @@ class RunEveryTests(TestCase):
         handler.cancel.assert_called_once_with()
 
 
-@given(tf.configmaker)
+@given(lib.configmaker)
 @mock.patch("larry.cli.asyncio.new_event_loop")
 class MainTests(TestCase):
     def test(self, new_event_loop, fixtures: Fixtures) -> None:
