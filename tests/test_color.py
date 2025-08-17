@@ -650,3 +650,24 @@ class IntensifyTests(TestCase):
         c = Color("#bf86bf")
 
         self.assertEqual(c, c.intensify(0))
+
+
+class ClosestTests(TestCase):
+    colors = lib.make_colors(
+        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+    )
+
+    def test(self) -> None:
+        self.assert_closest("#bf86bf", "#9772ea")
+        self.assert_closest("#0000ff", "#754fc7")
+        self.assert_closest("#ffff00", "#9f934b")
+        self.assert_closest("#008080", "#835d75")
+
+    def test_is_closest_to_self(self) -> None:
+        self.assert_closest("#35dfe9", "#35dfe9")
+
+    def assert_closest(self, c1: str, c2: str) -> None:
+        self.assertEqual(str(self.closest(c1)), c2)
+
+    def closest(self, c: str) -> Color:
+        return Color(c).closest(self.colors)

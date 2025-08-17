@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from math import floor
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
+import numpy as np
 from sklearn.cluster import KMeans
 
 from larry import utils
@@ -486,6 +487,12 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         hsv = self.to_hsv()
 
         return Color.from_hsv((hsv[0], utils.clip(factor * hsv[1]), hsv[2]))
+
+    def closest(self, colors: ColorList) -> Color:
+        """Return the closest color given the list of colors"""
+        target = np.array(self)
+
+        return min(colors, key=lambda c: np.linalg.norm(np.array(c) - target))
 
 
 ColorList: TypeAlias = list[Color]
