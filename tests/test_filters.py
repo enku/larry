@@ -52,11 +52,13 @@ class LoadFilterTests(TestCase):
             filters.load_filter("bogus")
 
     def test_when_filter_wont_load(self):
-        with self.assertRaises(filters.FilterNotFound):
-            with mock.patch.object(
+        with (
+            self.assertRaises(filters.FilterNotFound),
+            mock.patch.object(
                 importlib.metadata.EntryPoint, "load", side_effect=ModuleNotFoundError
-            ):
-                filters.load_filter("random")
+            ),
+        ):
+            filters.load_filter("random")
 
 
 class FiltersListTests(TestCase):
