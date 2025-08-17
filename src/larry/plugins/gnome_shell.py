@@ -5,9 +5,9 @@ import pathlib
 import shutil
 import tempfile
 import typing as t
+from enum import Enum, unique
 
-from larry import Color, ColorList
-from larry.color import COLORS_RE, replace_string, ungray
+from larry.color import COLORS_RE, Color, ColorList, replace_string, ungray
 from larry.config import ConfigType
 from larry.plugins import gir
 
@@ -15,6 +15,29 @@ DEFAULT_GRAY_THRESHOLD = 35
 THEME_GSETTINGS_NAME = "name"
 THEME_GSETTINGS_SCHEMA = "org.gnome.shell.extensions.user-theme"
 THEME_INDEX_GNOME_SECTION = "X-GNOME-Metatheme"
+
+ACCENT_COLOR_SCHEMA = "org.gnome.desktop.interface"
+ACCENT_COLOR_NAME = "accent-color"
+
+
+@unique
+class AccentColor(Enum):
+    """Gnome Shell accent colors"""
+
+    BLUE = Color("#0000ff")
+    TEAL = Color("#008080")
+    GREEN = Color("#00ff00")
+    YELLOW = Color("#ffff00")
+    ORANGE = Color("#ffa500")
+    RED = Color("#ff0000")
+    PINK = Color("#ffc0cb")
+    PURPLE = Color("#800080")
+    SLATE = Color("#708090")
+
+    @classmethod
+    def index(cls, accent_color: "AccentColor") -> int:
+        """Return the index of the given AccentColor"""
+        return list(cls).index(accent_color)
 
 
 class Theme:
@@ -24,6 +47,8 @@ class Theme:
     """
 
     def __init__(self, name_or_path: str) -> None:
+        self.accent_color: AccentColor = AccentColor.BLUE
+
         if "/" in name_or_path:
             self._path = pathlib.Path(name_or_path)
             self._name = self._path.name
@@ -59,6 +84,9 @@ class Theme:
         """Set the theme as the GNOME Shell theme"""
         settings = gir.Gio.Settings(schema=THEME_GSETTINGS_SCHEMA)
         settings.set_string(THEME_GSETTINGS_NAME, self.name)
+
+        settings = gir.Gio.Settings(schema=ACCENT_COLOR_SCHEMA)
+        settings.set_enum(ACCENT_COLOR_NAME, AccentColor.index(self.accent_color))
 
     def delete(self) -> None:
         """Delete the theme from the filesystem"""
@@ -106,6 +134,9 @@ class Theme:
 
         new_css = replace_string(orig_css, colormap)
         new_theme.gnome_shell_css_path.write_text(new_css, encoding="utf-8")
+
+        closest_color = theme_color.closest([c.value for c in AccentColor])
+        new_theme.accent_color = AccentColor(closest_color)
 
         return new_theme
 

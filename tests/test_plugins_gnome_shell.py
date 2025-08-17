@@ -84,9 +84,13 @@ class ThemeTests(TestCase):
         with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
             theme.set()
 
-        gio.Settings.assert_called_once_with(schema=gnome_shell.THEME_GSETTINGS_SCHEMA)
-        settings = gio.Settings.return_value
-        settings.set_string.assert_called_once_with("name", "testtheme")
+        calls = [
+            mock.call(schema=gnome_shell.THEME_GSETTINGS_SCHEMA),
+            mock.call().set_string("name", "testtheme"),
+            mock.call(schema=gnome_shell.ACCENT_COLOR_SCHEMA),
+            mock.call().set_enum(gnome_shell.ACCENT_COLOR_NAME, 0),
+        ]
+        gio.Settings.assert_has_calls(calls)
 
     @mock.patch.object(GIRepository, "Gio", create=True)
     def test_delete(self, gio, fixtures: Fixtures) -> None:
