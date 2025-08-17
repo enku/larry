@@ -123,9 +123,8 @@ class Theme:
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """Plugin runner"""
     current_theme = Theme.current()
-    new_theme = Theme.from_template(
-        str(pathlib.Path(config["template"]).expanduser()), colors
-    )
+    template_path = str(pathlib.Path(config["template"]).expanduser())
+    new_theme = Theme.from_template(template_path, colors)
 
     new_theme.set()
 
