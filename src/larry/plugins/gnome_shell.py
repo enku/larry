@@ -122,7 +122,7 @@ class Theme:
     def from_template(cls, template: str, colors: ColorList) -> t.Self:
         """Create new gnome-shell theme base on the given template"""
         theme_template = cls(template)
-        theme_color = next(Color.generate_from(colors, 1, randomize=False))
+        theme_color = Color.dominant(colors, 1, randomize=False)[0]
 
         new_theme = theme_template.copy()
         orig_css = theme_template.gnome_shell_css_path.read_text(encoding="utf-8")

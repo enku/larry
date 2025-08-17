@@ -70,7 +70,7 @@ class ThemeTests(TestCase):
         theme_colors = [Color(s) for s in COLORS_RE.findall(css)]
 
         expected = lib.make_colors(
-            "#4a3441 #33242d #943972 #6c0044 #943972 #6c0044 #33242d"
+            "#34424a #242d33 #397494 #00466c #397494 #00466c #242d33"
         )
         self.assertEqual(theme_colors, expected)
 
