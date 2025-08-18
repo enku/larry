@@ -133,6 +133,7 @@ class Theme:
         }
 
         new_css = replace_string(orig_css, colormap)
+        new_css = new_css.replace("-st-accent-color", str(theme_color))
         new_theme.gnome_shell_css_path.write_text(new_css, encoding="utf-8")
 
         closest_color = theme_color.closest([c.value for c in AccentColor])
