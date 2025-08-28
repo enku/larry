@@ -13,6 +13,10 @@ from larry.filters.random import cfilter as random_filter
 
 from . import lib
 
+ORIG_COLORS = lib.make_colors(
+    "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+)
+
 
 class FilterTestCase(TestCase):
     entry_point: str
@@ -80,10 +84,7 @@ class LuminocityTests(FilterTestCase):
 
     @mock.patch("larry.color.random", random.Random(1))
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = lib.make_colors(
             "#51269a #20887c #82683a #22b00a #91a101 #c97867 #49e315 #adcc3f"
@@ -95,10 +96,7 @@ class InverseTests(FilterTestCase):
     entry_point = "inverse"
 
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = lib.make_colors(
             "#81ee70 #8ab038 #7ca28a #7f86cf #688d15 #606cb4 #c617dd #ca2016"
@@ -112,10 +110,7 @@ class GradientTests(FilterTestCase):
     @mock.patch("larry.color.random", random.Random(1))
     def test(self):
         config = lib.make_config("gradient")
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#51269a #4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce"
@@ -126,10 +121,7 @@ class GradientTests(FilterTestCase):
     @mock.patch("larry.utils.random", random.Random(12345))
     def test_with_fuzz(self):
         config = lib.make_config("gradient", fuzz=60)
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#8b41ff #7c4eef #6e5bdf #5f69cf #5176bf #4284af #34919f #269f90"
@@ -139,7 +131,7 @@ class GradientTests(FilterTestCase):
     @mock.patch("larry.color.random", random.Random(1))
     def test_with_1_input_color(self) -> None:
         config = lib.make_config("gradient")
-        orig_colors = lib.make_colors("#7e118f")
+        orig_colors = [ORIG_COLORS[0]]
         colors = self.filter(orig_colors, config)
 
         expected = lib.make_colors("#51269a #14544c")
@@ -153,10 +145,7 @@ class ZipgradientTests(FilterTestCase):
     @mock.patch("larry.color.random", random.Random(1))
     def test(self):
         config = lib.make_config("zipgradient")
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#44559d #3785a0 #2bb5a4 #62b18c #9aad74 #d2a95d #9dc543 #68e229"
@@ -166,10 +155,7 @@ class ZipgradientTests(FilterTestCase):
     @mock.patch("larry.color.random", random.Random(1))
     def test_with_colors_option(self):
         config = lib.make_config("zipgradient", colors=1)
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce #4cdabd"
@@ -178,12 +164,9 @@ class ZipgradientTests(FilterTestCase):
 
     def test_when_not_enough_steps(self):
         config = lib.make_config("zipgradient", colors=9)
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
-        self.assertEqual(colors, orig_colors)
+        self.assertEqual(colors, ORIG_COLORS)
 
 
 class ShuffleTests(FilterTestCase):
@@ -191,10 +174,7 @@ class ShuffleTests(FilterTestCase):
 
     @mock.patch("larry.filters.shuffle.random", random.Random(1))
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = lib.make_colors(
             "#108f7e #c7754f #83755c #803078 #72ea97 #4b9f92 #3822e8 #df34e9"
@@ -207,10 +187,7 @@ class ShiftTests(FilterTestCase):
     entry_point = "shift"
 
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = lib.make_colors(
             "#754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9 #7e118f"
@@ -218,7 +195,7 @@ class ShiftTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
     def test_shift_single_item(self):
-        orig_colors = lib.make_colors("#7e118f")
+        orig_colors = [ORIG_COLORS[0]]
         self.assertEqual(self.filter(orig_colors, None), orig_colors)
 
 
@@ -226,10 +203,7 @@ class PastelizeTests(FilterTestCase):
     entry_point = "pastelize"
 
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
-        colors = self.filter(orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = lib.make_colors(
             "#ed7fff #a77fff #ff7fd0 #fff37f #a67fff #ffec7f #8eff7f #7ff7ff"
@@ -241,11 +215,8 @@ class SoftenTests(FilterTestCase):
     entry_point = "soften"
 
     def test(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
         config = lib.make_config("soften")
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#bb6fc6 #b49ee3 #c1a5b6 #bfba83 #c9b5f4 #cfc798 #97f38b #95eef4"
@@ -253,11 +224,8 @@ class SoftenTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
     def test_with_softness(self):
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
         config = lib.make_config("soften", softness="0.7")
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#d5a2dd #d0c3ee #d9c6d2 #d8d5b0 #ded2f8 #e2ddbe #bff8b8 #bef5f8"
@@ -267,14 +235,11 @@ class SoftenTests(FilterTestCase):
 
 class BrightenTests(FilterTestCase):
     entry_point = "brighten"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
         config = lib.make_config("brighten")
 
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         # Kind of strange that brighten darkens by default
         expected = "#650e72 #5e3f9f #694a5e #666126 #795bbb #7f763c #2eba1b #2ab2ba"
@@ -283,7 +248,7 @@ class BrightenTests(FilterTestCase):
     def test_with_percent_option(self):
         config = lib.make_config("brighten", percent=40)
 
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#b018c8 #a46fff #b782a4 #b3a943 #d3a0ff #dfce69 #50ff30 #4affff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -291,20 +256,17 @@ class BrightenTests(FilterTestCase):
 
 class SubtractTests(FilterTestCase):
     entry_point = "subtract"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     @mock.patch("larry.filters.subtract.random", random.Random(1))
     def test(self):
-        colors = self.filter(self.orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = "#7e8f11 #75c74f #83755d #803079 #97ea72 #9f4b93 #3922e8 #35e9df"
         self.assertEqual(colors, lib.make_colors(expected))
 
     @mock.patch("larry.filters.subtract.random", random.Random(12))
     def test2(self):
-        colors = self.filter(self.orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = "#b3fff0 #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -313,12 +275,9 @@ class SubtractTests(FilterTestCase):
 @mock.patch("larry.filters.randbright.random", random.Random(1))
 class RandbrightTests(FilterTestCase):
     entry_point = "randbright"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
-        colors = self.filter(self.orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = "#861298 #24183d #9f718e #433f19 #ffd1ff #ffec79 #57ff34 #3bfaff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -326,12 +285,9 @@ class RandbrightTests(FilterTestCase):
 
 class ContrastTests(FilterTestCase):
     entry_point = "contrast"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
-        colors = self.filter(self.orig_colors, None)
+        colors = self.filter(ORIG_COLORS, None)
 
         expected = "#000000 #24183d #4e3746 #6a6528 #8c69d8 #b1a454 #45ff29 #44ffff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -340,14 +296,11 @@ class ContrastTests(FilterTestCase):
 @mock.patch("larry.color.random", random.Random(1))
 class SwapTests(FilterTestCase):
     entry_point = "swap"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
         config = lib.make_config("swap")
 
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#666666 #000000 #254351 #1c343f #7c8e96 #a7b3b9 #d3d9dc #ffffff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -355,7 +308,7 @@ class SwapTests(FilterTestCase):
     def test_with_source_image(self):
         config = lib.make_config("swap", source=DEFAULT_INPUT_PATH)
 
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#666666 #1c343f #000000 #254351 #7c8e96 #a7b3b9 #d3d9dc #ffffff"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -363,32 +316,26 @@ class SwapTests(FilterTestCase):
 
 class NoneTests(FilterTestCase):
     entry_point = "none"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
         config = lib.make_config("whatever")
 
-        self.assertEqual(self.filter(self.orig_colors, config), self.orig_colors)
+        self.assertEqual(self.filter(ORIG_COLORS, config), ORIG_COLORS)
 
 
 class VGATests(FilterTestCase):
     entry_point = "vga"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
         config = lib.make_config("vga")
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#600080 #6040c0 #804060 #806020 #8060e0 #808040 #20e020 #20c0e0"
         self.assertEqual(colors, lib.make_colors(expected))
 
     def test_with_bits_option(self):
         config = lib.make_config("vga", bits=4)
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#400080 #4040c0 #804040 #804000 #8040c0 #808040 #00c000 #00c0c0"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -396,27 +343,24 @@ class VGATests(FilterTestCase):
 
 class GrayscaleTests(FilterTestCase):
     entry_point = "grayscale"
-    orig_colors = lib.make_colors(
-        "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-    )
 
     def test(self):
         config = lib.make_config("grayscale")
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#8f8f8f #c7c7c7 #838383 #808080 #eaeaea #9f9f9f #e8e8e8 #e9e9e9"
         self.assertEqual(colors, lib.make_colors(expected))
 
     def test_with_saturation_setting(self):
         config = lib.make_config("grayscale", saturation=30)
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#89648f #9e8bc7 #835b74 #807c59 #b9a3ea #9f986f #aae8a2 #a3e5e9"
         self.assertEqual(colors, lib.make_colors(expected))
 
     def test_with_saturation_setting_above_100(self):
         config = lib.make_config("grayscale", saturation=130)
-        colors = self.filter(self.orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = "#75008f #1600c7 #830044 #807100 #1700ea #9f8100 #00e800 #00d8e9"
         self.assertEqual(colors, lib.make_colors(expected))
@@ -578,11 +522,8 @@ class ChromeFocusTests(FilterTestCase):
 
     def test(self):
         config = lib.make_config("larry")
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
 
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
             "#8f8f8f #754fc7 #838383 #808080 #9772ea #9f9f9f #e8e8e8 #e9e9e9"
@@ -591,10 +532,7 @@ class ChromeFocusTests(FilterTestCase):
 
     def test_with_0_range(self):
         config = lib.make_config("chromefocus", range="0")
-        orig_colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
 
-        colors = self.filter(orig_colors, config)
+        colors = self.filter(ORIG_COLORS, config)
 
-        self.assertEqual(colors, orig_colors)
+        self.assertEqual(colors, ORIG_COLORS)
