@@ -44,6 +44,8 @@ class BadColorSpecError(ValueError):
 class Color(namedtuple("Color", ["red", "green", "blue"])):
     """tuple-like color class"""
 
+    # pylint: disable=too-many-public-methods
+
     __slots__ = ()
 
     def __new__(cls, *colorspec) -> Color:
