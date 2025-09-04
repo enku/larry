@@ -10,9 +10,7 @@ def read_file(filename: str) -> bytes:
     If filename starts with "!" then treat the rest as a shell command, run it in a
     shell and return it's standout output
     """
-    pipe_exec = filename.startswith("!")
-
-    if pipe_exec:
+    if filename.startswith("!"):
         command = filename[1:]
         with sp.Popen(command, shell=True, stdout=sp.PIPE) as popen:
             assert popen.stdout
@@ -32,9 +30,7 @@ def write_file(filename: str, data: bytes) -> int:
     Returns bytes written if it is a regular filename else returns the status code of
     the shell command.
     """
-    pipe_exec = filename.startswith("!")
-
-    if pipe_exec:
+    if filename.startswith("!"):
         command = filename[1:]
         with sp.Popen(command, shell=True, stdin=sp.PIPE) as popen:
             assert popen.stdin
