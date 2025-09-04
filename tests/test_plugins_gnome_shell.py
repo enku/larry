@@ -12,6 +12,10 @@ from larry.plugins import GIRepository, gnome_shell
 
 from . import lib
 
+COLORS = lib.make_colors(
+    "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
+)
+
 
 @given(lib.tmpdir)
 class ThemeTests(TestCase):
@@ -56,13 +60,10 @@ class ThemeTests(TestCase):
         template_path = f"{fixtures.tmpdir}/.themes/template"
         os.makedirs(template_path)
         create_theme(Path(template_path, "gnome-shell"))
-        colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
         expanduser = mock_expanduser(fixtures.tmpdir)
 
         with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
-            theme = gnome_shell.Theme.from_template(template_path, colors)
+            theme = gnome_shell.Theme.from_template(template_path, COLORS)
 
         self.assertTrue(theme.path.exists())
 
@@ -130,18 +131,15 @@ class PluginTests(TestCase):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_shell")
         configmaker.add_config(template="test-template")
-        colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
         gnome_shell_config = configmaker.config["plugins:gnome_shell"]
 
         current_theme = mock.Mock()
         current_theme.name = "larry-test"
         theme_cls.current.return_value = current_theme
-        gnome_shell.plugin(colors, gnome_shell_config)
+        gnome_shell.plugin(COLORS, gnome_shell_config)
 
         theme_cls.current.assert_called_once_with()
-        theme_cls.from_template.assert_called_once_with("test-template", colors)
+        theme_cls.from_template.assert_called_once_with("test-template", COLORS)
         theme = theme_cls.from_template.return_value
         theme.set.assert_called_once_with()
         current_theme.delete.assert_called_once_with()
@@ -152,15 +150,12 @@ class PluginTests(TestCase):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_shell")
         configmaker.add_config(template="test-template")
-        colors = lib.make_colors(
-            "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
-        )
         gnome_shell_config = configmaker.config["plugins:gnome_shell"]
 
         current_theme = mock.Mock()
         current_theme.name = "Adwaita"
         theme_cls.current.return_value = current_theme
-        gnome_shell.plugin(colors, gnome_shell_config)
+        gnome_shell.plugin(COLORS, gnome_shell_config)
 
         current_theme.delete.assert_not_called()
 
