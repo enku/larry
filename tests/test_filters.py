@@ -4,7 +4,7 @@ import random
 from inspect import signature
 from unittest import TestCase, mock
 
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, params
 
 from larry import filters
 from larry.color import Color
@@ -16,6 +16,8 @@ from . import lib
 ORIG_COLORS = lib.make_colors(
     "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
 )
+
+FILTER_LIST = [ep.name for ep in importlib.metadata.entry_points(group="larry.filters")]
 
 
 class FilterTestCase(TestCase):
@@ -75,8 +77,8 @@ class FiltersListTests(TestCase):
 
     def assert_is_filter_func(self, func):
         sig = signature(func)
-        params = sig.parameters
-        self.assertEqual(len(params), 2)
+        parameters = sig.parameters
+        self.assertEqual(len(parameters), 2)
 
 
 class LuminocityTests(FilterTestCase):
@@ -536,3 +538,12 @@ class ChromeFocusTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         self.assertEqual(colors, ORIG_COLORS)
+
+
+@params(filter_name=FILTER_LIST)
+class AllFiltersTests(TestCase):
+    def test_apply_filter(self, fixtures: Fixtures) -> None:
+        cfilter = filters.load_filter(fixtures.filter_name)
+        config = lib.make_config("larry")
+
+        cfilter(ORIG_COLORS, config)

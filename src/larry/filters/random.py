@@ -24,16 +24,15 @@ def cfilter(
     if not filter_names:
         return orig_colors
 
-    chains = config["filters:random"].getint("chains", fallback=1)
+    chains = config.getint("filters:random", "chains", fallback=1)
 
     new_colors = orig_colors
     iters = random.randint(1, chains)
 
-    num_colors = len(orig_colors)
     for _ in range(iters):
         filter_name = random.choice(filter_names)
         filter_ = load_filter(filter_name)
         LOGGER.debug("random: running filter: %s", filter_name)
-        new_colors = filter_(new_colors, num_colors, config)
+        new_colors = filter_(new_colors, config)
 
     return new_colors

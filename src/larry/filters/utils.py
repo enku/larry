@@ -55,7 +55,7 @@ def get_opacity(config: ConfigParser, section: str, name: str = "opacity") -> fl
 
     If the opacity value is not valid, raise FilterError.
     """
-    opacity = config[f"filters:{section}"].getfloat(name, fallback=1.0)
+    opacity = config.getfloat(f"filters:{section}", name, fallback=1.0)
 
     if not 0 <= opacity <= 1:
         raise FilterError(f"'opacity' must be in range [0..1]. Actual {opacity}")
@@ -64,16 +64,31 @@ def get_opacity(config: ConfigParser, section: str, name: str = "opacity") -> fl
 
 
 def new_image_colors(
-    count: int, config: ConfigParser, section: str, name: str = "image"
+    orig_colors: ColorList,
+    config: ConfigParser,
+    section: str,
+    name: str = "image",
+    count: int | None = None,
 ) -> ColorList:
     """Return count colors from the image specified in config
 
     If the image has fewer colors than requested, the colors are cycled.
+
+    The default count is the number of colors in the original list.
+
+    If the no image file is given in the config, colors are selected from the original
+    list.
     """
-    image_colors = list(
-        make_image_from_bytes(read_file(config[f"filters:{section}"].get(name))).colors
-    )
-    if config[f"filters:{section}"].getboolean("shuffle", fallback=False):
+    if count is None:
+        count = len(orig_colors)
+
+    section = f"filters:{section}"
+    image_colors = list(orig_colors)
+
+    if filename := config.get(section, name, fallback=""):
+        image_colors = list(make_image_from_bytes(read_file(filename)).colors)
+
+    if config.getboolean(section, "shuffle", fallback=False):
         random.shuffle(image_colors)
     replacer_colors_cycle = cycle(image_colors)
 

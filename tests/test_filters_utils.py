@@ -7,17 +7,20 @@ from copy import deepcopy
 from unittest import TestCase, mock
 
 from larry import filters
+from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
 from larry.filters import utils
 
 from .lib import make_colors, make_config
+
+COLORS = [Color() for _ in range(6)]
 
 
 class NewImageColorsTests(TestCase):
     config = make_config("test", image=DEFAULT_INPUT_PATH)
 
     def test(self):
-        colors = utils.new_image_colors(6, self.config, "test")
+        colors = utils.new_image_colors(COLORS, self.config, "test")
 
         expected = make_colors("#000000 #1c343f #ffffff #666666 #254351 #7c8e96")
         self.assertEqual(colors, expected)
@@ -27,13 +30,13 @@ class NewImageColorsTests(TestCase):
         config = deepcopy(self.config)
         config["filters:test"]["shuffle"] = "1"
 
-        colors = utils.new_image_colors(6, config, "test")
+        colors = utils.new_image_colors(COLORS, config, "test")
 
         expected = make_colors("#ffffff #666666 #7c8e96 #000000 #254351 #1c343f")
         self.assertEqual(colors, expected)
 
     def test_with_more_colors_than_source_image_cycle(self):
-        colors = utils.new_image_colors(8, self.config, "test")
+        colors = utils.new_image_colors(COLORS, self.config, "test", count=8)
 
         expected = make_colors(
             "#000000 #1c343f #ffffff #666666 #254351 #7c8e96 #000000 #1c343f"

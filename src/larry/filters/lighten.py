@@ -10,7 +10,7 @@ from .utils import get_opacity, new_image_colors
 
 def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
     """Lighten colors with the lightest of two colors"""
-    aux_colors = new_image_colors(len(orig_colors), config, "lighten")
+    aux_colors = new_image_colors(orig_colors, config, "lighten")
     opacity = get_opacity(config, "lighten")
 
     return [
