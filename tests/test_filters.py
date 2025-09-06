@@ -582,6 +582,20 @@ class ColorBalanceTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class NeonizeTests(FilterTestCase):
+    entry_point = "neonize"
+
+    def test(self):
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#dc00ff #5000ff #ff00a1 #ffe800 #4e00ff #ffda00 #1dff00 #00f0ff"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
