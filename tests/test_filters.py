@@ -554,6 +554,20 @@ class VibranceTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class HueShiftTests(FilterTestCase):
+    entry_point = "hueshift"
+
+    def test(self):
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#10608f #4fc7b1 #5c6283 #80305f #72ead3 #9f4b80 #e86e22 #85e934"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
