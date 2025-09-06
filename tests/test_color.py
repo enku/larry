@@ -1,6 +1,7 @@
 # pylint: disable=missing-docstring,duplicate-code,unused-argument
 from unittest import TestCase
 
+import numpy as np
 from unittest_fixtures import Fixtures, given
 
 from larry import color
@@ -663,3 +664,21 @@ class ClosestTests(TestCase):
 
     def closest(self, c: str) -> Color:
         return Color(c).closest(self.colors)
+
+
+class ToArrayTests(TestCase):
+    def test(self) -> None:
+        c = Color("#7e118f")
+
+        array = c.to_array()
+
+        self.assertTrue(np.array_equal(array, np.array([126, 17, 143])), array)
+
+
+class FromArrayTests(TestCase):
+    def test(self) -> None:
+        array = np.array([126, 17, 143])
+
+        c = Color.from_array(array)
+
+        self.assertEqual(c, Color("#7e118f"))

@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from math import floor, sqrt
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.cluster import KMeans
 
 from larry import utils
@@ -19,6 +21,7 @@ ColorFloatType = TypeVar(  #  pylint: disable=invalid-name
 ColorTuple = tuple[int, int, int]
 ColorSpecStringParser: TypeAlias = Callable[[str], ColorTuple]
 ColorSpecType: TypeAlias = Union[str, "Color", ColorTuple]
+ColorArray: TypeAlias = NDArray[np.int8]
 
 _COMPS = (">", "<", "=")
 
@@ -500,6 +503,15 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def closest(self, colors: ColorList) -> Color:
         """Return the closest color given the list of colors"""
         return min(colors, key=self.distance)
+
+    def to_array(self) -> ColorArray:
+        """Convert the color into a numpy array"""
+        return np.array(self)
+
+    @classmethod
+    def from_array(cls, array: ColorArray) -> Color:
+        """Initialize Color from a numpy array"""
+        return cls(int(array[0]), int(array[1]), int(array[2]))
 
 
 ColorList: TypeAlias = list[Color]
