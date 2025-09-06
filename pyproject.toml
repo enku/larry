@@ -61,6 +61,7 @@ soften = "larry.filters.soften:cfilter"
 subgradient = "larry.filters.subgradient:cfilter"
 subtract = "larry.filters.subtract:cfilter"
 swap = "larry.filters.swap:cfilter"
+vibrance = "larry.filters.vibrance:cfilter"
 vga = "larry.filters.vga:cfilter"
 zipgradient = "larry.filters.zipgradient:cfilter"
 

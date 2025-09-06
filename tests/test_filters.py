@@ -540,6 +540,20 @@ class ChromeFocusTests(FilterTestCase):
         self.assertEqual(colors, ORIG_COLORS)
 
 
+class VibranceTests(FilterTestCase):
+    entry_point = "vibrance"
+
+    def test(self):
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#7e118f #744dc7 #835471 #80782f #936cea #9f9247 #39e822 #35dfe9"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
