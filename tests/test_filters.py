@@ -568,6 +568,20 @@ class HueShiftTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class ColorBalanceTests(FilterTestCase):
+    entry_point = "colorbalance"
+
+    def test(self):
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#78488b #7467a7 #7b6e7e #797c5b #8579b8 #898969 #56b454 #54afb8"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:

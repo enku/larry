@@ -41,6 +41,7 @@ vim = "larry.plugins.vim:plugin"
 [project.entry-points."larry.filters"]
 brighten = "larry.filters.brighten:cfilter"
 chromefocus = "larry.filters.chromefocus:cfilter"
+colorbalance = "larry.filters.colorbalance:cfilter"
 colorify = "larry.filters.colorify:cfilter"
 contrast = "larry.filters.contrast:cfilter"
 darken = "larry.filters.darken:cfilter"
@@ -62,8 +63,8 @@ soften = "larry.filters.soften:cfilter"
 subgradient = "larry.filters.subgradient:cfilter"
 subtract = "larry.filters.subtract:cfilter"
 swap = "larry.filters.swap:cfilter"
-vibrance = "larry.filters.vibrance:cfilter"
 vga = "larry.filters.vga:cfilter"
+vibrance = "larry.filters.vibrance:cfilter"
 zipgradient = "larry.filters.zipgradient:cfilter"
 
 [build-system]
