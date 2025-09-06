@@ -628,6 +628,20 @@ class KaleidoscopeTests(FilterTestCase):
         self.assertEqual(filtered, expected)
 
 
+class SepiaTests(FilterTestCase):
+    entry_point = "sepia"
+
+    def test(self) -> None:
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#564730 #837e4d #827e44 #84873f #aca863 #a5a851 #a9c756 #c8e179"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
