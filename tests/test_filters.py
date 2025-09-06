@@ -596,6 +596,38 @@ class NeonizeTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class KaleidoscopeTests(FilterTestCase):
+    entry_point = "kaleidoscope"
+
+    def test(self):
+        config = lib.make_config("larry")
+        colors = lib.make_colors(
+            "#dc00ff #5000ff #ff00a1 #ffe800 #4e00ff #ffda00 #1dff00 #00f0ff"
+        )
+        expected = lib.make_colors(
+            "#dc00ff #00f0ff #4e00ff #ffe800 #ffe800 #4e00ff #00f0ff #dc00ff"
+        )
+
+        filtered = self.filter(colors, config)
+
+        self.assertEqual(len(filtered), len(colors))
+        self.assertEqual(filtered, expected)
+
+    def test_odd_number_length(self):
+        config = lib.make_config("larry")
+        colors = lib.make_colors(
+            "#dc00ff #5000ff #ff00a1 #ffe800 #4e00ff #ffda00 #1dff00"
+        )
+        expected = lib.make_colors(
+            "#dc00ff #1dff00 #4e00ff #ff00a1 #4e00ff #1dff00 #dc00ff"
+        )
+
+        filtered = self.filter(colors, config)
+
+        self.assertEqual(len(filtered), len(colors))
+        self.assertEqual(filtered, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
