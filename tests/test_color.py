@@ -636,7 +636,7 @@ class IntensifyTests(TestCase):
     def test(self) -> None:
         c = Color("#bf86bf")
 
-        self.assertEqual(Color("#bf5ebf"), c.intensify(0.7))
+        self.assertEqual(Color("#bf5fbf"), c.intensify(0.7))
 
     def test_zero(self) -> None:
         c = Color("#bf86bf")
