@@ -648,4 +648,10 @@ class AllFiltersTests(TestCase):
         cfilter = filters.load_filter(fixtures.filter_name)
         config = lib.make_config("larry")
 
-        cfilter(ORIG_COLORS, config)
+        result = cfilter(ORIG_COLORS, config)
+
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), len(ORIG_COLORS))
+
+        for item in result:
+            self.assertIsInstance(item, Color)
