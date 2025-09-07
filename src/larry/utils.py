@@ -8,12 +8,12 @@ def between(value, min_value, max_value) -> bool:
     return min_value <= value <= max_value
 
 
-def clip(value, *, minimum=0, maximum=255):
+def clip(value: int | float, *, minimum: int = 0, maximum: int = 255) -> int:
     """Return value that is no larger than maximum and no smaller than minimum"""
     value = min(value, maximum)
     value = max(value, minimum)
 
-    return value
+    return int(value)
 
 
 def parse_range(string: str) -> tuple[int, int] | tuple[float, float]:
