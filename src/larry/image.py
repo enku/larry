@@ -5,6 +5,7 @@ from __future__ import annotations
 from io import BytesIO
 from typing import Iterable, Protocol, Type
 
+import numpy as np
 from PIL import Image as PillowImage
 
 from larry.color import COLORS_RE, Color, replace_string
@@ -86,13 +87,13 @@ class RasterImage:
     @property
     def colors(self) -> set[Color]:
         """Return the Colors of this Image"""
-        width, height = self.image.size
+        array = np.array(self.image)[:, :, :3]
 
-        pixels = {
-            self.image.getpixel((x, y))[:3] for y in range(height) for x in range(width)
+        return {
+            Color.from_array(array[i, j])
+            for i in range(array.shape[0])
+            for j in range(array.shape[1])
         }
-
-        return {Color(*i) for i in pixels}
 
     def replace(
         self, orig_colors: Iterable[Color], new_colors: Iterable[Color]
