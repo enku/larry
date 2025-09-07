@@ -13,7 +13,7 @@ def clip(value, *, minimum=0, maximum=255):
     value = min(value, maximum)
     value = max(value, minimum)
 
-    return int(value)
+    return value
 
 
 def parse_range(string: str) -> tuple[int, int] | tuple[float, float]:
