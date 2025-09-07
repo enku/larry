@@ -2,6 +2,7 @@
 
 from configparser import ConfigParser
 from dataclasses import dataclass
+from functools import partial
 
 from larry.color import Color, ColorList
 from larry.utils import clip
@@ -50,14 +51,16 @@ def sepia(color: Color, rc: Channel, gc: Channel, bc: Channel) -> Color:
 
     Given the channel coefficients
     """
+    ic = partial(lambda x: int(clip(x)))  # sneaking around pylint
+
     return Color(
-        clip(rc.base * color.red + rc.multiplier * color.green + bc.base * color.blue),
-        clip(
+        ic(rc.base * color.red + rc.multiplier * color.green + bc.base * color.blue),
+        ic(
             rc.adjustment * color.red
             + gc.base * color.green
             + bc.multiplier * color.blue
         ),
-        clip(
+        ic(
             bc.adjustment * color.red
             + gc.multiplier * color.green
             + bc.base * color.blue
