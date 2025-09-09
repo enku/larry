@@ -27,9 +27,7 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
         start(config)
 
     conversions = config.get("colors", "")
-    new_colors = get_new_colors(
-        conversions, colors, soften=config.getboolean("soften", fallback=False)
-    )
+    new_colors = get_new_colors(conversions, colors, config)
     VimProtocol.run(new_colors, config)
 
 
@@ -47,11 +45,12 @@ def start(config: ConfigType) -> None:
 
 
 def get_new_colors(
-    config: str, from_colors: ColorList, soften=False
+    conversions: str, from_colors: ColorList, config: ConfigType
 ) -> List[Tuple[str, str]]:
-    """Given the config and colors, return the vim colorscheme"""
+    """Given the conversions and colors, return the vim colorscheme"""
+    soften = config.getboolean("soften", fallback=False)
     bg_color = from_colors[0]
-    vim_configs = [*process_config(config)]
+    vim_configs = [*process_config(conversions)]
     targets = Color.generate_from(list(from_colors), len(vim_configs))
     to_colors: List[Tuple[str, str]] = []
 

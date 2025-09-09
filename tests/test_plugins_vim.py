@@ -1,5 +1,4 @@
 # pylint: disable=missing-docstring
-import random
 from unittest import TestCase, mock
 
 from unittest_fixtures import Fixtures, given
@@ -68,24 +67,35 @@ class StartTests(TestCase):
         loop.create_task.assert_called_once_with(server)
 
 
-@mock.patch("larry.color.random", random.Random(1))
+@given(lib.configmaker, lib.random)
 class GetNewColorsTests(TestCase):
-    def test(self):
-        new_colors = vim.get_new_colors(COLOR_STR, COLORS)
+    def test(self, fixtures: Fixtures):
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:vim")
+
+        new_colors = vim.get_new_colors(
+            COLOR_STR, COLORS, configmaker.config["plugins:vim"]
+        )
 
         self.assertEqual(new_colors, CONVERSION)
 
-    def test_with_soften(self):
-        new_colors = vim.get_new_colors(COLOR_STR, COLORS, soften=True)
+    def test_with_soften(self, fixtures: Fixtures):
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:vim")
+        configmaker.add_config(soften="true")
+
+        new_colors = vim.get_new_colors(
+            COLOR_STR, COLORS, configmaker.config["plugins:vim"]
+        )
 
         expected = [
             ("ALEErrorSign", "guibg=#9658a0"),
             ("ALEWarningSign", "guibg=#9658a0"),
             ("ColorColumn", "guibg=#9658a0"),
-            ("ColorColumn", "guifg=#a2b7b9"),
+            ("ColorColumn", "guifg=#b9a2b0"),
             ("CommandTSelection", "guibg=#e19deb"),
-            ("Comment", "guifg=#ffec7f"),
-            ("Constant", "guifg=#ccc688"),
+            ("Comment", "guifg=#a67fff"),
+            ("Constant", "guifg=#c288cc"),
         ]
         self.assertEqual(new_colors, expected)
 
