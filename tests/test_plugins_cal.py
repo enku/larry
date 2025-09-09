@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring,unused-argument
 import io
+from configparser import ConfigParser
 from unittest import TestCase, mock
 
 from unittest_fixtures import Fixtures, given
@@ -18,8 +19,11 @@ class CalTests(TestCase):
         colors = lib.make_colors(
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
+        config = ConfigParser()
+        config.add_section("plugins:cal")
+        config.set("plugins:cal", "filter", "pastelize")
 
-        cal.plugin(colors, None)
+        cal.plugin(colors, config["plugins:cal"])
 
         expected = """\
 today 38;1;255;127;208
