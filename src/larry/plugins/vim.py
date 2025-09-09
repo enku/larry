@@ -52,20 +52,22 @@ def get_new_colors(
     bg_color = from_colors[0]
     vim_configs = [*process_config(conversions)]
     targets = Color.generate_from(list(from_colors), len(vim_configs))
-    to_colors: List[Tuple[str, str]] = []
+    to_colors = apply_plugin_filter(
+        [
+            vim_config.color.colorify(target if vim_config.key == "fg" else bg_color)
+            for vim_config, target in zip(vim_configs, targets)
+        ],
+        config,
+    )
+    vim_colors: List[Tuple[str, str]] = []
 
-    for vim_config in vim_configs:
-        target = next(targets) if vim_config.key == "fg" else bg_color
-        to_color = vim_config.color.colorify(target)
-        to_color = apply_plugin_filter([to_color], config)[0]
-
+    for vim_config, color in zip(vim_configs, to_colors):
         key = f"gui{vim_config.key}"
+        vim_colors.append((vim_config.name, f"{key}={color}"))
 
-        to_colors.append((vim_config.name, f"{key}={to_color}"))
+    LOGGER.debug("vim colors: %s", vim_colors)
 
-    LOGGER.debug("vim colors: %s", to_colors)
-
-    return to_colors
+    return vim_colors
 
 
 def process_config(config: str) -> Iterator[HighlightGroup]:

@@ -26,10 +26,10 @@ CONVERSION = [
     ("ALEErrorSign", "guibg=#3a0742"),
     ("ALEWarningSign", "guibg=#3a0742"),
     ("ColorColumn", "guibg=#3a0742"),
-    ("ColorColumn", "guifg=#745769"),
+    ("ColorColumn", "guifg=#577274"),
     ("CommandTSelection", "guibg=#c549d9"),
-    ("Comment", "guifg=#4e00ff"),
-    ("Constant", "guifg=#8b3399"),
+    ("Comment", "guifg=#5000ff"),
+    ("Constant", "guifg=#3e9933"),
 ]
 
 
@@ -92,10 +92,10 @@ class GetNewColorsTests(TestCase):
             ("ALEErrorSign", "guibg=#9658a0"),
             ("ALEWarningSign", "guibg=#9658a0"),
             ("ColorColumn", "guibg=#9658a0"),
-            ("ColorColumn", "guifg=#b9a2b0"),
+            ("ColorColumn", "guifg=#a2b7b9"),
             ("CommandTSelection", "guibg=#e19deb"),
-            ("Comment", "guifg=#a67fff"),
-            ("Constant", "guifg=#c288cc"),
+            ("Comment", "guifg=#a77fff"),
+            ("Constant", "guifg=#8fcc88"),
         ]
         self.assertEqual(new_colors, expected)
 
