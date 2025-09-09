@@ -70,20 +70,6 @@ def load(name: str) -> PluginType:
     return PLUGINS[name]
 
 
-def filtered(plugin: PluginType) -> PluginType:
-    """Apply filters to the given plugin"""
-
-    @wraps(plugin)
-    def wrapper(colors: ColorList, config_: ConfigType) -> Any:
-        for filter_name in (config_.get("filter") or "").split():
-            cfilter = load_filter(filter_name)
-            colors = cfilter(colors, make_filter_config(filter_name, config_))
-
-        return plugin(colors, config_)
-
-    return wrapper
-
-
 class GIRepository:  # pylint: disable=too-few-public-methods
     """Proxy for the gobject introspection repository
 
@@ -100,20 +86,6 @@ class GIRepository:  # pylint: disable=too-few-public-methods
 
 
 gir = GIRepository()
-
-
-def make_filter_config(filter_name, plugin_config: ConfigType) -> ConfigParser:
-    """Create a "filter config" for the given filter given plugin options"""
-    config_parser = ConfigParser()
-    config_parser.add_section(f"filters:{filter_name}")
-    filter_config_prefix = f"filters:{filter_name}:"
-    offset = len(filter_config_prefix)
-
-    for key, value in plugin_config.items():
-        if key.startswith(filter_config_prefix):
-            config_parser[f"filters:{filter_name}"][key[offset:]] = value
-
-    return config_parser
 
 
 def apply_plugin_filter(colors: ColorList, plugin_config: ConfigType) -> ColorList:
