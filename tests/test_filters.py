@@ -688,6 +688,20 @@ class TimeOfDayFilterConfigurableDaystart(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class IntensifyFilterTest(FilterTestCase):
+    entry_point = "intensify"
+
+    def test(self) -> None:
+        config = lib.make_config("larry")
+
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#75008f #4c13c7 #834a6e #807508 #6e38ea #9f8d21 #00e800 #00dae9"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
