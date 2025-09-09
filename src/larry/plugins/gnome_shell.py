@@ -9,7 +9,7 @@ from enum import Enum, unique
 
 from larry.color import COLORS_RE, Color, ColorList, replace_string, ungray
 from larry.config import ConfigType
-from larry.plugins import gir
+from larry.plugins import apply_plugin_filter, gir
 
 DEFAULT_GRAY_THRESHOLD = 35
 THEME_GSETTINGS_NAME = "name"
@@ -119,7 +119,9 @@ class Theme:
         return new_theme
 
     @classmethod
-    def from_template(cls, template: str, colors: ColorList) -> t.Self:
+    def from_template(
+        cls, template: str, colors: ColorList, config: ConfigType
+    ) -> t.Self:
         """Create new gnome-shell theme base on the given template"""
         theme_template = cls(template)
         theme_color = Color.dominant(colors, 1, randomize=False)[0]
@@ -127,10 +129,11 @@ class Theme:
         new_theme = theme_template.copy()
         orig_css = theme_template.gnome_shell_css_path.read_text(encoding="utf-8")
         orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
+        new_colors = [ungray([color])[0] for color in orig_colors]
+        new_colors = [color.colorify(theme_color) for color in new_colors]
+        new_colors = apply_plugin_filter(new_colors, config)
 
-        colormap = {
-            color: ungray([color])[0].colorify(theme_color) for color in orig_colors
-        }
+        colormap = dict(zip(orig_colors, new_colors))
 
         new_css = replace_string(orig_css, colormap)
         new_css = new_css.replace("-st-accent-color", str(theme_color))
@@ -156,7 +159,7 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
     """Plugin runner"""
     current_theme = Theme.current()
     template_path = str(pathlib.Path(config["template"]).expanduser())
-    new_theme = Theme.from_template(template_path, colors)
+    new_theme = Theme.from_template(template_path, colors, config)
 
     new_theme.set()
 

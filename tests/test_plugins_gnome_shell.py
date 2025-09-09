@@ -17,7 +17,7 @@ COLORS = lib.make_colors(
 )
 
 
-@given(lib.tmpdir)
+@given(lib.tmpdir, lib.configmaker)
 class ThemeTests(TestCase):
     def test_init_with_name(self, fixtures: Fixtures) -> None:
         name = "testtheme"
@@ -61,9 +61,12 @@ class ThemeTests(TestCase):
         os.makedirs(template_path)
         create_theme(Path(template_path, "gnome-shell"))
         expanduser = mock_expanduser(fixtures.tmpdir)
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:gnome_shell")
+        config = configmaker.config["plugins:gnome_shell"]
 
         with mock.patch.object(os.path, "expanduser", side_effect=expanduser):
-            theme = gnome_shell.Theme.from_template(template_path, COLORS)
+            theme = gnome_shell.Theme.from_template(template_path, COLORS, config)
 
         self.assertTrue(theme.path.exists())
 
@@ -139,7 +142,9 @@ class PluginTests(TestCase):
         gnome_shell.plugin(COLORS, gnome_shell_config)
 
         theme_cls.current.assert_called_once_with()
-        theme_cls.from_template.assert_called_once_with("test-template", COLORS)
+        theme_cls.from_template.assert_called_once_with(
+            "test-template", COLORS, gnome_shell_config
+        )
         theme = theme_cls.from_template.return_value
         theme.set.assert_called_once_with()
         current_theme.delete.assert_called_once_with()
