@@ -7,7 +7,7 @@ from larry.color import DEFAULT_SOFTNESS
 
 
 def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
-    """Pastelize all the original colors"""
+    """Soften all the original colors"""
     softness = config.getfloat("filters:soften", "softness", fallback=DEFAULT_SOFTNESS)
 
     return [orig_color.soften(softness) for orig_color in orig_colors]
