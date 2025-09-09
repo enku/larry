@@ -3,21 +3,30 @@
 import datetime as dt
 import sys
 from configparser import ConfigParser
-from enum import IntEnum, unique
+from enum import StrEnum, auto, unique
+from typing import TypeAlias
 
 from larry.color import Color, ColorList
 
 
 @unique
-class TimeOfDay(IntEnum):
+class TimeOfDay(StrEnum):
     """Different times of day (and what hour they start)"""
 
-    MORNING = 6
-    MIDDAY = 12
-    EVENING = 18
-    NIGHT = 21
+    MORNING = auto()
+    MIDDAY = auto()
+    EVENING = auto()
+    NIGHT = auto()
 
 
+StartTable: TypeAlias = dict[TimeOfDay, int]
+
+DEFAULT_START: StartTable = {
+    TimeOfDay.MORNING: 6,
+    TimeOfDay.MIDDAY: 12,
+    TimeOfDay.EVENING: 18,
+    TimeOfDay.NIGHT: 21,
+}
 DEFAULT_FACTORS = {
     TimeOfDay.MORNING: (0.8, 1.0),
     TimeOfDay.MIDDAY: (1.0, 1.0),
@@ -43,10 +52,13 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
 
 def get_brightness_factor(time: dt.datetime, config: ConfigParser) -> float:
     """Given the time return the factor of the brightness to be used"""
-    time_of_day = get_time_of_day(time)
+    starts = get_start_table(config)
+    time_of_day = get_time_of_day(time, starts)
     next_time_of_day = get_next_time_of_day(time_of_day)
-    percentage = (time.hour - min(time_of_day, next_time_of_day)) / abs(
-        time_of_day - next_time_of_day
+    time_of_day_hour = starts[time_of_day]
+    next_time_of_day_hour = starts[next_time_of_day]
+    percentage = (time.hour - min(time_of_day_hour, next_time_of_day_hour)) / abs(
+        time_of_day_hour - next_time_of_day_hour
     )
     factors = get_factors(config)
     factor_range = factors[time_of_day]
@@ -55,15 +67,15 @@ def get_brightness_factor(time: dt.datetime, config: ConfigParser) -> float:
     return percentage * diff + factor_range[0]
 
 
-def get_time_of_day(time: dt.datetime) -> TimeOfDay:
+def get_time_of_day(time: dt.datetime, starts: StartTable) -> TimeOfDay:
     """Given the time return what TimeOfDay it is"""
     hour = time.hour
 
-    if TimeOfDay.MORNING <= hour < TimeOfDay.MIDDAY:
+    if starts[TimeOfDay.MORNING] <= hour < starts[TimeOfDay.MIDDAY]:
         return TimeOfDay.MORNING
-    if TimeOfDay.MIDDAY <= hour < TimeOfDay.EVENING:
+    if starts[TimeOfDay.MIDDAY] <= hour < starts[TimeOfDay.EVENING]:
         return TimeOfDay.MIDDAY
-    if TimeOfDay.EVENING <= hour < TimeOfDay.NIGHT:
+    if starts[TimeOfDay.EVENING] <= hour < starts[TimeOfDay.NIGHT]:
         return TimeOfDay.EVENING
     return TimeOfDay.NIGHT
 
@@ -95,6 +107,20 @@ def get_factors(config: ConfigParser) -> dict[TimeOfDay, tuple[float, float]]:
                 print(f"Invalid range for {option}: {value!r}", file=sys.stderr)
 
     return factors
+
+
+def get_start_table(config) -> StartTable:
+    """Return a StartTable based on the config using the default DEFAULT_START"""
+    starts = DEFAULT_START.copy()
+    start: int | None
+
+    for timeofday in starts:
+        option = timeofday.lower()
+
+        if start := config.getint("filters:timeofday", option, fallback=None):
+            starts[timeofday] = start
+
+    return starts
 
 
 def parse_range(range_str: str) -> tuple[float, float] | None:

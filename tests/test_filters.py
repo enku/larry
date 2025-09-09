@@ -670,6 +670,24 @@ class TimeOfDayFilters(FilterTestCase):
         )
 
 
+class TimeOfDayFilterConfigurableDaystart(FilterTestCase):
+    entry_point = "timeofday"
+
+    def test(self) -> None:
+        config = lib.make_config("larry")
+        config.add_section("filters:timeofday")
+        config.set("filters:timeofday", "midday", "9")
+
+        with mock.patch("larry.filters.timeofday.now") as now:
+            now.return_value = dt.datetime(2025, 9, 7, 9, 0, 0)
+            colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#7e108f #754fc7 #835c75 #807830 #9772ea #9f934b #39e822 #34dfe9"
+        )
+        self.assertEqual(colors, expected)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
