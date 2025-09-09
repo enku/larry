@@ -9,6 +9,7 @@ from weakref import WeakSet
 
 from larry import LOGGER, Color, ColorList
 from larry.config import ConfigType
+from larry.plugins import apply_plugin_filter
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,7 +49,6 @@ def get_new_colors(
     conversions: str, from_colors: ColorList, config: ConfigType
 ) -> List[Tuple[str, str]]:
     """Given the conversions and colors, return the vim colorscheme"""
-    soften = config.getboolean("soften", fallback=False)
     bg_color = from_colors[0]
     vim_configs = [*process_config(conversions)]
     targets = Color.generate_from(list(from_colors), len(vim_configs))
@@ -57,9 +57,7 @@ def get_new_colors(
     for vim_config in vim_configs:
         target = next(targets) if vim_config.key == "fg" else bg_color
         to_color = vim_config.color.colorify(target)
-
-        if soften:
-            to_color = to_color.soften()
+        to_color = apply_plugin_filter([to_color], config)[0]
 
         key = f"gui{vim_config.key}"
 

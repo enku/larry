@@ -82,7 +82,7 @@ class GetNewColorsTests(TestCase):
     def test_with_soften(self, fixtures: Fixtures):
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:vim")
-        configmaker.add_config(soften="true")
+        configmaker.add_config(filter="soften")
 
         new_colors = vim.get_new_colors(
             COLOR_STR, COLORS, configmaker.config["plugins:vim"]
