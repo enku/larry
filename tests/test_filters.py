@@ -702,6 +702,19 @@ class IntensifyFilterTest(FilterTestCase):
         self.assertEqual(colors, expected)
 
 
+class LuminizeFilterTest(FilterTestCase):
+    entry_point = "luminize"
+
+    def test(self) -> None:
+        src = lib.make_colors("#a916e2 #ffc0cb #e2bd16")
+        dst = lib.make_colors("#ff2cff #d7a2ab #deb916")
+        config = lib.make_config("larry")
+
+        colors = self.filter(src, config)
+
+        self.assertEqual(colors, dst)
+
+
 @params(filter_name=FILTER_LIST)
 class AllFiltersTests(TestCase):
     def test_apply_filter(self, fixtures: Fixtures) -> None:
