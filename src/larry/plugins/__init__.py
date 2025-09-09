@@ -114,3 +114,42 @@ def make_filter_config(filter_name, plugin_config: ConfigType) -> ConfigParser:
             config_parser[f"filters:{filter_name}"][key[offset:]] = value
 
     return config_parser
+
+
+def apply_plugin_filter(colors: ColorList, plugin_config: ConfigType) -> ColorList:
+    """Apply the colors to the effect(s) given in the config
+
+    Some plugins can apply filters. The config is similar to the "global" filter for the
+    image. For example the "command" plugin, which can apply filters, can be configured
+    accordingly:
+
+    [plugins:command]
+    filter = inverse neonize
+    filter.neonize.brightness = 50
+    """
+    colors = list(colors)
+
+    if not (filter_names := plugin_config.get("filter", "").split()):
+        return colors
+
+    for name in filter_names:
+        cfilter = load_filter(name)
+        global_config = global_config_for_filter(name, plugin_config)
+        colors = cfilter(colors, global_config)
+
+    return colors
+
+
+def global_config_for_filter(name, plugin_config: ConfigType) -> ConfigParser:
+    """Create a ConfigParser given the plugin config and filter name"""
+    section = f"filters:{name}"
+    prefix = f"filter.{name}."
+    parser = ConfigParser()
+
+    parser.add_section(section)
+
+    for key, value in plugin_config.items():
+        if key.startswith(prefix):
+            parser.set(section, key.removeprefix(prefix), value)
+
+    return parser
