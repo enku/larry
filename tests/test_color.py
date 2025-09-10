@@ -344,7 +344,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual(colors, expected)
 
     def test_randhue(self, fixtures: Fixtures) -> None:
-        s, v = 59, 86
+        s, v = 59.0, 86.0
 
         c = Color.randhue(s, v)
 
