@@ -21,12 +21,7 @@ ORIG_COLORS = lib.make_colors(
 FILTER_LIST = [ep.name for ep in importlib.metadata.entry_points(group="larry.filters")]
 
 
-class FilterTestCase(TestCase):
-    entry_point: str
-
-    @property
-    def filter(self) -> filters.Filter:
-        return filters.load_filter(self.entry_point)
+FilterTestCase = lib.FilterTestCase
 
 
 @given(lib.tmpdir)
@@ -627,20 +622,6 @@ class KaleidoscopeTests(FilterTestCase):
 
         self.assertEqual(len(filtered), len(colors))
         self.assertEqual(filtered, expected)
-
-
-class SepiaTests(FilterTestCase):
-    entry_point = "sepia"
-
-    def test(self) -> None:
-        config = lib.make_config("larry")
-
-        colors = self.filter(ORIG_COLORS, config)
-
-        expected = lib.make_colors(
-            "#564730 #837e4d #827e44 #84873f #aca863 #a5a851 #a9c756 #c8e179"
-        )
-        self.assertEqual(colors, expected)
 
 
 @params(time=["06:00:00", "9:00:00", "14:00:00", "18:00:00", "20:30:00", "22:00:00"])

@@ -1,5 +1,7 @@
 """sepia color filter"""
 
+import random
+import sys
 from configparser import ConfigParser
 from dataclasses import dataclass
 
@@ -90,5 +92,16 @@ def get(config: ConfigParser, name: str) -> float:
     """
     channel, _, attr = name.partition("_")
     default = getattr(CHANNELS[channel], attr)
+    value = config.get("filters:sepia", name, fallback=None)
 
-    return config.getfloat("filters:sepia", name, fallback=default)
+    match value:
+        case None:
+            return default
+        case "random":
+            return random.random()
+        case _:
+            try:
+                return float(value)
+            except ValueError:
+                print(f'{name}: "{value}" is not a valid number', file=sys.stderr)
+                return default

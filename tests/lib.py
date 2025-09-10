@@ -6,7 +6,7 @@ import tempfile
 from configparser import ConfigParser
 from pathlib import Path
 from typing import IO, Any, Callable
-from unittest import mock
+from unittest import TestCase, mock
 
 import numpy as np
 from unittest_fixtures import FixtureContext, Fixtures, fixture
@@ -14,6 +14,7 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 from larry import config as larry_config
 from larry.color import Color
 from larry.config import DEFAULT_INPUT_PATH
+from larry.filters import Filter, load_filter
 
 RASTER_IMAGE = (Path(__file__).parent / "test.png").read_bytes()
 SVG_IMAGE = Path(DEFAULT_INPUT_PATH).read_bytes()
@@ -37,6 +38,14 @@ d {
   color: #333;
 }
 """
+
+
+class FilterTestCase(TestCase):
+    entry_point: str
+
+    @property
+    def filter(self) -> Filter:
+        return load_filter(self.entry_point)
 
 
 class ConfigMaker:
