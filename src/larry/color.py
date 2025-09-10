@@ -374,18 +374,13 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         yield from cls.generate_from(colors[split:], needed - split)
 
     @classmethod
-    def dominant(cls, colors: ColorList, needed: int, randomize=True) -> ColorList:
+    def dominant(cls, colors: ColorList, needed: int) -> ColorList:
         """Return the n dominant colors in colors"""
         kmeans = KMeans(n_clusters=needed)
         kmeans = kmeans.fit(colors)
         centroids = kmeans.cluster_centers_
 
-        colors = [cls(int(i[0]), int(i[1]), int(i[2])) for i in centroids]
-
-        if randomize:
-            random.shuffle(colors)
-
-        return colors
+        return [cls(int(i[0]), int(i[1]), int(i[2])) for i in centroids]
 
     @classmethod
     def randhue(cls, saturation, brightness) -> Color:

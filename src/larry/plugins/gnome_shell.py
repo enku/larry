@@ -124,7 +124,7 @@ class Theme:
     ) -> t.Self:
         """Create new gnome-shell theme base on the given template"""
         theme_template = cls(template)
-        theme_color = Color.dominant(colors, 1, randomize=False)[0]
+        theme_color = Color.dominant(colors, 1)[0]
 
         new_theme = theme_template.copy()
         orig_css = theme_template.gnome_shell_css_path.read_text(encoding="utf-8")

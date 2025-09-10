@@ -401,12 +401,12 @@ class DominantTests(TestCase):
             "#FF5733 #33FF57 #3357FF #FFFF33 #FF33FF #33FFFF #FF8C00 #8A2BE2 #FFD700"
         )
 
-        dominant_colors = Color.dominant(colors, 4, randomize=False)
+        dominant_colors = Color.dominant(colors, 4)
 
         expected = ["#ffae19", "#5080f5", "#33ff57", "#ff33ff"]
         self.assertEqual([Color(i) for i in expected], dominant_colors)
 
-        dominant_colors = Color.dominant(colors, 3, randomize=False)
+        dominant_colors = Color.dominant(colors, 3)
         expected = ["#ffae19", "#943cf5", "#33ffab"]
         self.assertEqual([Color(i) for i in expected], dominant_colors)
 
