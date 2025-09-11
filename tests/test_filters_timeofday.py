@@ -2,9 +2,11 @@
 
 # pylint: disable=missing-docstring
 import datetime as dt
-from unittest import mock
+from unittest import TestCase, mock
 
 from unittest_fixtures import Fixtures, params
+
+from larry.filters import timeofday
 
 from . import lib
 
@@ -56,3 +58,11 @@ class TimeOfDayFilterConfigurableDaystart(lib.FilterTestCase):
             "#7e108f #754fc7 #835c75 #807830 #9772ea #9f934b #39e822 #34dfe9"
         )
         self.assertEqual(colors, expected)
+
+
+class ParseRangeTests(TestCase):
+    def test(self) -> None:
+        self.assertEqual(timeofday.parse_range("0.72-6.4"), (0.72, 6.4))
+
+    def test_missing_parts(self) -> None:
+        self.assertEqual(timeofday.parse_range("0.72"), None)
