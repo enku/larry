@@ -17,7 +17,7 @@ class LoadTests(TestCase):
         path = os.path.join(fixtures.tmpdir, "bogus")
         config_obj = config.load(path)
 
-        self.assertIn("input", config_obj["DEFAULT"])
+        self.assertIn("larry", config_obj)
 
     def test_loads_toml(self, fixtures: Fixtures) -> None:
         toml = """\
@@ -76,7 +76,6 @@ colors = ["red", "green", "blue"]
         result.write(result_str)
 
         expected = """\
-
 [inventory]
 
 [inventory.main]
@@ -101,7 +100,6 @@ class ConfigFromTomlTests(TestCase):
         result.write(result_str)
 
         expected = """\
-
 [main]
 name = vase
 value = 26

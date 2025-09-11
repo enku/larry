@@ -11,7 +11,7 @@ from typing import Iterable
 
 from larry import LOGGER, __version__
 from larry.color import Color, ColorList
-from larry.config import DEFAULT_CONFIG_PATH, is_paused
+from larry.config import DEFAULT_CONFIG_PATH, DEFAULT_INPUT_PATH, is_paused
 from larry.config import load as load_config
 from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.image import make_image_from_bytes
@@ -95,7 +95,9 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
         LOGGER.info("Larry is paused")
         return
 
-    raw_image_data = read_file(os.path.expanduser(config["larry"]["input"]))
+    raw_image_data = read_file(
+        os.path.expanduser(config.get("larry", "input", fallback=DEFAULT_INPUT_PATH))
+    )
     image = make_image_from_bytes(raw_image_data)
 
     orig_colors = list(image.colors)
@@ -113,7 +115,7 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     if colors != orig_colors:
         image = image.replace(orig_colors, colors)
 
-    outfile = os.path.expanduser(config["larry"]["output"])
+    outfile = os.path.expanduser(config.get("larry", "output", fallback="!cat"))
     write_file(outfile, bytes(image))
 
     # now run any plugins

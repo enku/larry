@@ -20,8 +20,6 @@ ConfigType = configparser.SectionProxy
 def load(path: str) -> configparser.ConfigParser:
     """Return ConfigParser instance given the path"""
     config = configparser.ConfigParser()
-    config["DEFAULT"]["input"] = DEFAULT_INPUT_PATH
-    config["DEFAULT"]["output"] = "!cat"
     config.add_section("larry")
 
     try:
@@ -68,8 +66,6 @@ def config_from_toml(toml: dict[str, dict[str, Any]]) -> configparser.ConfigPars
         sep = "\n"
 
     config = configparser.ConfigParser()
-    config["DEFAULT"]["input"] = DEFAULT_INPUT_PATH
-
     config.read_string(config_io.getvalue())
 
     return config
