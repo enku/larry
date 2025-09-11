@@ -1,7 +1,6 @@
 """Misc utility functions"""
 
 import random
-import warnings
 
 
 def between(value, min_value, max_value) -> bool:
@@ -15,15 +14,6 @@ def clamp(value: int | float, *, minimum: int = 0, maximum: int = 255) -> int:
     value = max(value, minimum)
 
     return int(value)
-
-
-def clip(value: int | float, *, minimum: int = 0, maximum: int = 255) -> int:
-    """Return value that is no larger than maximum and no smaller than minimum
-
-    This is deprecated. Use clamp() instead.
-    """
-    warnings.warn("clip is deprecated. Please use clamp instead", DeprecationWarning)
-    return clamp(value, minimum=minimum, maximum=maximum)
 
 
 def parse_range(string: str) -> tuple[int, int] | tuple[float, float]:
