@@ -148,15 +148,15 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green + value
 
             red, green, blue = [
-                int(utils.clip(component)) for component in (red, green, blue)
+                int(utils.clamp(component)) for component in (red, green, blue)
             ]
 
             return Color(red, green, blue)
 
         return Color(
-            utils.clip(self.red + value.red),
-            utils.clip(self.blue + value.blue),
-            utils.clip(self.green + value.green),
+            utils.clamp(self.red + value.red),
+            utils.clamp(self.blue + value.blue),
+            utils.clamp(self.green + value.green),
         )
 
     def __mul__(self, value: Color | float) -> Color:
@@ -167,7 +167,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             green = self.green * value
             blue = self.blue * value
 
-            red, green, blue = [int(utils.clip(i)) for i in (red, green, blue)]
+            red, green, blue = [int(utils.clamp(i)) for i in (red, green, blue)]
 
             return Color(red, green, blue)
 
@@ -451,9 +451,9 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             elif i == 5:
                 red, green, blue = value, aa, bb
 
-        red = int(utils.clip(red * 255))
-        green = int(utils.clip(green * 255))
-        blue = int(utils.clip(blue * 255))
+        red = int(utils.clamp(red * 255))
+        green = int(utils.clamp(green * 255))
+        blue = int(utils.clamp(blue * 255))
 
         return cls(red, green, blue)
 
@@ -486,7 +486,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         factor = 1 + amount
         hsv = self.to_hsv()
 
-        return Color.from_hsv((hsv[0], utils.clip(factor * hsv[1]), hsv[2]))
+        return Color.from_hsv((hsv[0], utils.clamp(factor * hsv[1]), hsv[2]))
 
     def distance(self, other: Color) -> float:
         """Return the distance between two colors"""
@@ -521,7 +521,7 @@ def ungray(
         return color.is_gray() and color not in black_or_white
 
     def modify(channel: int) -> int:
-        return utils.clip(round(amount * channel))
+        return utils.clamp(round(amount * channel))
 
     return [
         (

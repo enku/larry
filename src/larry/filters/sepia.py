@@ -6,7 +6,7 @@ from configparser import ConfigParser
 from dataclasses import dataclass
 
 from larry.color import Color, ColorList
-from larry.utils import clip
+from larry.utils import clamp
 
 
 @dataclass
@@ -53,13 +53,13 @@ def sepia(color: Color, rc: Channel, gc: Channel, bc: Channel) -> Color:
     Given the channel coefficients
     """
     return Color(
-        clip(rc.base * color.red + rc.multiplier * color.green + bc.base * color.blue),
-        clip(
+        clamp(rc.base * color.red + rc.multiplier * color.green + bc.base * color.blue),
+        clamp(
             rc.adjustment * color.red
             + gc.base * color.green
             + bc.multiplier * color.blue
         ),
-        clip(
+        clamp(
             bc.adjustment * color.red
             + gc.multiplier * color.green
             + bc.base * color.blue
@@ -79,9 +79,9 @@ def blend(orig_color: Color, sepia_color: Color, amount: float) -> Color:
         return orig_color
 
     return Color(
-        clip((1 - amount) * orig_color.red + amount * sepia_color.red),
-        clip((1 - amount) * orig_color.green + amount * sepia_color.green),
-        clip((1 - amount) * orig_color.blue + amount * sepia_color.blue),
+        clamp((1 - amount) * orig_color.red + amount * sepia_color.red),
+        clamp((1 - amount) * orig_color.green + amount * sepia_color.green),
+        clamp((1 - amount) * orig_color.blue + amount * sepia_color.blue),
     )
 
 

@@ -61,24 +61,24 @@ class RandsignTests(TestCase):
         self.assertEqual(utils.randsign(100), -19)
 
 
-class ClipTests(TestCase):
+class ClampTests(TestCase):
     def test1(self):
-        self.assertEqual(utils.clip(20), 20)
+        self.assertEqual(utils.clamp(20), 20)
 
     def test2(self):
-        self.assertEqual(utils.clip(-20), 0)
+        self.assertEqual(utils.clamp(-20), 0)
 
     def test3(self):
-        self.assertEqual(utils.clip(20, maximum=19), 19)
+        self.assertEqual(utils.clamp(20, maximum=19), 19)
 
     def test4(self):
-        self.assertEqual(utils.clip(-20, minimum=-4), -4)
+        self.assertEqual(utils.clamp(-20, minimum=-4), -4)
 
     def test5(self):
-        self.assertEqual(utils.clip(300), 255)
+        self.assertEqual(utils.clamp(300), 255)
 
     def test6(self):
-        self.assertEqual(utils.clip(-3), 0)
+        self.assertEqual(utils.clamp(-3), 0)
 
 
 class AngularDistanceTests(TestCase):
