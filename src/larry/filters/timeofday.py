@@ -7,6 +7,7 @@ from enum import StrEnum, auto, unique
 from typing import TypeAlias
 
 from larry.color import Color, ColorList
+from larry.filters.utils import parse_range
 
 
 @unique
@@ -121,20 +122,3 @@ def get_start_table(config) -> StartTable:
             starts[timeofday] = start
 
     return starts
-
-
-def parse_range(range_str: str) -> tuple[float, float] | None:
-    """Parse float range from the config string
-
-    range_str should look like:
-
-        "0.8 - 1.0"
-
-    If the string is not parsable, None is returned.
-    """
-    start, dash, stop = range_str.partition("-")
-
-    if not all([start, dash, stop]):
-        return None
-
-    return (float(start.strip()), float(stop.strip()))

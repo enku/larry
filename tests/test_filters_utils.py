@@ -65,3 +65,11 @@ class GetOpacityTests(TestCase):
     def test_bad_value(self):
         with self.assertRaises(filters.FilterError):
             utils.get_opacity(self.config, "test", "bar")
+
+
+class ParseRangeTests(TestCase):
+    def test(self) -> None:
+        self.assertEqual(utils.parse_range("0.72-6.4"), (0.72, 6.4))
+
+    def test_missing_parts(self) -> None:
+        self.assertEqual(utils.parse_range("0.72"), None)

@@ -100,3 +100,20 @@ def closest_color(color: Color, colors: ColorList) -> Color:
     distances = [distance.euclidean(color, c) for c in colors]
 
     return colors[np.argmin(distances)]
+
+
+def parse_range(range_str: str) -> tuple[float, float] | None:
+    """Parse float range from the config string
+
+    range_str should look like:
+
+        "0.8 - 1.0"
+
+    If the string is not parsable, None is returned.
+    """
+    start, dash, stop = range_str.partition("-")
+
+    if not all([start, dash, stop]):
+        return None
+
+    return (float(start.strip()), float(stop.strip()))
