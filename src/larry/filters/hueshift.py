@@ -35,7 +35,7 @@ def get_amount(amount_str: str, default: float = DEFAULT_AMOUNT) -> float:
         return default
 
     if amount_str == "random":
-        return random.random() * 360
+        return random.uniform(0, 360)
 
     try:
         return float(amount_str)
