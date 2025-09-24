@@ -50,8 +50,9 @@ def get_new_colors(
 ) -> List[Tuple[str, str]]:
     """Given the conversions and colors, return the vim colorscheme"""
     bg_color = from_colors[0]
+    filter_bg = config.getboolean("filter_bg", fallback=True)
     vim_configs = [*process_config(conversions)]
-    targets = Color.generate_from(list(from_colors), len(vim_configs))
+    targets = list(Color.generate_from(list(from_colors), len(vim_configs)))
     to_colors = apply_plugin_filter(
         [
             vim_config.color.colorify(target if vim_config.key == "fg" else bg_color)
@@ -63,6 +64,8 @@ def get_new_colors(
 
     for vim_config, color in zip(vim_configs, to_colors):
         key = f"gui{vim_config.key}"
+        if not filter_bg and vim_config.key == "bg":
+            color = vim_config.color.colorify(bg_color)
         vim_colors.append((vim_config.name, f"{key}={color}"))
 
     LOGGER.debug("vim colors: %s", vim_colors)

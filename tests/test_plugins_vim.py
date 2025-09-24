@@ -99,6 +99,24 @@ class GetNewColorsTests(TestCase):
         ]
         self.assertEqual(new_colors, expected)
 
+    def test_filter_skip_bg(self, fixtures: Fixtures) -> None:
+        configmaker = fixtures.configmaker
+        configmaker.add_section("plugins:vim")
+        configmaker.add_config(filter="soften", filter_bg="false")
+        new_colors = vim.get_new_colors(
+            COLOR_STR, COLORS, configmaker.config["plugins:vim"]
+        )
+        expected = [
+            ("ALEErrorSign", "guibg=#3a0742"),
+            ("ALEWarningSign", "guibg=#3a0742"),
+            ("ColorColumn", "guibg=#3a0742"),
+            ("ColorColumn", "guifg=#a2b7b9"),
+            ("CommandTSelection", "guibg=#c549d9"),
+            ("Comment", "guifg=#a77fff"),
+            ("Constant", "guifg=#8fcc88"),
+        ]
+        self.assertEqual(new_colors, expected)
+
 
 class VimProtocolTests(TestCase):
     def tearDown(self):
