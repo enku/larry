@@ -26,14 +26,14 @@ CONVERSION = [
     ("ALEErrorSign", "guibg=#3a0742"),
     ("ALEWarningSign", "guibg=#3a0742"),
     ("ColorColumn", "guibg=#3a0742"),
-    ("ColorColumn", "guifg=#577274"),
+    ("ColorColumn", "guifg=#5a7457"),
     ("CommandTSelection", "guibg=#c549d9"),
-    ("Comment", "guifg=#5000ff"),
-    ("Constant", "guifg=#3e9933"),
+    ("Comment", "guifg=#dc00ff"),
+    ("Constant", "guifg=#533399"),
 ]
 
 
-@given(lib.random, lib.configmaker)
+@given(lib.random, lib.configmaker, lib.nprandom)
 class PluginTests(TestCase):
     @mock.patch("larry.plugins.vim.start")
     @mock.patch("larry.plugins.vim.VimProtocol.run")
@@ -67,7 +67,7 @@ class StartTests(TestCase):
         loop.create_task.assert_called_once_with(server)
 
 
-@given(lib.configmaker, lib.random)
+@given(lib.configmaker, lib.random, lib.nprandom)
 class GetNewColorsTests(TestCase):
     def test(self, fixtures: Fixtures):
         configmaker = fixtures.configmaker
@@ -92,10 +92,10 @@ class GetNewColorsTests(TestCase):
             ("ALEErrorSign", "guibg=#9658a0"),
             ("ALEWarningSign", "guibg=#9658a0"),
             ("ColorColumn", "guibg=#9658a0"),
-            ("ColorColumn", "guifg=#a2b7b9"),
+            ("ColorColumn", "guifg=#a4b9a2"),
             ("CommandTSelection", "guibg=#e19deb"),
-            ("Comment", "guifg=#a77fff"),
-            ("Constant", "guifg=#8fcc88"),
+            ("Comment", "guifg=#ed7fff"),
+            ("Constant", "guifg=#9d88cc"),
         ]
         self.assertEqual(new_colors, expected)
 
@@ -110,10 +110,10 @@ class GetNewColorsTests(TestCase):
             ("ALEErrorSign", "guibg=#3a0742"),
             ("ALEWarningSign", "guibg=#3a0742"),
             ("ColorColumn", "guibg=#3a0742"),
-            ("ColorColumn", "guifg=#a2b7b9"),
+            ("ColorColumn", "guifg=#a4b9a2"),
             ("CommandTSelection", "guibg=#c549d9"),
-            ("Comment", "guifg=#a77fff"),
-            ("Constant", "guifg=#8fcc88"),
+            ("Comment", "guifg=#ed7fff"),
+            ("Constant", "guifg=#9d88cc"),
         ]
         self.assertEqual(new_colors, expected)
 

@@ -52,7 +52,7 @@ def get_new_colors(
     bg_color = from_colors[0]
     filter_bg = config.getboolean("filter_bg", fallback=True)
     vim_configs = [*process_config(conversions)]
-    targets = list(Color.generate_from(list(from_colors), len(vim_configs)))
+    targets = list(Color.dominant(list(from_colors), len(vim_configs)))
     to_colors = apply_plugin_filter(
         [
             vim_config.color.colorify(target if vim_config.key == "fg" else bg_color)
