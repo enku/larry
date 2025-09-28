@@ -5,6 +5,7 @@ import platformdirs
 from larry import Color, ColorList, io
 from larry.config import ConfigType
 from larry.plugins import apply_plugin_filter
+from larry.pool import run
 
 NAMES = ["today", "weeknumber", "header", "workday", "weekend"]
 NORMAL = 2
@@ -20,6 +21,8 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
         weight = BOLD if name == "today" else NORMAL
         scheme = f"{scheme}{name} 38;{weight};{color.red};{color.green};{color.blue}\n"
 
-    io.write_text_file(
-        f"{platformdirs.user_config_dir()}/terminal-colors.d/cal.scheme", scheme
+    await run(
+        io.write_text_file,
+        f"{platformdirs.user_config_dir()}/terminal-colors.d/cal.scheme",
+        scheme,
     )

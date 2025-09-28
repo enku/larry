@@ -12,6 +12,7 @@ from larry import LOGGER, config
 from larry.color import ColorList
 from larry.config import ConfigType
 from larry.filters import load_filter
+from larry.pool import run
 
 PluginType: TypeAlias = Callable[[ColorList, config.ConfigType], Any]
 PLUGINS: dict[str, PluginType] = {}
@@ -24,7 +25,7 @@ class PluginNotFound(LookupError):
 async def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
     """Run the given plugin"""
     try:
-        plugin = load(plugin_name)
+        plugin = await run(load, plugin_name)
     except PluginNotFound:
         LOGGER.warning("plugin %s not found", plugin_name)
         return

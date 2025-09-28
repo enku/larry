@@ -3,6 +3,7 @@
 from larry import Color, ColorList
 from larry.config import ConfigType
 from larry.plugins import gir
+from larry.pool import run
 
 # schema how to set gnome-terminal profiles
 SCHEMA = "org.gnome.Terminal.Legacy.Profile"
@@ -19,8 +20,8 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
         path = get_path(profile)
         new_color = color.colorify(colors[0])
         value = str(new_color)
-        settings = gir.Gio.Settings.new_with_path(SCHEMA, path)
-        settings.set_string("background-color", value)
+        settings = await run(gir.Gio.Settings.new_with_path, SCHEMA, path)
+        await run(settings.set_string, "background-color", value)
 
 
 def get_path(profile: str) -> str:

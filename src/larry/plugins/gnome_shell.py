@@ -10,6 +10,7 @@ from enum import Enum, unique
 from larry.color import COLORS_RE, Color, ColorList, replace_string, ungray
 from larry.config import ConfigType
 from larry.plugins import apply_plugin_filter, gir
+from larry.pool import run
 
 DEFAULT_GRAY_THRESHOLD = 35
 THEME_GSETTINGS_NAME = "name"
@@ -161,7 +162,7 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
     template_path = str(pathlib.Path(config["template"]).expanduser())
     new_theme = Theme.from_template(template_path, colors, config)
 
-    new_theme.set()
+    await run(new_theme.set)
 
     if current_theme.name.startswith("larry-"):
-        current_theme.delete()
+        await run(current_theme.delete)

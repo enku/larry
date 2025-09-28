@@ -13,7 +13,8 @@ async def plugin(colors: ColorList, config: ConfigType):
     theme_color = next(Color.generate_from(colors, 1, randomize=False))
     template = config["template"]
     outfile = config["location"]
-    orig_css = read_file(template).decode()
+    orig_css_bytes = read_file(template)
+    orig_css = orig_css_bytes.decode()
     orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
 
     colormap = {

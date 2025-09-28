@@ -3,6 +3,7 @@
 from larry import ColorList
 from larry.config import ConfigType
 from larry.plugins import apply_plugin_filter, gir
+from larry.pool import run
 
 SCHEMA = "org.gnome.desktop.background"
 
@@ -16,6 +17,6 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
     )
     settings = gir.Gio.Settings.new(SCHEMA)
 
-    settings.set_string("primary-color", str(primary_color))
-    settings.set_string("secondary-color", str(secondary_color))
-    settings.apply()
+    await run(settings.set_string, "primary-color", str(primary_color))
+    await run(settings.set_string, "secondary-color", str(secondary_color))
+    await run(settings.apply)

@@ -1,6 +1,6 @@
 """Larry plugin to run a shell command"""
 
-import subprocess
+import asyncio
 
 from larry import LOGGER, ColorList
 from larry.config import ConfigType
@@ -12,8 +12,13 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
     """run a command with the colors as stdin"""
     LOGGER.debug("command plugin begin")
     colors = apply_plugin_filter(colors, config)
-    exe = config["command"]
+    exe = config.get("command", fallback="")
+
+    if not exe:
+        return
+
     colors_str = "\n".join(str(i) for i in colors)
 
     LOGGER.debug('command="%s"', exe)
-    subprocess.run(exe, check=False, shell=True, input=colors_str.encode())
+    proc = await asyncio.create_subprocess_shell(exe, stdin=asyncio.subprocess.PIPE)
+    await proc.communicate(input=colors_str.encode())
