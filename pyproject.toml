@@ -27,7 +27,7 @@ gnome = [
 ]
 
 [project.scripts]
-larry = "larry.cli:main"
+larry = "larry.__main__:main"
 
 [project.entry-points."larry.plugins"]
 cal = "larry.plugins.cal:plugin"

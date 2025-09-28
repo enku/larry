@@ -8,7 +8,7 @@ from larry.config import ConfigType
 from . import apply_plugin_filter
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """run a command with the colors as stdin"""
     LOGGER.debug("command plugin begin")
     colors = apply_plugin_filter(colors, config)

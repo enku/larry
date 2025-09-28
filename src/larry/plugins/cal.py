@@ -11,7 +11,7 @@ NORMAL = 2
 BOLD = 1
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """cal colors plugin"""
     colors = apply_plugin_filter(list(Color.generate_from(colors, len(NAMES))), config)
     scheme = ""

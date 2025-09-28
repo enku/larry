@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from unittest import TestCase
+from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -11,8 +11,8 @@ from . import lib
 
 
 @given(lib.configmaker, lib.tmpdir)
-class DoPluginTest(TestCase):
-    def test(self, fixtures: Fixtures) -> None:
+class DoPluginTest(IsolatedAsyncioTestCase):
+    async def test(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
         plugin = "command"
         output_file = f"{fixtures.tmpdir}/test.txt"
@@ -21,10 +21,27 @@ class DoPluginTest(TestCase):
         configmaker.add_config(command=f"cat > {output_file}")
         colors = lib.make_colors("#ff0000 #ffffff #0000ff")
 
-        plugins.do_plugin(plugin, colors, configmaker.path)
+        await plugins.do_plugin(plugin, colors, configmaker.path)
 
         output = read_file(output_file)
         self.assertEqual(output, b"#ff0000\n#ffffff\n#0000ff")
+
+    async def test_without_coroutine(self, fixtures: Fixtures) -> None:
+        called = False
+        colors = lib.make_colors("#ff0000 #ffffff #0000ff")
+        configmaker = fixtures.configmaker
+        configmaker.add_config(plugins="fake_plugin")
+
+        def fake_plugin(_colors, _config):
+            nonlocal called
+            called = True
+
+        with mock.patch("larry.plugins.load", return_value=fake_plugin):
+            with self.assertLogs("larry", level="WARNING") as log:
+                await plugins.do_plugin("fake_plugin", colors, configmaker.path)
+
+        self.assertTrue(called)
+        self.assertIn("WARNING:larry:plugin fake_plugin not asynchronous", log.output)
 
 
 class PluginsList(TestCase):

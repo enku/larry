@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from unittest import TestCase, mock
+from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -10,8 +10,8 @@ from . import lib
 
 @given(lib.configmaker)
 @mock.patch.object(GIRepository, "Gio", create=True)
-class PluginTests(TestCase):
-    def test(self, gio, fixtures: Fixtures) -> None:
+class PluginTests(IsolatedAsyncioTestCase):
+    async def test(self, gio, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_terminal")
         configmaker.add_config(profiles="a b c", color="1d1e28")
@@ -19,7 +19,9 @@ class PluginTests(TestCase):
             "#7e118f #754fc7 #835d75 #807930 #9772ea #9f934b #39e822 #35dfe9"
         )
 
-        gnome_terminal.plugin(colors, configmaker.config["plugins:gnome_terminal"])
+        await gnome_terminal.plugin(
+            colors, configmaker.config["plugins:gnome_terminal"]
+        )
 
         new_with_path_calls = []
         for profile in "abc":

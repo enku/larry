@@ -21,7 +21,7 @@ class HighlightGroup:
     color: Color
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """vim plugin"""
 
     if not VimProtocol.is_running:

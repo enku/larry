@@ -155,7 +155,7 @@ class Theme:
         return self.path.joinpath("index.theme")
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """Plugin runner"""
     current_theme = Theme.current()
     template_path = str(pathlib.Path(config["template"]).expanduser())

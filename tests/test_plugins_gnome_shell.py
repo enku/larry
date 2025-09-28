@@ -3,7 +3,7 @@ import os
 import os.path
 import random
 from pathlib import Path
-from unittest import TestCase, mock
+from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -129,8 +129,8 @@ class ThemeTests(TestCase):
 
 @given(lib.configmaker)
 @mock.patch("larry.plugins.gnome_shell.Theme", autospec=True)
-class PluginTests(TestCase):
-    def test(self, theme_cls, fixtures: Fixtures) -> None:
+class PluginTests(IsolatedAsyncioTestCase):
+    async def test(self, theme_cls, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:gnome_shell")
         configmaker.add_config(template="test-template")
@@ -139,7 +139,7 @@ class PluginTests(TestCase):
         current_theme = mock.Mock()
         current_theme.name = "larry-test"
         theme_cls.current.return_value = current_theme
-        gnome_shell.plugin(COLORS, gnome_shell_config)
+        await gnome_shell.plugin(COLORS, gnome_shell_config)
 
         theme_cls.current.assert_called_once_with()
         theme_cls.from_template.assert_called_once_with(
@@ -149,7 +149,7 @@ class PluginTests(TestCase):
         theme.set.assert_called_once_with()
         current_theme.delete.assert_called_once_with()
 
-    def test_when_current_theme_is_not_a_larry_theme(
+    async def test_when_current_theme_is_not_a_larry_theme(
         self, theme_cls, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
@@ -160,7 +160,7 @@ class PluginTests(TestCase):
         current_theme = mock.Mock()
         current_theme.name = "Adwaita"
         theme_cls.current.return_value = current_theme
-        gnome_shell.plugin(COLORS, gnome_shell_config)
+        await gnome_shell.plugin(COLORS, gnome_shell_config)
 
         current_theme.delete.assert_not_called()
 

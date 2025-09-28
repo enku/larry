@@ -1,7 +1,7 @@
 # pylint: disable=missing-docstring,unused-argument
 import io
 from configparser import ConfigParser
-from unittest import TestCase, mock
+from unittest import IsolatedAsyncioTestCase, mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -12,8 +12,8 @@ from . import lib
 
 @given(lib.random)
 @mock.patch("larry.plugins.cal.io.write_file")
-class CalTests(TestCase):
-    def test(self, write_file, fixtures: Fixtures):
+class CalTests(IsolatedAsyncioTestCase):
+    async def test(self, write_file, fixtures: Fixtures):
         output = io.BytesIO()
         write_file.side_effect = lib.mock_write_file(output)
         colors = lib.make_colors(
@@ -23,7 +23,7 @@ class CalTests(TestCase):
         config.add_section("plugins:cal")
         config.set("plugins:cal", "filter", "pastelize")
 
-        cal.plugin(colors, config["plugins:cal"])
+        await cal.plugin(colors, config["plugins:cal"])
 
         expected = """\
 today 38;1;255;127;208

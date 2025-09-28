@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from unittest import TestCase, mock
+from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -34,16 +34,16 @@ CONVERSION = [
 
 
 @given(lib.random, lib.configmaker, lib.nprandom)
-class PluginTests(TestCase):
+class PluginTests(IsolatedAsyncioTestCase):
     @mock.patch("larry.plugins.vim.start")
     @mock.patch("larry.plugins.vim.VimProtocol.run")
-    def test(self, run, start, fixtures: Fixtures) -> None:
+    async def test(self, run, start, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
         configmaker.add_section("plugins:vim")
         configmaker.add_config(
             listen_address="localhost.invalid", port=65336, colors=COLOR_STR
         )
-        vim.plugin(COLORS, configmaker.config["plugins:vim"])
+        await vim.plugin(COLORS, configmaker.config["plugins:vim"])
         start.assert_called_once_with(configmaker.config["plugins:vim"])
         run.assert_called_once_with(CONVERSION, configmaker.config["plugins:vim"])
 

@@ -37,7 +37,7 @@ class Handler:
         cls._handler = handler
 
 
-def main(argv=None) -> None:
+async def main(argv=None) -> None:
     """Actual program entry point"""
     logging.basicConfig()
     parser = build_parser()
@@ -57,36 +57,39 @@ def main(argv=None) -> None:
         print(list_filters(args.config_path), end="")
         return
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
 
     if args.interval:
         loop.add_signal_handler(
-            signal.SIGUSR1, run_every, args.interval, args.config_path, loop
+            signal.SIGUSR1, loop.call_soon, run_every, args.interval, args.config_path
         )
-        loop.call_soon(run_every, args.interval, args.config_path, loop)
+        await run_every(args.interval, args.config_path)
     else:
-        loop.add_signal_handler(signal.SIGUSR1, run, args.config_path, loop)
-        run(args.config_path, loop)
+        loop.add_signal_handler(
+            signal.SIGUSR1, lambda: asyncio.create_task(run(args.config_path))
+        )
+        await run(args.config_path)
 
-    run_loop(loop)
 
-
-def run_every(interval: float, config_path: str, loop) -> None:
+async def run_every(interval: float, config_path: str) -> None:
     """Run *callback* immediately and then every *interval* seconds after"""
     if handler := Handler.get():
         LOGGER.info("received signal to change wallpaper")
         handler.cancel()
 
-    run(config_path, loop)
+    await run(config_path)
 
     if interval == 0:
         return
 
-    handler = loop.call_later(interval, run_every, interval, config_path, loop)
+    loop = asyncio.get_event_loop()
+    handler = loop.call_later(
+        interval, lambda: asyncio.create_task(run_every(interval, config_path))
+    )
     Handler.set(handler)
 
 
-def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
+async def run(config_path: str) -> None:
     """Perform a single iteration of Larry"""
     config = load_config(config_path)
     colors: Iterable[Color]
@@ -119,8 +122,9 @@ def run(config_path: str, loop: asyncio.AbstractEventLoop) -> None:
     write_file(outfile, bytes(image))
 
     # now run any plugins
-    for plugin_name in config.get("larry", "plugins", fallback="").split():
-        loop.call_soon(do_plugin, plugin_name, colors, config_path)
+    async with asyncio.TaskGroup() as task_group:
+        for plugin_name in config.get("larry", "plugins", fallback="").split():
+            task_group.create_task(do_plugin(plugin_name, colors, config_path))
 
 
 def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> ColorList:

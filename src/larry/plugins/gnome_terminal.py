@@ -9,7 +9,7 @@ SCHEMA = "org.gnome.Terminal.Legacy.Profile"
 PATH = "/org/gnome/terminal/legacy/profiles:/:{profile}/"
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """larry plugin to set the gnome-terminal background color"""
     profiles = config.get("profiles", "").split()
     colorstr = config["color"]

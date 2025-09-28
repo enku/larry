@@ -5,6 +5,7 @@ import io
 from configparser import ConfigParser
 from functools import cache, wraps
 from importlib.metadata import entry_points
+from inspect import iscoroutinefunction
 from typing import Any, Callable, List, Tuple, TypeAlias
 
 from larry import LOGGER, config
@@ -20,13 +21,23 @@ class PluginNotFound(LookupError):
     """Unable to find the requested plugin"""
 
 
-def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
+async def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> None:
     """Run the given plugin"""
-    plugin = load(plugin_name)
+    try:
+        plugin = load(plugin_name)
+    except PluginNotFound:
+        LOGGER.warning("plugin %s not found", plugin_name)
+        return
+
     plugin_config = config.get_plugin_config(plugin_name, config_path)
 
     LOGGER.debug("Running plugin for %s", plugin_name)
-    plugin(colors, plugin_config)
+
+    if iscoroutinefunction(plugin):
+        await plugin(colors, plugin_config)
+    else:
+        LOGGER.warning("plugin %s not asynchronous", plugin_name)
+        plugin(colors, plugin_config)
 
 
 def plugins_list() -> List[Tuple[str, PluginType]]:

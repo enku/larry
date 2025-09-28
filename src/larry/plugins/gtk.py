@@ -8,7 +8,7 @@ from larry.io import read_file, write_text_file
 DEFAULT_GRAY_THRESHOLD = 35
 
 
-def plugin(colors: ColorList, config: ConfigType):
+async def plugin(colors: ColorList, config: ConfigType):
     """gtk.css plugin"""
     theme_color = next(Color.generate_from(colors, 1, randomize=False))
     template = config["template"]

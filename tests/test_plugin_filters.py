@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring
-from unittest import TestCase
+from unittest import IsolatedAsyncioTestCase
 
 from unittest_fixtures import Fixtures, given
 
@@ -10,8 +10,8 @@ from . import lib
 
 
 @given(lib.configmaker, lib.tmpdir)
-class PluginFilterTest(TestCase):
-    def test(self, fixtures: Fixtures) -> None:
+class PluginFilterTest(IsolatedAsyncioTestCase):
+    async def test(self, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
         output_file = f"{fixtures.tmpdir}/test.txt"
         configmaker.add_config(plugins="command")
@@ -24,7 +24,7 @@ class PluginFilterTest(TestCase):
         configmaker.add_config(**command_config)
         colors = lib.make_colors("#ff0000 #ffffff #0000ff")
 
-        do_plugin("command", colors, configmaker.path)
+        await do_plugin("command", colors, configmaker.path)
 
         output = read_file(output_file)
         self.assertEqual(output, b"#007f7f\n#7f0002\n#7f7f00")
