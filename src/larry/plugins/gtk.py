@@ -1,6 +1,6 @@
 """Larry plugin for gtk"""
 
-from larry import Color, ColorList
+from larry import Color, ColorList, pool
 from larry.color import COLORS_RE, replace_string, ungray
 from larry.config import ConfigType
 from larry.io import read_file, write_text_file
@@ -13,7 +13,7 @@ async def plugin(colors: ColorList, config: ConfigType):
     theme_color = next(Color.generate_from(colors, 1, randomize=False))
     template = config["template"]
     outfile = config["location"]
-    orig_css_bytes = read_file(template)
+    orig_css_bytes = await pool.run(read_file, template)
     orig_css = orig_css_bytes.decode()
     orig_colors = set(Color(s) for s in COLORS_RE.findall(orig_css))
 
@@ -22,4 +22,4 @@ async def plugin(colors: ColorList, config: ConfigType):
     }
     new_css = replace_string(orig_css, colormap)
 
-    write_text_file(outfile, new_css)
+    await pool.run(write_text_file, outfile, new_css)
