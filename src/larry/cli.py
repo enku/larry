@@ -61,12 +61,13 @@ async def main(argv=None) -> None:
 
     if args.interval:
         loop.add_signal_handler(
-            signal.SIGUSR1, loop.call_soon, run_every, args.interval, args.config_path
+            signal.SIGUSR1,
+            lambda: loop.create_task(run_every(args.interval, args.config_path)),
         )
         await run_every(args.interval, args.config_path)
     else:
         loop.add_signal_handler(
-            signal.SIGUSR1, lambda: asyncio.create_task(run(args.config_path))
+            signal.SIGUSR1, lambda: loop.create_task(run(args.config_path))
         )
         await run(args.config_path)
 

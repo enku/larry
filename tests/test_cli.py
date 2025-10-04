@@ -177,9 +177,7 @@ class MainTests(IsolatedAsyncioTestCase):
         await cli.main(argv)
 
         loop = get_event_loop.return_value
-        loop.add_signal_handler.assert_called_once_with(
-            signal.SIGUSR1, loop.call_soon, cli.run_every, 60, configmaker.path
-        )
+        loop.add_signal_handler.assert_called_once_with(signal.SIGUSR1, mock.ANY)
         run_every.assert_called_once_with(60, configmaker.path)
 
     async def test_with_interval_0(
