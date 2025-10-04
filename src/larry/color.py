@@ -377,7 +377,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def dominant(cls, colors: ColorList, needed: int) -> ColorList:
         """Return the n dominant colors in colors"""
         kmeans = KMeans(n_clusters=needed)
-        kmeans = kmeans.fit(colors)
+        kmeans = kmeans.fit(np.array(colors))
         centroids = kmeans.cluster_centers_
 
         return [cls(int(i[0]), int(i[1]), int(i[2])) for i in centroids]
