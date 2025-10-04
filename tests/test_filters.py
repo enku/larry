@@ -544,7 +544,7 @@ class VibranceTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
-            "#7e118f #744dc7 #835471 #80782f #936cea #9f9247 #39e822 #35dfe9"
+            "#7e118f #754fc7 #835572 #807930 #946dea #9f9249 #39e822 #35dfe9"
         )
         self.assertEqual(colors, expected)
 

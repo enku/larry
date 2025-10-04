@@ -3,6 +3,7 @@
 from configparser import ConfigParser
 
 from larry.color import Color, ColorList
+from larry.utils import clamp
 
 
 def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
@@ -26,7 +27,7 @@ def cfilter(orig_colors: ColorList, config: ConfigParser) -> ColorList:
             colors.append(color)
             continue
 
-        new_s = s + percentage * (threshold - s)
+        new_s = clamp(s + percentage * (threshold - s), maximum=100)
         colors.append(Color.from_hsv((h, new_s, v)))
 
     return colors
