@@ -135,7 +135,7 @@ def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> Color
     """
     colors = colors.copy()
 
-    for filter_name in config["larry"].get("filter", "gradient").split():
+    for filter_name in config["larry"].get("filter", fallback="none").split():
         try:
             cfilter = load_filter(filter_name)
         except FilterNotFound:
