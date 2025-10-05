@@ -43,6 +43,17 @@ class DoPluginTest(IsolatedAsyncioTestCase):
         self.assertTrue(called)
         self.assertIn("WARNING:larry:plugin fake_plugin not asynchronous", log.output)
 
+    async def test_when_plugin_raises_exception(self, fixtures: Fixtures):
+        async def fake_plugin(_colors, _config):
+            raise RuntimeError("I failed")
+
+        with mock.patch("larry.plugins.load", return_value=fake_plugin):
+            with self.assertLogs("larry", level="ERROR") as log:
+                await plugins.do_plugin("fake_plugin", [], "")
+
+        error = log.output[-1]
+        self.assertIn("ERROR:larry:Error running plugin fake_plugin", error)
+
 
 class PluginsList(TestCase):
     def test(self):

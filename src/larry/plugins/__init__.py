@@ -34,11 +34,14 @@ async def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> No
 
     LOGGER.debug("Running plugin for %s", plugin_name)
 
-    if iscoroutinefunction(plugin):
-        await plugin(colors, plugin_config)
-    else:
-        LOGGER.warning("plugin %s not asynchronous", plugin_name)
-        plugin(colors, plugin_config)
+    try:
+        if iscoroutinefunction(plugin):
+            await plugin(colors, plugin_config)
+        else:
+            LOGGER.warning("plugin %s not asynchronous", plugin_name)
+            plugin(colors, plugin_config)
+    except Exception:
+        LOGGER.exception("Error running plugin %s", plugin_name)
 
 
 def plugins_list() -> List[Tuple[str, PluginType]]:
