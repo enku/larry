@@ -1,9 +1,11 @@
 """Larry plugin to run a shell command"""
 
-import asyncio
+import subprocess
+from functools import partial
 
 from larry import LOGGER, ColorList
 from larry.config import ConfigType
+from larry.pool import run
 
 from . import apply_plugin_filter
 
@@ -20,5 +22,5 @@ async def plugin(colors: ColorList, config: ConfigType) -> None:
     colors_str = "\n".join(str(i) for i in colors)
 
     LOGGER.debug('command="%s"', exe)
-    proc = await asyncio.create_subprocess_shell(exe, stdin=asyncio.subprocess.PIPE)
-    await proc.communicate(input=colors_str.encode())
+    func = partial(subprocess.run, check=False, shell=True, input=colors_str.encode())
+    await run(func, exe)
