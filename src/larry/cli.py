@@ -171,7 +171,7 @@ def build_parser() -> argparse.ArgumentParser:
 def run_loop(loop: asyncio.AbstractEventLoop) -> None:
     """Run the given loop forever until interrupted"""
     try:
-        loop.run_forever()
+        loop.run_until_complete(main())
     except KeyboardInterrupt:
         LOGGER.info("User interrupted")
         loop.stop()

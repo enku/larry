@@ -240,19 +240,26 @@ class RunLoopTests(TestCase):
     def test_runs_forever(self) -> None:
         loop = mock.Mock(spec=asyncio.AbstractEventLoop)
 
-        cli.run_loop(loop)
+        with mock.patch("larry.cli.main", new_callable=mock.Mock) as main:
+            cli.run_loop(loop)
 
         loop.assert_has_calls(
-            [mock.call.run_forever(), mock.call.close()], any_order=False
+            [mock.call.run_until_complete(main.return_value), mock.call.close()],
+            any_order=False,
         )
 
     def test_intercepts_keyboardinterrupt(self) -> None:
         loop = mock.Mock(spec=asyncio.AbstractEventLoop)
-        loop.run_forever.side_effect = KeyboardInterrupt()
+        loop.run_until_complete.side_effect = KeyboardInterrupt()
 
-        cli.run_loop(loop)
+        with mock.patch("larry.cli.main", new_callable=mock.Mock) as main:
+            cli.run_loop(loop)
 
         loop.assert_has_calls(
-            [mock.call.run_forever(), mock.call.stop(), mock.call.close()],
+            [
+                mock.call.run_until_complete(main.return_value),
+                mock.call.stop(),
+                mock.call.close(),
+            ],
             any_order=False,
         )
