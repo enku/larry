@@ -1,4 +1,4 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 from unittest_fixtures import Fixtures, given
