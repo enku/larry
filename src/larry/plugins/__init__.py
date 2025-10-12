@@ -40,7 +40,7 @@ async def do_plugin(plugin_name: str, colors: ColorList, config_path: str) -> No
         else:
             LOGGER.warning("plugin %s not asynchronous", plugin_name)
             plugin(colors, plugin_config)
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         LOGGER.exception("Error running plugin %s", plugin_name)
 
 
