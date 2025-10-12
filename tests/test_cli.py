@@ -15,6 +15,8 @@ from larry.io import read_file
 
 from . import lib
 
+ANY = mock.ANY
+
 
 class HandlerTests(TestCase):
     def tearDown(self):
@@ -57,9 +59,9 @@ class RunTests(IsolatedAsyncioTestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), ANY
             ),
-            None,
+            ANY,
         )
         do_plugin.assert_has_calls(
             [
@@ -99,9 +101,9 @@ class RunTests(IsolatedAsyncioTestCase):
         inverse = filters.load_filter("inverse")
         colors = pastelize(
             inverse(
-                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), None
+                lib.make_colors("#000000 #1c343f #254351 #666666 #7c8e96 #ffffff"), ANY
             ),
-            None,
+            ANY,
         )
         image = make_image_from_bytes(read_file(configmaker.config["larry"]["output"]))
         image_colors = image.colors
