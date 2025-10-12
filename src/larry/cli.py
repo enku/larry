@@ -37,26 +37,34 @@ class Handler:
         cls._handler = handler
 
 
-async def main(argv=None) -> None:
-    """Actual program entry point"""
-    logging.basicConfig()
+def main(argv=None) -> argparse.Namespace | None:
+    """Non async entry point
+
+    Return argparse.Namespace to transfer control to the loop.
+    """
     parser = build_parser()
     args = parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
+
+    if args.list_plugins:
+        print(list_plugins(args.config_path), end="")
+        return None
+
+    if args.list_filters:
+        print(list_filters(args.config_path), end="")
+        return None
+
+    return args
+
+
+async def async_main(args: argparse.Namespace) -> None:
+    """Actual program entry point"""
+    logging.basicConfig()
     config = load_config(args.config_path)
 
     if args.debug or config["larry"].getboolean("debug", fallback=False):
         LOGGER.setLevel("DEBUG")
 
     LOGGER.debug("args=%s", args)
-
-    if args.list_plugins:
-        print(list_plugins(args.config_path), end="")
-        return
-
-    if args.list_filters:
-        print(list_filters(args.config_path), end="")
-        return
-
     loop = asyncio.get_event_loop()
 
     if args.interval:
@@ -171,7 +179,7 @@ def build_parser() -> argparse.ArgumentParser:
 def run_loop(loop: asyncio.AbstractEventLoop) -> None:
     """Run the given loop forever until interrupted"""
     try:
-        loop.run_until_complete(main())
+        loop.run_forever()
     except KeyboardInterrupt:
         LOGGER.info("User interrupted")
         loop.stop()
