@@ -7,6 +7,8 @@ import re
 from collections import namedtuple
 from dataclasses import dataclass
 from math import floor
+from multiprocessing import Process, Queue
+from queue import Empty
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
 import numpy as np
@@ -377,9 +379,17 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def dominant(cls, colors: ColorList, needed: int) -> ColorList:
         """Return the n dominant colors in colors"""
         kmeans = KMeans(n_clusters=needed)
-        kmeans = kmeans.fit(np.array(colors))
-        centroids = kmeans.cluster_centers_
+        queue: Queue = Queue()
+        process = Process(target=lambda: queue.put(kmeans.fit(np.array(colors))))
+        process.start()
 
+        try:
+            kmeans = queue.get(timeout=5.0)
+        except Empty:
+            process.kill()
+            return list(cls.generate_from(colors, needed))
+
+        centroids = kmeans.cluster_centers_
         return [cls(int(i[0]), int(i[1]), int(i[2])) for i in centroids]
 
     @classmethod
