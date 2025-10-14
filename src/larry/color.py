@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import multiprocessing as mp
 import random
 import re
 from collections import namedtuple
 from dataclasses import dataclass
 from math import floor
-from multiprocessing import Process, Queue
 from queue import Empty
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
@@ -41,6 +41,8 @@ PASTEL_SATURATION = 50
 PASTEL_BRIGHTNESS = 100
 
 DEFAULT_SOFTNESS = 0.5
+
+mp.set_start_method("fork")
 
 
 class BadColorSpecError(ValueError):
@@ -379,12 +381,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def dominant(cls, colors: ColorList, needed: int) -> ColorList:
         """Return the n dominant colors in colors"""
         kmeans = KMeans(n_clusters=needed)
-        queue: Queue = Queue()
-
-        def dominant_subprocess() -> None:
-            queue.put(kmeans.fit(np.array(colors)))
-
-        process = Process(target=dominant_subprocess)
+        queue: mp.Queue = mp.Queue()
+        process = mp.Process(target=lambda: queue.put(kmeans.fit(np.array(colors))))
         process.start()
 
         try:
