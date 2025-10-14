@@ -380,7 +380,11 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         """Return the n dominant colors in colors"""
         kmeans = KMeans(n_clusters=needed)
         queue: Queue = Queue()
-        process = Process(target=lambda: queue.put(kmeans.fit(np.array(colors))))
+
+        def dominant_subprocess() -> None:
+            queue.put(kmeans.fit(np.array(colors)))
+
+        process = Process(target=dominant_subprocess)
         process.start()
 
         try:
