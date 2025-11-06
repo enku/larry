@@ -144,7 +144,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         c2 = Color("#040404")
         c3 = c1 + c2
 
-        self.assertEqual(c3, Color("#36af4d"))
+        self.assertEqual(c3, Color("#364daf"))
 
     def test_mul_float(self, fixtures: Fixtures) -> None:
         c1 = Color("#3249ab")
@@ -169,7 +169,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         c2 = Color("#3249ab")
         c3 = c1 - c2
 
-        self.assertEqual(c3, Color("#ff00a5"))
+        self.assertEqual(c3, Color("#cd5c00"))
 
     def test_colorify(self, fixtures: Fixtures) -> None:
         c1 = Color("#3249ab")

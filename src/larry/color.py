@@ -159,8 +159,8 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
 
         return Color(
             utils.clamp(self.red + value.red),
-            utils.clamp(self.blue + value.blue),
             utils.clamp(self.green + value.green),
+            utils.clamp(self.blue + value.blue),
         )
 
     def __mul__(self, value: Color | float) -> Color:
@@ -181,7 +181,14 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     __rmul__ = __mul__
 
     def __sub__(self, value: Color | float) -> Color:
-        return self.__add__(-1 * value)
+        if isinstance(value, (int, float)):
+            return self.__add__(-1 * value)
+
+        return Color(
+            utils.clamp(self.red - value.red),
+            utils.clamp(self.green - value.green),
+            utils.clamp(self.blue - value.blue),
+        )
 
     def colorify(self, color: Color, fix_bw: bool = False) -> Color:
         """Return new color with color's hue and self's saturation and value"""

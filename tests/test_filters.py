@@ -258,14 +258,14 @@ class SubtractTests(FilterTestCase):
     def test(self):
         colors = self.filter(ORIG_COLORS, None)
 
-        expected = "#7e8f11 #75c74f #83755d #803079 #97ea72 #9f4b93 #3922e8 #35e9df"
+        expected = "#00001a #000052 #000000 #001c00 #141575 #1c3600 #008b00 #008274"
         self.assertEqual(colors, lib.make_colors(expected))
 
     @mock.patch("larry.filters.subtract.random", random.Random(12))
     def test2(self):
         colors = self.filter(ORIG_COLORS, None)
 
-        expected = "#b3fff0 #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff"
+        expected = '#b3f0ff #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff'
         self.assertEqual(colors, lib.make_colors(expected))
 
 
