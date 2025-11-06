@@ -316,7 +316,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         colors = list(Color.generate_from(orig_colors, 7))
 
         expected = lib.make_colors(
-            "#754fc7 #835d75 #7e118f #807930 #85765e #8b758d #9772ea"
+            "#754fc7 #835d75 #7e118f #807930 #85775e #8b758d #9772ea"
         )
         self.assertEqual(colors, expected)
 
@@ -337,7 +337,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
 
         # gradient goes from input colors ordered by luminocity
         expected = lib.make_colors(
-            "#7e118f #7e1f80 #7e2e73 #7e3c65 #7f4c58 #7f5a4a #807930"
+            "#7e118f #7e1f81 #7e2e73 #7e3d66 #7f4c58 #7f5b4b #807930"
         )
         self.assertEqual(colors, expected)
 

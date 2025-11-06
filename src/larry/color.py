@@ -554,7 +554,11 @@ def get_gradient_color(colors: Iterable[Color], steps: int, step: int) -> Color:
         if step < (steps_between_colors - 1):
             left, right = colors[:2]
             ratio = step / steps_between_colors
-            return (1 - ratio) * left + ratio * right
+            return Color(
+                int((1 - ratio) * left.red + ratio * right.red),
+                int((1 - ratio) * left.green + ratio * right.green),
+                int((1 - ratio) * left.blue + ratio * right.blue),
+            )
         colors = colors[1:]
         steps = steps - steps_between_colors + 1
         step = step - steps_between_colors + 1
