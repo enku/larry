@@ -277,9 +277,19 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         colors = list(Color.gradient(start, stop, steps))
 
         expected = lib.make_colors(
-            "#000000 #2a2a2a #555555 #7f7f7f #aaaaaa #d4d4d4 #ffffff"
+            "#000000 #242424 #484848 #6d6d6d #919191 #b6b6b6 #ffffff"
         )
         self.assertEqual(colors, expected)
+
+    def test_get_gradient_color(self, fixtures: Fixtures) -> None:
+        orig_colors = lib.make_colors("#ff0000 #00ff00 #0000ff")
+
+        colors = list(color.get_gradient_color(orig_colors, 7, i) for i in range(7))
+
+        expected = lib.make_colors(
+            "#ff0000 #bf3f00 #7f7f00 #00ff00 #00bf3f #007f7f #0000ff"
+        )
+        self.assertEqual(colors, expected, " ".join(str(i) for i in colors))
 
     def test_generate_from_with_same_number_of_colors(self, fixtures: Fixtures) -> None:
         orig_colors = lib.make_colors(
@@ -306,7 +316,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         colors = list(Color.generate_from(orig_colors, 7))
 
         expected = lib.make_colors(
-            "#754fc7 #835d75 #7e118f #807930 #87766e #8f74ac #9772ea"
+            "#754fc7 #835d75 #7e118f #807930 #85765e #8b758d #9772ea"
         )
         self.assertEqual(colors, expected)
 
@@ -327,7 +337,7 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
 
         # gradient goes from input colors ordered by luminocity
         expected = lib.make_colors(
-            "#7e118f #7e227f #7e336f #7e445f #7f564f #7f673f #807930"
+            "#7e118f #7e1f80 #7e2e73 #7e3c65 #7f4c58 #7f5a4a #807930"
         )
         self.assertEqual(colors, expected)
 

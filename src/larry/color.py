@@ -7,7 +7,7 @@ import random
 import re
 from collections import namedtuple
 from dataclasses import dataclass
-from math import floor
+from math import ceil, floor
 from queue import Empty
 from typing import Callable, Iterable, Iterator, Optional, TypeAlias, TypeVar, Union
 
@@ -323,27 +323,15 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     @classmethod
     def gradient(cls, from_color: Color, to_color: Color, steps: int) -> ColorGenerator:
         """Generator for creating gradients"""
-        yield from_color
+        colors = (from_color, to_color)
 
-        fsteps = float(steps - 1)
+        if steps == 1:
+            yield from_color
+            yield to_color
+            return
 
-        if fsteps:
-            inc_red = (to_color.red - from_color.red) / fsteps
-            inc_green = (to_color.green - from_color.green) / fsteps
-            inc_blue = (to_color.blue - from_color.blue) / fsteps
-
-            new_red = float(from_color.red)
-            new_blue = float(from_color.blue)
-            new_green = float(from_color.green)
-
-            for _ in range(steps - 2):  # minus the 2 endpoints
-                new_red = new_red + inc_red
-                new_green = new_green + inc_green
-                new_blue = new_blue + inc_blue
-                new_color = cls(int(new_red), int(new_green), int(new_blue))
-                yield new_color
-
-        yield to_color
+        for step in range(steps):
+            yield get_gradient_color(colors, steps, step)
 
     @classmethod
     def generate_from(
@@ -550,6 +538,26 @@ def ungray(
         )
         for color in colors
     ]
+
+
+def get_gradient_color(colors: Iterable[Color], steps: int, step: int) -> Color:
+    """Given the stop colors, return the gradient color of the given step
+
+    Given the total number of steps.
+    """
+    colors = tuple(colors)
+    steps_between_colors = ceil(steps / (len(colors) - 1))
+
+    while True:
+        if len(colors) == 1:
+            return colors[0]
+        if step < (steps_between_colors - 1):
+            left, right = colors[:2]
+            ratio = step / steps_between_colors
+            return (1 - ratio) * left + ratio * right
+        colors = colors[1:]
+        steps = steps - steps_between_colors + 1
+        step = step - steps_between_colors + 1
 
 
 @dataclass(frozen=True, slots=True)

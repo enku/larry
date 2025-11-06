@@ -110,7 +110,7 @@ class GradientTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
-            "#51269a #4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce"
+            "#51269a #4c3d9f #4954a6 #466cad #4384b4 #3f9bb9 #3cb3c0 #36e3ce"
         )
         self.assertEqual(colors, expected)
 
@@ -121,7 +121,7 @@ class GradientTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
-            "#8b41ff #7c4eef #6e5bdf #5f69cf #5176bf #4284af #34919f #269f90"
+            "#8b41ff #7d4bf1 #7157e3 #6463d5 #586fc7 #4b7bb9 #3e87ab #269f90"
         )
         self.assertEqual(colors, expected)
 
@@ -145,7 +145,7 @@ class ZipgradientTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
-            "#44559d #3785a0 #2bb5a4 #62b18c #9aad74 #d2a95d #9dc543 #68e229"
+            "#46499c #3d6d9f #2bb5a4 #54b192 #7eae80 #d2a95d #a9bd48 #82d335"
         )
         self.assertEqual(colors, expected)
 
@@ -155,7 +155,7 @@ class ZipgradientTests(FilterTestCase):
         colors = self.filter(ORIG_COLORS, config)
 
         expected = lib.make_colors(
-            "#4d41a1 #495ca8 #4577b0 #4192b7 #3dadbf #39c8c6 #36e3ce #4cdabd"
+            "#4c3d9f #4954a6 #466cad #4384b4 #3f9bb9 #3cb3c0 #36e3ce #49dbbf"
         )
         self.assertEqual(colors, expected)
 
@@ -265,7 +265,7 @@ class SubtractTests(FilterTestCase):
     def test2(self):
         colors = self.filter(ORIG_COLORS, None)
 
-        expected = '#b3f0ff #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff'
+        expected = "#b3f0ff #aaffff #b8ffff #b5ffff #ccffff #d4ffff #6effff #6affff"
         self.assertEqual(colors, lib.make_colors(expected))
 
 
@@ -299,7 +299,7 @@ class SwapTests(FilterTestCase):
 
         colors = self.filter(ORIG_COLORS, config)
 
-        expected = "#666666 #000000 #254351 #1c343f #7c8e96 #a7b3b9 #d3d9dc #ffffff"
+        expected = "#666666 #000000 #254351 #1c343f #7c8e96 #9ca9af #bdc6ca #ffffff"
         self.assertEqual(colors, lib.make_colors(expected))
 
     def test_with_source_image(self):
@@ -307,7 +307,7 @@ class SwapTests(FilterTestCase):
 
         colors = self.filter(ORIG_COLORS, config)
 
-        expected = "#666666 #1c343f #000000 #254351 #7c8e96 #a7b3b9 #d3d9dc #ffffff"
+        expected = "#666666 #1c343f #000000 #254351 #7c8e96 #9ca9af #bdc6ca #ffffff"
         self.assertEqual(colors, lib.make_colors(expected))
 
 
@@ -429,7 +429,7 @@ class SubGradientTests(FilterTestCase):
         colors = self.filter(self.orig_colors, config)
 
         expected = (
-            "#231815 #11678a #00b6ff #dd8138 #aea69b #7fccff #ffa97f #bfc1bf #7fd9ff"
+            "#231815 #174c63 #00b6ff #dd8138 #bd9a7a #7fccff #ffa97f #d4b8a9 #7fd9ff"
         )
         self.assertEqual(colors, lib.make_colors(expected))
 
