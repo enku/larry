@@ -6,7 +6,6 @@ import configparser
 import logging
 import os
 import signal
-import sys
 from typing import Iterable
 
 from larry import LOGGER, __version__
@@ -140,28 +139,22 @@ def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> Color
     return colors
 
 
-def parse_args(argv=None) -> argparse.Namespace:
-    """Parse argument vector"""
-    parser = build_parser()
-
-    return parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
-
-
 def build_parser() -> argparse.ArgumentParser:
     """Parse command-line arguments"""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {__version__}"
-    )
-    parser.add_argument(
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    ap.add_argument(
         "--config", "-c", type=str, dest="config_path", default=DEFAULT_CONFIG_PATH
     )
-    parser.add_argument("--debug", action="store_true", default=False)
-    parser.add_argument("--interval", "-n", type=int, default=INTERVAL)
-    parser.add_argument(
+    ap.add_argument("--debug", action="store_true", default=False)
+    ap.add_argument("--interval", "-n", type=int, default=INTERVAL)
+    ap.add_argument(
         "--list-plugins", action="store_true", default=False, help="List known plugins"
     )
-    parser.add_argument(
+    ap.add_argument(
         "--list-filters", action="store_true", default=False, help="List known filters"
     )
-    return parser
+    return ap
+
+
+parser = build_parser()

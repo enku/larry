@@ -7,7 +7,8 @@ from larry import cli
 
 def main():
     """script entry point"""
-    args = cli.parse_args()
+    parser = cli.parser
+    args = parser.parse_args()
 
     try:
         asyncio.run(cli.main(args))

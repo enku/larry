@@ -170,8 +170,7 @@ class RunEveryTests(IsolatedAsyncioTestCase):
 class MainTests(IsolatedAsyncioTestCase):
     async def test(self, get_running_loop: mock.Mock, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
-        args = cli.parse_args(f"larry -c {configmaker.path} --interval=60".split())
-        assert args
+        args = cli.parser.parse_args(f"-c {configmaker.path} --interval=60".split())
 
         await cli.main(args)
 
@@ -182,7 +181,7 @@ class MainTests(IsolatedAsyncioTestCase):
         self, get_running_loop: mock.Mock, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
-        args = cli.parse_args(f"larry -c {configmaker.path} -n0".split())
+        args = cli.parser.parse_args(f"-c {configmaker.path} -n0".split())
 
         await cli.main(args)
 
@@ -193,7 +192,7 @@ class MainTests(IsolatedAsyncioTestCase):
         self, _get_running_loop: mock.Mock, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
-        args = cli.parse_args(f"larry -c {configmaker.path} --debug".split())
+        args = cli.parser.parse_args(f"-c {configmaker.path} --debug".split())
 
         with mock.patch("larry.cli.LOGGER") as logger:
             await cli.main(args)
@@ -204,8 +203,8 @@ class MainTests(IsolatedAsyncioTestCase):
         self, _get_running_loop: mock.Mock, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
-        argv = f"larry -c {configmaker.path} --list-filters".split()
-        args = cli.parse_args(argv)
+        argv = f"-c {configmaker.path} --list-filters".split()
+        args = cli.parser.parse_args(argv)
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
@@ -218,8 +217,8 @@ class MainTests(IsolatedAsyncioTestCase):
     ) -> None:
         configmaker = fixtures.configmaker
         configmaker.add_config(plugins="command")
-        argv = f"larry -c {configmaker.path} --list-plugins".split()
-        args = cli.parse_args(argv)
+        argv = f"-c {configmaker.path} --list-plugins".split()
+        args = cli.parser.parse_args(argv)
 
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
