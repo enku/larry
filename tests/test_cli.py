@@ -210,7 +210,7 @@ class MainTests(IsolatedAsyncioTestCase):
         with contextlib.redirect_stdout(stdout):
             await cli.main(args)
 
-        self.assertIn("[X] gradient", stdout.getvalue())
+        self.assertIn("[X] none", stdout.getvalue())
 
     async def test_list_plugins(
         self, _get_running_loop: mock.Mock, fixtures: Fixtures

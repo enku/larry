@@ -20,7 +20,7 @@ def list_filters(config_path: str) -> str:
     """Return text displaying available filters and enabled status"""
     output = io.StringIO()
     config = load_config(config_path)
-    enabled_filter = config["larry"].get("filter", "gradient").split()
+    enabled_filter = config["larry"].get("filter", "none").split()
 
     for name, func in filters_list():
         func_doc = func.__doc__ or ""
