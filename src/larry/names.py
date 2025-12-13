@@ -24,7 +24,7 @@ class _Terminal(NamedTuple):
     brightwhite: Color = Color(255, 255, 255)
 
 
-Terminal = _Terminal()
+Terminal = _Terminal()  # pylint: disable=invalid-name
 
 
 NAMES = {
