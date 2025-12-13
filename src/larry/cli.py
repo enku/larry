@@ -16,25 +16,9 @@ from larry.filters import FilterNotFound, list_filters, load_filter
 from larry.image import make_image_from_bytes
 from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins
+from larry.types import STOP_EVENT, Handler
 
 INTERVAL = 8 * 60
-STOP_EVENT = asyncio.Event()
-
-
-class Handler:
-    """Process timer handle"""
-
-    _handler = None
-
-    @classmethod
-    def get(cls) -> asyncio.TimerHandle | None:
-        """Return the timer handle if one is set"""
-        return cls._handler
-
-    @classmethod
-    def set(cls, handler: asyncio.TimerHandle | None) -> None:
-        """Set the timer handle"""
-        cls._handler = handler
 
 
 async def main(args: argparse.Namespace) -> None:
