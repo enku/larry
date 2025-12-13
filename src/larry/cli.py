@@ -38,11 +38,22 @@ class Handler:
         cls._handler = handler
 
 
-def parse_args(argv=None) -> argparse.Namespace:
-    """Parse argument vector"""
-    parser = build_parser()
+async def main(args: argparse.Namespace) -> None:
+    """Run the given loop forever until interrupted"""
+    if args.list_plugins:
+        print(list_plugins(args.config_path), end="")
+        return
 
-    return parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
+    if args.list_filters:
+        print(list_filters(args.config_path), end="")
+        return
+
+    logging.basicConfig()
+
+    if args.debug:
+        LOGGER.setLevel("DEBUG")
+
+    await run_every(args.interval, args.config_path)
 
 
 async def run_every(interval: float, config_path: str) -> None:
@@ -129,6 +140,13 @@ def apply_filters(colors: ColorList, config: configparser.ConfigParser) -> Color
     return colors
 
 
+def parse_args(argv=None) -> argparse.Namespace:
+    """Parse argument vector"""
+    parser = build_parser()
+
+    return parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -147,21 +165,3 @@ def build_parser() -> argparse.ArgumentParser:
         "--list-filters", action="store_true", default=False, help="List known filters"
     )
     return parser
-
-
-async def main(args: argparse.Namespace) -> None:
-    """Run the given loop forever until interrupted"""
-    if args.list_plugins:
-        print(list_plugins(args.config_path), end="")
-        return
-
-    if args.list_filters:
-        print(list_filters(args.config_path), end="")
-        return
-
-    logging.basicConfig()
-
-    if args.debug:
-        LOGGER.setLevel("DEBUG")
-
-    await run_every(args.interval, args.config_path)
