@@ -19,6 +19,7 @@ from larry.io import read_file, write_file
 from larry.plugins import do_plugin, list_plugins
 
 INTERVAL = 8 * 60
+STOP_EVENT = asyncio.Event()
 
 
 class Handler:
@@ -37,47 +38,11 @@ class Handler:
         cls._handler = handler
 
 
-def main(argv=None) -> argparse.Namespace | None:
-    """Non async entry point
-
-    Return argparse.Namespace to transfer control to the loop.
-    """
+def parse_args(argv=None) -> argparse.Namespace:
+    """Parse argument vector"""
     parser = build_parser()
-    args = parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
 
-    if args.list_plugins:
-        print(list_plugins(args.config_path), end="")
-        return None
-
-    if args.list_filters:
-        print(list_filters(args.config_path), end="")
-        return None
-
-    return args
-
-
-async def async_main(args: argparse.Namespace) -> None:
-    """Actual program entry point"""
-    logging.basicConfig()
-    config = load_config(args.config_path)
-
-    if args.debug or config["larry"].getboolean("debug", fallback=False):
-        LOGGER.setLevel("DEBUG")
-
-    LOGGER.debug("args=%s", args)
-    loop = asyncio.get_event_loop()
-
-    if args.interval:
-        loop.add_signal_handler(
-            signal.SIGUSR1,
-            lambda: loop.create_task(run_every(args.interval, args.config_path)),
-        )
-        await run_every(args.interval, args.config_path)
-    else:
-        loop.add_signal_handler(
-            signal.SIGUSR1, lambda: loop.create_task(run(args.config_path))
-        )
-        await run(args.config_path)
+    return parser.parse_args(argv[1:] if argv is not None else sys.argv[1:])
 
 
 async def run_every(interval: float, config_path: str) -> None:
@@ -88,14 +53,22 @@ async def run_every(interval: float, config_path: str) -> None:
 
     await run(config_path)
 
-    if interval == 0:
-        return
+    loop = asyncio.get_running_loop()
 
-    loop = asyncio.get_event_loop()
-    handler = loop.call_later(
-        interval, lambda: asyncio.create_task(run_every(interval, config_path))
-    )
-    Handler.set(handler)
+    if interval == 0:
+        loop.add_signal_handler(
+            signal.SIGUSR1, lambda: loop.create_task(run(config_path))
+        )
+    else:
+        loop.add_signal_handler(
+            signal.SIGUSR1, lambda: loop.create_task(run_every(interval, config_path))
+        )
+        handler = loop.call_later(
+            interval, lambda: loop.create_task(run_every(interval, config_path))
+        )
+        Handler.set(handler)
+
+    await STOP_EVENT.wait()
 
 
 async def run(config_path: str) -> None:
@@ -176,12 +149,19 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run_loop(loop: asyncio.AbstractEventLoop) -> None:
+async def main(args: argparse.Namespace) -> None:
     """Run the given loop forever until interrupted"""
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        LOGGER.info("User interrupted")
-        loop.stop()
-    finally:
-        loop.close()
+    if args.list_plugins:
+        print(list_plugins(args.config_path), end="")
+        return
+
+    if args.list_filters:
+        print(list_filters(args.config_path), end="")
+        return
+
+    logging.basicConfig()
+
+    if args.debug:
+        LOGGER.setLevel("DEBUG")
+
+    await run_every(args.interval, args.config_path)

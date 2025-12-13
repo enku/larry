@@ -7,12 +7,19 @@ from larry import cli
 
 def main():
     """script entry point"""
-    if (args := cli.main()) is None:
-        return
+    args = cli.parse_args()
 
-    loop = asyncio.get_event_loop()
-    loop.create_task(cli.async_main(args))
-    cli.run_loop(loop)
+    try:
+        asyncio.run(cli.main(args))
+    except KeyboardInterrupt:
+        cli.LOGGER.info("User interrupted")
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            pass
+        else:
+            cli.STOP_EVENT.set()
+            loop.stop()
 
 
 if __name__ == "__main__":

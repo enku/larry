@@ -1,6 +1,5 @@
 # pylint: disable=missing-docstring
 import argparse
-import asyncio
 import contextlib
 import io
 import os.path
@@ -138,11 +137,11 @@ class RunEveryTests(IsolatedAsyncioTestCase):
         configmaker = fixtures.configmaker
         with mock.patch("larry.cli.Handler") as mock_handler:
             mock_handler.get.return_value = None
-            with mock.patch("larry.cli.asyncio.get_event_loop") as get_event_loop:
+            with mock.patch("larry.cli.asyncio.get_running_loop") as get_running_loop:
                 await cli.run_every(15.0, configmaker.path)
 
         self.assertTrue(os.path.exists(configmaker.config["larry"]["output"]))
-        loop = get_event_loop.return_value
+        loop = get_running_loop.return_value
         loop.call_later.assert_called_once_with(15.0, mock.ANY)
         timer_handler = loop.call_later.return_value
         mock_handler.set_assert_called_once_with(timer_handler)
@@ -166,89 +165,64 @@ class RunEveryTests(IsolatedAsyncioTestCase):
         handler.cancel.assert_called_once_with()
 
 
-@given(lib.configmaker)
-class MainTests(TestCase):
-    def test_list_filters(self, fixtures: Fixtures) -> None:
+@given(lib.configmaker, stop=lambda _: cli.STOP_EVENT.set())
+@mock.patch("larry.cli.asyncio.get_running_loop")
+class MainTests(IsolatedAsyncioTestCase):
+    async def test(self, get_running_loop: mock.Mock, fixtures: Fixtures) -> None:
         configmaker = fixtures.configmaker
-        argv = f"larry -c {configmaker.path} --list-filters".split()
-
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
-            cli.main(argv)
-
-        self.assertIn("[X] gradient", stdout.getvalue())
-
-    def test_list_plugins(self, fixtures: Fixtures) -> None:
-        configmaker = fixtures.configmaker
-        configmaker.add_config(plugins="command")
-        argv = f"larry -c {configmaker.path} --list-plugins".split()
-
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
-            cli.main(argv)
-
-        self.assertIn("[X] command", stdout.getvalue())
-
-
-@given(lib.configmaker)
-@mock.patch("larry.cli.asyncio.get_event_loop")
-@mock.patch("larry.cli.run_every")
-class AsyncMainTests(IsolatedAsyncioTestCase):
-    async def test(
-        self, run_every: mock.Mock, get_event_loop: mock.Mock, fixtures: Fixtures
-    ) -> None:
-        configmaker = fixtures.configmaker
-        args = cli.main(f"larry -c {configmaker.path} --interval=60".split())
+        args = cli.parse_args(f"larry -c {configmaker.path} --interval=60".split())
         assert args
 
-        await cli.async_main(args)
+        await cli.main(args)
 
-        loop = get_event_loop.return_value
+        loop = get_running_loop.return_value
         loop.add_signal_handler.assert_called_once_with(signal.SIGUSR1, mock.ANY)
-        run_every.assert_called_once_with(60, configmaker.path)
 
     async def test_with_interval_0(
-        self, _run_every: mock.Mock, get_event_loop: mock.Mock, fixtures: Fixtures
+        self, get_running_loop: mock.Mock, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
-        args = cli.main(f"larry -c {configmaker.path} -n0".split())
-        assert args
+        args = cli.parse_args(f"larry -c {configmaker.path} -n0".split())
 
-        await cli.async_main(args)
+        await cli.main(args)
 
-        loop = get_event_loop.return_value
+        loop = get_running_loop.return_value
         loop.add_signal_handler.assert_called_once_with(signal.SIGUSR1, mock.ANY)
 
     async def test_with_debug(
-        self, _run_every: mock.Mock, _get_event_loop: mock.Mock, fixtures: Fixtures
+        self, _get_running_loop: mock.Mock, fixtures: Fixtures
     ) -> None:
         configmaker = fixtures.configmaker
-        args = cli.main(f"larry -c {configmaker.path} --debug".split())
-        assert args
+        args = cli.parse_args(f"larry -c {configmaker.path} --debug".split())
 
         with mock.patch("larry.cli.LOGGER") as logger:
-            await cli.async_main(args)
+            await cli.main(args)
 
         logger.setLevel.assert_called_once_with("DEBUG")
 
+    async def test_list_filters(
+        self, _get_running_loop: mock.Mock, fixtures: Fixtures
+    ) -> None:
+        configmaker = fixtures.configmaker
+        argv = f"larry -c {configmaker.path} --list-filters".split()
+        args = cli.parse_args(argv)
 
-class RunLoopTests(TestCase):
-    def test_runs_forever(self) -> None:
-        loop = mock.Mock(spec=asyncio.AbstractEventLoop)
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            await cli.main(args)
 
-        cli.run_loop(loop)
+        self.assertIn("[X] gradient", stdout.getvalue())
 
-        loop.assert_has_calls(
-            [mock.call.run_forever(), mock.call.close()], any_order=False
-        )
+    async def test_list_plugins(
+        self, _get_running_loop: mock.Mock, fixtures: Fixtures
+    ) -> None:
+        configmaker = fixtures.configmaker
+        configmaker.add_config(plugins="command")
+        argv = f"larry -c {configmaker.path} --list-plugins".split()
+        args = cli.parse_args(argv)
 
-    def test_intercepts_keyboardinterrupt(self) -> None:
-        loop = mock.Mock(spec=asyncio.AbstractEventLoop)
-        loop.run_forever.side_effect = KeyboardInterrupt()
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            await cli.main(args)
 
-        cli.run_loop(loop)
-
-        loop.assert_has_calls(
-            [mock.call.run_forever(), mock.call.stop(), mock.call.close()],
-            any_order=False,
-        )
+        self.assertIn("[X] command", stdout.getvalue())

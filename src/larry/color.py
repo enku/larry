@@ -682,8 +682,7 @@ def parse_rgb_with_slashes(color_str: str) -> ColorTuple:
 @parser(r"#?[0-9a-fA-F]{6}|#?[0-9a-fA-F]{3}")
 def parse_hash_rgb(color_str: str) -> ColorTuple:
     """rrggbb"""
-    if color_str[0] == "#":
-        color_str = color_str[1:]
+    color_str = color_str.removeprefix("#")
 
     if len(color_str) == 3:
         return (
