@@ -36,6 +36,7 @@ gnome_background = "larry.plugins.background:plugin"
 gnome_shell = "larry.plugins.gnome_shell:plugin"
 gnome_terminal = "larry.plugins.gnome_terminal:plugin"
 gtk = "larry.plugins.gtk:plugin"
+pid = "larry.plugins.pid:plugin"
 vim = "larry.plugins.vim:plugin"
 
 [project.entry-points."larry.filters"]
