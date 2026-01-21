@@ -28,12 +28,10 @@ class ListFiltersTestsi(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         config_path = f"{fixtures.tmpdir}/larry.cfg"
         with open(config_path, "w", encoding="UTF-8") as fp:
-            fp.write(
-                """\
+            fp.write("""\
 [larry]
 filter = random | grayscale
-"""
-            )
+""")
         result = filters.list_filters(config_path)
 
         self.assertIn("[X] grayscale", result)
