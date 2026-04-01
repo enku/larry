@@ -32,7 +32,7 @@ class SineTests(lib.FilterTestCase):
         self.assertEqual(colors, expected)
 
     def test_cosine(self, fixtures: Fixtures) -> None:
-        config = fixtures.configmaker.config
+        config = fixtures.configmaker.config  # pylint: disable=duplicate-code
         config["filters:sine"] = {"mode": "cosine"}
 
         colors = self.filter(ORIG_COLORS, config)
