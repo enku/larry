@@ -6,7 +6,7 @@ import os.path
 import signal
 from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import FixtureContext, Fixtures, fixture, given
 
 from larry import cli, filters
 from larry.image import make_image_from_bytes
@@ -17,16 +17,22 @@ from . import lib
 ANY = mock.ANY
 
 
+@fixture()
+def cli_handler(_fixtures: Fixtures) -> FixtureContext[type[cli.Handler]]:
+    cli.Handler.set(None)
+    yield cli.Handler
+
+    cli.Handler.set(None)
+
+
+@given(cli_handler)
 class HandlerTests(TestCase):
-    def tearDown(self):
-        cli.Handler.set(None)
-        super().tearDown()
+    def test(self, fixtures: Fixtures) -> None:
+        handler = fixtures.cli_handler
+        self.assertEqual(handler.get(), None)
 
-    def test(self):
-        self.assertEqual(cli.Handler.get(), None)
-
-        cli.Handler.set(6)
-        self.assertEqual(cli.Handler.get(), 6)
+        handler.set(6)
+        self.assertEqual(handler.get(), 6)
 
 
 class BuildParserTests(TestCase):
