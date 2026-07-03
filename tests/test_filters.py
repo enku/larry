@@ -113,6 +113,27 @@ class GradientTests(FilterTestCase):
         self.assertEqual(colors, expected)
 
     @mock.patch("larry.color.random", random.Random(1))
+    def test_multicolor(self) -> None:
+        config = lib.make_config("gradient", num_colors=4)
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#51269a #414891 #218c80 #4f8b6f #ad8b4d #84b138 #33ff0f #33ff0f"
+        )
+        self.assertEqual(colors, expected)
+
+    @mock.patch("larry.color.random", random.Random(1))
+    @mock.patch("larry.filters.gradient.random", random.Random(12345))
+    def test_multicolor_random(self) -> None:
+        config = lib.make_config("gradient", num_colors="random")
+        colors = self.filter(ORIG_COLORS, config)
+
+        expected = lib.make_colors(
+            "#51269a #218c80 #a7874a #2ada0c #b5c901 #b5c901 #b5c901 #b5c901"
+        )
+        self.assertEqual(colors, expected)
+
+    @mock.patch("larry.color.random", random.Random(1))
     @mock.patch("larry.utils.random", random.Random(12345))
     def test_with_fuzz(self):
         config = lib.make_config("gradient", fuzz=60)
