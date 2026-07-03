@@ -323,15 +323,22 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     @classmethod
     def gradient(cls, from_color: Color, to_color: Color, steps: int) -> ColorGenerator:
         """Generator for creating gradients"""
-        colors = (from_color, to_color)
-
         if steps == 1:
             yield from_color
             yield to_color
             return
 
-        for step in range(steps):
-            yield get_gradient_color(colors, steps, step)
+        yield from cls.gradient2([from_color, to_color], steps)
+
+    @classmethod
+    def gradient2(cls, colors: ColorList, length: int) -> ColorGenerator:
+        """Generator for creating multi-color gradients"""
+        if len(colors) == length:
+            yield from colors
+            return
+
+        for i in range(length):
+            yield get_gradient_color(colors, length, i)
 
     @classmethod
     def generate_from(

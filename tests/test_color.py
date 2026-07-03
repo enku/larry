@@ -281,6 +281,16 @@ class ColorTests(TestCase):  # pylint: disable=too-many-public-methods
         )
         self.assertEqual(colors, expected)
 
+    def test_gradient2(self, fixtures: Fixtures) -> None:
+        colors = lib.make_colors("#ff0000 #00ff00 #0000ff")
+        length = 7
+
+        new_colors = list(Color.gradient2(colors, length))
+        expected = lib.make_colors(
+            "#ff0000 #bf3f00 #7f7f00 #00ff00 #00bf3f #007f7f #0000ff"
+        )
+        self.assertEqual(new_colors, expected, " ".join(str(i) for i in new_colors))
+
     def test_get_gradient_color(self, fixtures: Fixtures) -> None:
         orig_colors = lib.make_colors("#ff0000 #00ff00 #0000ff")
 
