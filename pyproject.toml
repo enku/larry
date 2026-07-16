@@ -90,6 +90,7 @@ source = ["larry"]
 omit = ["src/larry/__main__.py"]
 
 
+
 [tool.pdm]
 version = { source = "scm" }
 [dependency-groups]
@@ -102,6 +103,7 @@ dev = [
     "types-Pillow>=9.4.0.13",
     "scipy-stubs>=1.15.1.0",
     "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
+    "scikit-learn-stubs>=0.0.3",
 ]
 
 [tool.black]
