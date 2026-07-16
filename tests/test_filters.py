@@ -24,7 +24,7 @@ FilterTestCase = lib.FilterTestCase
 
 
 @given(lib.tmpdir)
-class ListFiltersTestsi(TestCase):
+class ListFiltersTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         config_path = f"{fixtures.tmpdir}/larry.cfg"
         with open(config_path, "w", encoding="UTF-8") as fp:
