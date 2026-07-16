@@ -145,7 +145,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
     def __str__(self) -> str:
         return f"#{self.red:02x}{self.green:02x}{self.blue:02x}"
 
-    def __add__(self, value: Color | float) -> Color:
+    def __add__(self, value: Color | float) -> Color:  # type: ignore[override]
         if isinstance(value, (int, float)):
             red = self.red + value
             blue = self.blue + value
@@ -163,7 +163,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
             utils.clamp(self.blue + value.blue),
         )
 
-    def __mul__(self, value: Color | float) -> Color:
+    def __mul__(self, value: Color | float) -> Color:  # type: ignore[override]
         """This should be used instead of __add__ as it makes more sense"""
 
         if isinstance(value, (int, float)):
@@ -178,7 +178,7 @@ class Color(namedtuple("Color", ["red", "green", "blue"])):
         clum = value.luminocity()
         return self * clum
 
-    __rmul__ = __mul__
+    __rmul__ = __mul__  # type: ignore[assignment]
 
     def __sub__(self, value: Color | float) -> Color:
         if isinstance(value, (int, float)):
