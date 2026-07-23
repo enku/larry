@@ -45,8 +45,6 @@ async def run_every(interval: float, config_path: str) -> None:
         LOGGER.info("received signal to change wallpaper")
         handler.cancel()
 
-    await run(config_path)
-
     loop = asyncio.get_running_loop()
 
     if interval == 0:
@@ -62,6 +60,7 @@ async def run_every(interval: float, config_path: str) -> None:
         )
         Handler.set(handler)
 
+    await run(config_path)
     await STOP_EVENT.wait()
 
 
